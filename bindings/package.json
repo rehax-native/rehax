@@ -1,0 +1,19 @@
+{
+  "name": "bindings",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "extract": "ts-node extract.ts",
+    "generate": "ts-node generate.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^18.0.3",
+    "quicktype-core": "^6.0.71",
+    "ts-node": "^10.8.2",
+    "typescript": "^4.7.4"
+  }
+}
