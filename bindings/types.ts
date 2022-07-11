@@ -1,5 +1,6 @@
 import {
   FluffyInner,
+  FrameworkInner,
   PurpleInner,
 } from "./generated/AppKit.framework/extracted";
 
@@ -18,5 +19,7 @@ export interface SimpleMethod {
 
 export interface SimpleClass {
   name: string;
+  origin: FrameworkInner
+  superClass: string | undefined;
   methods: Record<string, SimpleMethod>;
 }

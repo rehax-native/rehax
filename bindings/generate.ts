@@ -13,37 +13,57 @@ const infoLocation = path.join(
   "extracted.json"
 );
 
-const bindingFile = path.join(
+const bindingHeaderFile = path.join(
   __dirname,
   "generated",
   frameworkName + ".framework",
   "binding.h"
 );
+const bindingImplFile = path.join(
+  __dirname,
+  "generated",
+  frameworkName + ".framework",
+  "binding.m"
+);
+
+// // These classes are handled by the javascriptcore framework
+// // Subclassing these classes results in an error
+// const blacklistedClasses = [
+//   "NSDate",
+//   "NSDictionary",
+//   "NSArray",
+//   "NSString",
+//   "NSNumber",
+// ];
+
+const classNamesToExport = [
+  "NSView",
+  "NSButton",
+  "NSTextField",
+];
 
 function simplifyInfo(data: Framework): Record<string, SimpleClass> {
   const classDeclarations: Record<string, SimpleClass> = {};
 
   data.inner.forEach((inner) => {
     if (inner.kind === "ObjCInterfaceDecl" && inner.name) {
-      inner.name;
-
       if (!classDeclarations[inner.name]) {
         classDeclarations[inner.name] = {
           name: inner.name,
+          origin: inner,
+          superClass: inner.super?.name,
           methods: {},
         };
       }
 
       const classDeclaration = classDeclarations[inner.name];
 
-      inner.inner?.forEach((classInner) => {
-        // if (
-        //   classDeclaration.name === "NSDate" &&
-        //   classInner.name === "timeIntervalSinceReferenceDate"
-        // ) {
-        //   console.log(classInner);
-        // }
+      // No previous decl means first time it is defined
+      if (!inner.previousDecl) {
+        classDeclaration.origin = inner;
+      }
 
+      inner.inner?.forEach((classInner) => {
         if (classInner.kind === "ObjCMethodDecl" && classInner.name) {
           const args: SimpleMethodArgument[] = [];
           classInner.inner?.forEach((methodInner) => {
@@ -67,7 +87,51 @@ function simplifyInfo(data: Framework): Record<string, SimpleClass> {
     }
   });
 
-  return classDeclarations;
+  function addSuperClassDefinitions(
+    classDef: SimpleClass,
+    superClassName: string | undefined
+  ) {
+    const superClass = superClassName
+      ? classDeclarations[superClassName]
+      : undefined;
+    if (superClass) {
+      for (const name of Object.keys(superClass.methods)) {
+        classDef.methods[name] = superClass.methods[name];
+      }
+      addSuperClassDefinitions(classDef, superClass.superClass);
+    }
+  }
+
+  // hydrate with super class methods
+  for (const name of Object.keys(classDeclarations)) {
+    addSuperClassDefinitions(
+      classDeclarations[name],
+      classDeclarations[name].superClass
+    );
+  }
+
+  const exportedDeclarations: Record<string, SimpleClass> = {};
+  for (const name of Object.keys(classDeclarations)) {
+    const classDef = classDeclarations[name];
+    const isDefinedInThisFramework =
+      classDef.origin.loc.includedFrom?.file.includes(
+        `${frameworkName}.framework`
+      );
+    if (!isDefinedInThisFramework) {
+      continue;
+    }
+
+    // if (blacklistedClasses.includes(name)) {
+    //   continue;
+    // }
+    if (!classNamesToExport.includes(name)) {
+      continue;
+    }
+
+    exportedDeclarations[name] = classDef;
+  }
+
+  return exportedDeclarations;
 }
 
 async function run() {
@@ -76,16 +140,12 @@ async function run() {
   ) as Framework;
   const simple = simplifyInfo(data);
 
-  try {
-    await fs.unlink(bindingFile);
-  } catch {
-  }
-  await fs.appendFile(bindingFile, `#import <${frameworkName}/${frameworkName}.h>\n#import <JavaScriptCore/JavaScriptCore.h>`, "utf-8");
-  for (const info of Object.values(simple)) {
-    const output = generateJavascriptCoreFrameworkBindings(info);
-    await fs.appendFile(bindingFile, output, "utf-8");
-    // const output = generateDuktapeFrameworkBindings(info);
-  }
+  const output = generateJavascriptCoreFrameworkBindings(
+    frameworkName,
+    Object.values(simple)
+  );
+  await fs.writeFile(bindingHeaderFile, output.header, "utf-8");
+  await fs.writeFile(bindingImplFile, output.impl, "utf-8");
 }
 
 run();
