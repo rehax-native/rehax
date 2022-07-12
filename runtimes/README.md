@@ -1,0 +1,1 @@
+The runtimes set up the different js/lua VMs and the bindings to the native libraries.

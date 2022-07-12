@@ -1,6 +1,6 @@
 # Rehax Bindings
 
-Tools to generate bindings between native frameworks and scripting languages.
+Tools to generate bindings between native libraries and scripting languages.
 
 Run `pnpm run extract` to extract header info from a framework, then `pnpm run generate` to generate the bindings.
 
