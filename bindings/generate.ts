@@ -3,7 +3,8 @@ import fs from "fs/promises";
 import { Framework } from "./generated/AppKit.framework/extracted";
 import { SimpleClass, SimpleMethodArgument } from "./types";
 import { generateDuktapeFrameworkBindings } from "./generators/duktape-framework";
-import { generateJavascriptCoreFrameworkBindings } from "./generators/javascriptcore-framework";
+// import { generateJavascriptCoreFrameworkBindings } from "./generators/javascriptcore-framework";
+import { generateJavascriptCoreCBindings } from "./generators/javascriptcore-c";
 
 const frameworkName = "AppKit";
 const infoLocation = path.join(
@@ -23,7 +24,7 @@ const bindingImplFile = path.join(
   __dirname,
   "generated",
   frameworkName + ".framework",
-  "binding.m"
+  "binding.mm"
 );
 
 // // These classes are handled by the javascriptcore framework
@@ -111,8 +112,8 @@ function simplifyInfo(data: Framework): Record<string, SimpleClass> {
   }
 
   const exportedDeclarations: Record<string, SimpleClass> = {};
-  for (const name of Object.keys(classDeclarations)) {
-    const classDef = classDeclarations[name];
+  for (const id of Object.keys(classDeclarations)) {
+    const classDef = classDeclarations[id];
     const isDefinedInThisFramework =
       classDef.origin.loc.includedFrom?.file.includes(
         `${frameworkName}.framework`
@@ -124,11 +125,11 @@ function simplifyInfo(data: Framework): Record<string, SimpleClass> {
     // if (blacklistedClasses.includes(name)) {
     //   continue;
     // }
-    if (!classNamesToExport.includes(name)) {
+    if (!classNamesToExport.includes(classDef.name)) {
       continue;
     }
 
-    exportedDeclarations[name] = classDef;
+    exportedDeclarations[classDef.name] = classDef;
   }
 
   return exportedDeclarations;
@@ -140,10 +141,7 @@ async function run() {
   ) as Framework;
   const simple = simplifyInfo(data);
 
-  const output = generateJavascriptCoreFrameworkBindings(
-    frameworkName,
-    Object.values(simple)
-  );
+  const output = generateJavascriptCoreCBindings(frameworkName, simple);
   await fs.writeFile(bindingHeaderFile, output.header, "utf-8");
   await fs.writeFile(bindingImplFile, output.impl, "utf-8");
 }

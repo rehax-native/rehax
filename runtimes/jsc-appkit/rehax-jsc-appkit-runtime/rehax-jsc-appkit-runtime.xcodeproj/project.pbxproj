@@ -1,0 +1,470 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		92A74F59287C4E4A008D677C /* rehax_jsc_appkit_runtime.h in Headers */ = {isa = PBXBuildFile; fileRef = 92A74F58287C4E4A008D677C /* rehax_jsc_appkit_runtime.h */; };
+		92A74F5B287C4E4A008D677C /* rehax_jsc_appkit_runtime.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92A74F5A287C4E4A008D677C /* rehax_jsc_appkit_runtime.mm */; };
+		92A74F69287CE084008D677C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 92A74F68287CE084008D677C /* AppDelegate.m */; };
+		92A74F6C287CE084008D677C /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92A74F6B287CE084008D677C /* ViewController.mm */; };
+		92A74F6E287CE086008D677C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 92A74F6D287CE086008D677C /* Assets.xcassets */; };
+		92A74F71287CE086008D677C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92A74F6F287CE086008D677C /* Main.storyboard */; };
+		92A74F73287CE086008D677C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 92A74F72287CE086008D677C /* main.m */; };
+		92A74F7F287CE5C5008D677C /* binding.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92A74F7E287CE5C5008D677C /* binding.mm */; };
+		92A74F80287CE669008D677C /* librehax-jsc-appkit-runtime.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 92A74F55287C4E4A008D677C /* librehax-jsc-appkit-runtime.a */; };
+		92A74F82287CE8FA008D677C /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92A74F81287CE8FA008D677C /* JavaScriptCore.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		92A74F7A287CE16B008D677C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 92A74F4D287C4E4A008D677C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 92A74F54287C4E4A008D677C;
+			remoteInfo = "rehax-jsc-appkit-runtime";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		92A74F55287C4E4A008D677C /* librehax-jsc-appkit-runtime.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "librehax-jsc-appkit-runtime.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		92A74F58287C4E4A008D677C /* rehax_jsc_appkit_runtime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rehax_jsc_appkit_runtime.h; sourceTree = "<group>"; };
+		92A74F5A287C4E4A008D677C /* rehax_jsc_appkit_runtime.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = rehax_jsc_appkit_runtime.mm; sourceTree = "<group>"; };
+		92A74F65287CE084008D677C /* rehax-jsc-appkit-runtime-playground.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "rehax-jsc-appkit-runtime-playground.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		92A74F67287CE084008D677C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		92A74F68287CE084008D677C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		92A74F6A287CE084008D677C /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		92A74F6B287CE084008D677C /* ViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
+		92A74F6D287CE086008D677C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		92A74F70287CE086008D677C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		92A74F72287CE086008D677C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		92A74F74287CE086008D677C /* rehax_jsc_appkit_runtime_playground.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = rehax_jsc_appkit_runtime_playground.entitlements; sourceTree = "<group>"; };
+		92A74F7E287CE5C5008D677C /* binding.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = binding.mm; path = ../../../../bindings/generated/AppKit.framework/binding.mm; sourceTree = "<group>"; };
+		92A74F81287CE8FA008D677C /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		92A74F53287C4E4A008D677C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		92A74F62287CE084008D677C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92A74F82287CE8FA008D677C /* JavaScriptCore.framework in Frameworks */,
+				92A74F80287CE669008D677C /* librehax-jsc-appkit-runtime.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		92A74F4C287C4E4A008D677C = {
+			isa = PBXGroup;
+			children = (
+				92A74F57287C4E4A008D677C /* rehax-jsc-appkit-runtime */,
+				92A74F66287CE084008D677C /* rehax-jsc-appkit-runtime-playground */,
+				92A74F56287C4E4A008D677C /* Products */,
+				92A74F78287CE16B008D677C /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		92A74F56287C4E4A008D677C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				92A74F55287C4E4A008D677C /* librehax-jsc-appkit-runtime.a */,
+				92A74F65287CE084008D677C /* rehax-jsc-appkit-runtime-playground.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		92A74F57287C4E4A008D677C /* rehax-jsc-appkit-runtime */ = {
+			isa = PBXGroup;
+			children = (
+				92A74F7E287CE5C5008D677C /* binding.mm */,
+				92A74F58287C4E4A008D677C /* rehax_jsc_appkit_runtime.h */,
+				92A74F5A287C4E4A008D677C /* rehax_jsc_appkit_runtime.mm */,
+			);
+			path = "rehax-jsc-appkit-runtime";
+			sourceTree = "<group>";
+		};
+		92A74F66287CE084008D677C /* rehax-jsc-appkit-runtime-playground */ = {
+			isa = PBXGroup;
+			children = (
+				92A74F67287CE084008D677C /* AppDelegate.h */,
+				92A74F68287CE084008D677C /* AppDelegate.m */,
+				92A74F6A287CE084008D677C /* ViewController.h */,
+				92A74F6B287CE084008D677C /* ViewController.mm */,
+				92A74F6D287CE086008D677C /* Assets.xcassets */,
+				92A74F6F287CE086008D677C /* Main.storyboard */,
+				92A74F72287CE086008D677C /* main.m */,
+				92A74F74287CE086008D677C /* rehax_jsc_appkit_runtime_playground.entitlements */,
+			);
+			path = "rehax-jsc-appkit-runtime-playground";
+			sourceTree = "<group>";
+		};
+		92A74F78287CE16B008D677C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				92A74F81287CE8FA008D677C /* JavaScriptCore.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		92A74F51287C4E4A008D677C /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92A74F59287C4E4A008D677C /* rehax_jsc_appkit_runtime.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		92A74F54287C4E4A008D677C /* rehax-jsc-appkit-runtime */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 92A74F5E287C4E4A008D677C /* Build configuration list for PBXNativeTarget "rehax-jsc-appkit-runtime" */;
+			buildPhases = (
+				92A74F51287C4E4A008D677C /* Headers */,
+				92A74F52287C4E4A008D677C /* Sources */,
+				92A74F53287C4E4A008D677C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "rehax-jsc-appkit-runtime";
+			productName = "rehax-jsc-appkit-runtime";
+			productReference = 92A74F55287C4E4A008D677C /* librehax-jsc-appkit-runtime.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		92A74F64287CE084008D677C /* rehax-jsc-appkit-runtime-playground */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 92A74F75287CE086008D677C /* Build configuration list for PBXNativeTarget "rehax-jsc-appkit-runtime-playground" */;
+			buildPhases = (
+				92A74F61287CE084008D677C /* Sources */,
+				92A74F62287CE084008D677C /* Frameworks */,
+				92A74F63287CE084008D677C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				92A74F7B287CE16B008D677C /* PBXTargetDependency */,
+			);
+			name = "rehax-jsc-appkit-runtime-playground";
+			productName = "rehax-jsc-appkit-runtime-playground";
+			productReference = 92A74F65287CE084008D677C /* rehax-jsc-appkit-runtime-playground.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		92A74F4D287C4E4A008D677C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1340;
+				TargetAttributes = {
+					92A74F54287C4E4A008D677C = {
+						CreatedOnToolsVersion = 13.4.1;
+					};
+					92A74F64287CE084008D677C = {
+						CreatedOnToolsVersion = 13.4.1;
+					};
+				};
+			};
+			buildConfigurationList = 92A74F50287C4E4A008D677C /* Build configuration list for PBXProject "rehax-jsc-appkit-runtime" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 92A74F4C287C4E4A008D677C;
+			productRefGroup = 92A74F56287C4E4A008D677C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				92A74F54287C4E4A008D677C /* rehax-jsc-appkit-runtime */,
+				92A74F64287CE084008D677C /* rehax-jsc-appkit-runtime-playground */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		92A74F63287CE084008D677C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92A74F6E287CE086008D677C /* Assets.xcassets in Resources */,
+				92A74F71287CE086008D677C /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		92A74F52287C4E4A008D677C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92A74F5B287C4E4A008D677C /* rehax_jsc_appkit_runtime.mm in Sources */,
+				92A74F7F287CE5C5008D677C /* binding.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		92A74F61287CE084008D677C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92A74F6C287CE084008D677C /* ViewController.mm in Sources */,
+				92A74F73287CE086008D677C /* main.m in Sources */,
+				92A74F69287CE084008D677C /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		92A74F7B287CE16B008D677C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 92A74F54287C4E4A008D677C /* rehax-jsc-appkit-runtime */;
+			targetProxy = 92A74F7A287CE16B008D677C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		92A74F6F287CE086008D677C /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				92A74F70287CE086008D677C /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		92A74F5C287C4E4A008D677C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		92A74F5D287C4E4A008D677C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		92A74F5F287C4E4A008D677C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		92A74F60287C4E4A008D677C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		92A74F76287CE086008D677C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "rehax-jsc-appkit-runtime-playground/rehax_jsc_appkit_runtime_playground.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.rehax.rehax-jsc-appkit-runtime-playground";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		92A74F77287CE086008D677C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "rehax-jsc-appkit-runtime-playground/rehax_jsc_appkit_runtime_playground.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.rehax.rehax-jsc-appkit-runtime-playground";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		92A74F50287C4E4A008D677C /* Build configuration list for PBXProject "rehax-jsc-appkit-runtime" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				92A74F5C287C4E4A008D677C /* Debug */,
+				92A74F5D287C4E4A008D677C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		92A74F5E287C4E4A008D677C /* Build configuration list for PBXNativeTarget "rehax-jsc-appkit-runtime" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				92A74F5F287C4E4A008D677C /* Debug */,
+				92A74F60287C4E4A008D677C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		92A74F75287CE086008D677C /* Build configuration list for PBXNativeTarget "rehax-jsc-appkit-runtime-playground" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				92A74F76287CE086008D677C /* Debug */,
+				92A74F77287CE086008D677C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 92A74F4D287C4E4A008D677C /* Project object */;
+}
