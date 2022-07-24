@@ -24,19 +24,15 @@ const frameworkHeaderPath = path.join(
 
 const targetDir = path.join(
   __dirname,
+  "..",
   "generated",
-  `${frameworkName}.framework`,
+  `${frameworkName}.framework`
 );
 const targetLocation = path.join(
   targetDir,
   "extracted.json"
 );
-const tsDefinitionFileLocation = path.join(
-  __dirname,
-  "generated",
-  `${frameworkName}.framework`,
-  "extracted.ts"
-);
+const tsDefinitionFileLocation = path.join(targetDir, "extracted.ts");
 
 const extractionCommand = `clang -Xclang -ast-dump=json -fsyntax-only -x objective-c ${frameworkHeaderPath} > ${targetLocation}`;
 

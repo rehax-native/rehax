@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "extract": "ts-node extract.ts",
-    "generate": "ts-node generate.ts"
+    "extract-appkit": "ts-node appkit/extract.ts",
+    "generate-appkit": "ts-node appkit/generate.ts",
+    "extract-rehax": "ts-node rehax/extract.ts",
+    "generate-rehax": "ts-node rehax/generate.ts"
   },
   "keywords": [],
   "author": "",

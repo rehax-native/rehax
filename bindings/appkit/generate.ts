@@ -1,14 +1,15 @@
 import path from "path";
 import fs from "fs/promises";
-import { Framework } from "./generated/AppKit.framework/extracted";
-import { SimpleClass, SimpleMethodArgument } from "./types";
-import { generateDuktapeFrameworkBindings } from "./generators/duktape-framework";
+import { Framework } from "../generated/AppKit.framework/extracted";
+import { SimpleClass, SimpleMethodArgument } from "../types";
+import { generateDuktapeFrameworkBindings } from "../generators/duktape-framework";
 // import { generateJavascriptCoreFrameworkBindings } from "./generators/javascriptcore-framework";
-import { generateJavascriptCoreCBindings } from "./generators/javascriptcore-c";
+import { generateJavascriptCoreCBindings } from "./javascriptcore-c";
 
 const frameworkName = "AppKit";
 const infoLocation = path.join(
   __dirname,
+  "..",
   "generated",
   `${frameworkName}.framework`,
   "extracted.json"
@@ -16,12 +17,14 @@ const infoLocation = path.join(
 
 const bindingHeaderFile = path.join(
   __dirname,
+  "..",
   "generated",
   frameworkName + ".framework",
   "binding.h"
 );
 const bindingImplFile = path.join(
   __dirname,
+  "..",
   "generated",
   frameworkName + ".framework",
   "binding.mm"
