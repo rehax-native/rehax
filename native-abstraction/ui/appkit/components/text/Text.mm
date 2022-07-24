@@ -82,4 +82,4 @@ void Text<Container>::addNativeView(void * child)
   [view sizeToFit];
 }
 
-template class rehax::ui::appkit::impl::Text<rehax::ui::RawPtr>;
+template class rehax::ui::appkit::impl::Text<rehax::ui::RawPtr<rehax::ui::JscRegisteredClass>>;

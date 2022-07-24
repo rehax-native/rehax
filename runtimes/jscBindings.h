@@ -10,11 +10,6 @@ namespace jsc {
 class Bindings
 {
 public:
-    struct RegisteredClass {
-        std::string name;
-        JSClassRef classDefine;
-        JSObjectRef prototype;
-    };
     
     static std::string JSStringToStdString(JSContextRef ctx, JSStringRef str);
 
@@ -26,12 +21,20 @@ public:
     #ifdef REHAX_WITH_FLUXE
     void bindFluxeToJsc();
     #endif
-    JSObjectRef cppToJs(void * obj, std::string className);
+    
+    template <typename View>
+    JSObjectRef cppToJs(View * obj, std::string className)
+    {
+        obj->containerAdditionalData = classRegistry[className];
+        JSObjectRef object = JSObjectMake(ctx, classRegistry[className].classDefine, obj);
+        JSObjectSetPrototype(ctx, object, classRegistry[className].prototype);
+        return object;
+    }
 
 private:
     JSContextRef ctx;
 
-    std::unordered_map<std::string, RegisteredClass> classRegistry;
+    std::unordered_map<std::string, ui::JscRegisteredClass> classRegistry;
     
     template <typename View>
     void defineViewClass(JSContextRef ctx, std::string name, JSObjectRef parentPrototype);

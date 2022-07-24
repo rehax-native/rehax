@@ -65,9 +65,20 @@ void View<Container>::addNativeView(void * child)
 }
 
 template <typename Container>
-void View<Container>::removeNativeChild(void * child)
+void View<Container>::addNativeView(void * child, void * beforeChild)
 {
   NSView * view = (__bridge NSView *) nativeView;
+  NSView * childView = (__bridge NSView *) child;
+  NSView * beforeChildView = (__bridge NSView *) beforeChild;
+  [childView setFrame:view.bounds];
+  childView.translatesAutoresizingMaskIntoConstraints = NO;
+  [view addSubview:childView positioned:NSWindowBelow relativeTo:beforeChildView];
+}
+
+template <typename Container>
+void View<Container>::removeNativeView(void * child)
+{
+  // NSView * view = (__bridge NSView *) nativeView;
   NSView * childView = (__bridge NSView *) child;
   [childView removeFromSuperview];
 }
@@ -109,10 +120,12 @@ void View<Container>::setWidthFill()
 
   constraint = [NSLayoutConstraint constraintWithItem:[view superview] attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0];
   constraint.identifier = @"hx_width";
+  constraint.priority = 100;
   [[view superview] addConstraint:constraint];
 
   constraint = [NSLayoutConstraint constraintWithItem:[view superview] attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeRight multiplier:1.0 constant:0];
   constraint.identifier = @"hx_width";
+  constraint.priority = 100;
   [[view superview] addConstraint:constraint];
 }
 
@@ -126,10 +139,12 @@ void View<Container>::setHeightFill()
 
   constraint = [NSLayoutConstraint constraintWithItem:[view superview] attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
   constraint.identifier = @"hx_height";
+  constraint.priority = 100;
   [[view superview] addConstraint:constraint];
 
   constraint = [NSLayoutConstraint constraintWithItem:[view superview] attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
   constraint.identifier = @"hx_height";
+  constraint.priority = 100;
   [[view superview] addConstraint:constraint];
 }
 
@@ -155,6 +170,7 @@ void View<Container>::setWidthFixed(float width)
 
   NSLayoutConstraint * constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:width];
   constraint.identifier = @"hx_width";
+  constraint.priority = 100;
   [view addConstraint:constraint];
 }
 
@@ -166,6 +182,7 @@ void View<Container>::setHeightFixed(float height)
 
   NSLayoutConstraint * constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:height];
   constraint.identifier = @"hx_height";
+  constraint.priority = 100;
   [view addConstraint:constraint];
 }
 
@@ -177,6 +194,7 @@ void View<Container>::setWidthPercentage(float percentage)
 
   NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:[view superview] attribute:NSLayoutAttributeWidth multiplier:percentage / 100.0 constant:0];
   constraint.identifier = @"hx_width";
+  constraint.priority = 100;
   [[view superview] addConstraint:constraint];
 }
 
@@ -188,6 +206,7 @@ void View<Container>::setHeightPercentage(float percentage)
 
   NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:[view superview] attribute:NSLayoutAttributeHeight multiplier:percentage / 100.0 constant:0];
   constraint.identifier = @"hx_height";
+  constraint.priority = 100;
   [[view superview] addConstraint:constraint];
 }
 
@@ -204,11 +223,13 @@ void View<Container>::setNativeVerticalPositionNatural(void * previousView)
   if (previousView == NULL) {
     NSLayoutConstraint * constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:view.superview attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
     constraint.identifier = @"hx_pos_vert";
+    constraint.priority = 100;
     [view.superview addConstraint:constraint];
   } else {
     NSView * prev = (__bridge NSView *) nativeView;
     NSLayoutConstraint * constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:prev attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
     constraint.identifier = @"hx_pos_vert";
+    constraint.priority = 100;
     [view.superview addConstraint:constraint];
   }
 }
@@ -226,11 +247,13 @@ void View<Container>::setNativeHorizontalPositionNatural(void * previousView)
   if (previousView == NULL) {
     NSLayoutConstraint * constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:view.superview attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0];
     constraint.identifier = @"hx_pos_horiz";
+    constraint.priority = 100;
     [view.superview addConstraint:constraint];
   } else {
     NSView * prev = (__bridge NSView *) previousView;
     NSLayoutConstraint * constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:prev attribute:NSLayoutAttributeRight multiplier:1.0 constant:0];
     constraint.identifier = @"hx_pos_horiz";
+    constraint.priority = 100;
     [view.superview addConstraint:constraint];
   }
 }
@@ -243,6 +266,7 @@ void View<Container>::setVerticalPositionFixed(float y)
 
   NSLayoutConstraint * constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:view.superview attribute:NSLayoutAttributeTop multiplier:1.0 constant:y];
   constraint.identifier = @"hx_pos_vert";
+  constraint.priority = 100;
   [view.superview addConstraint:constraint];
 }
 
@@ -254,6 +278,7 @@ void View<Container>::setHorizontalPositionFixed(float x)
 
   NSLayoutConstraint * constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:view.superview attribute:NSLayoutAttributeLeft multiplier:1.0 constant:x];
   constraint.identifier = @"hx_pos_horiz";
+  constraint.priority = 100;
   [view.superview addConstraint:constraint];
 }
 
@@ -290,4 +315,4 @@ void View<Container>::setOpacity(float opacity)
 // //   [view addGestureRecognizer:rec];
 // }
 
-template class rehax::ui::appkit::impl::View<rehax::ui::RawPtr>;
+template class rehax::ui::appkit::impl::View<rehax::ui::RawPtr<rehax::ui::JscRegisteredClass>>;

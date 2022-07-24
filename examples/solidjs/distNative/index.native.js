@@ -757,25 +757,43 @@ const {
 
       case "button":
         return new Button();
-    } // return document.createElement(string);
 
+      default:
+        return null;
+    }
   },
 
   createTextNode(value) {
     var textView = new Text();
     textView.setText(value);
-    return textView; // return document.createTextNode(value);
+    return textView;
   },
 
   replaceText(textView, value) {
-    textView.setText(value); // textNode.data = value;
+    textView.setText(value);
   },
 
   setProperty(node, name, value) {
+    if (name === 'style') {
+      // We try to set all the properties of the style object
+      // Everything we don't know we just ignore
+      for (let key in Object.keys(value)) {
+        const setterName = `set${capitalize(key)}`;
+
+        if (setterName in node) {
+          node[setterName](value[key]);
+        }
+      }
+
+      return;
+    }
+
     const setterName = `set${capitalize(name)}`;
 
     if (setterName in node) {
       node[setterName](value);
+    } else {
+      console.error("Unknown property:", name);
     } // if (name === "style") Object.assign(node.style, value);
     // else if (name.startsWith("on")) node[name.toLowerCase()] = value;
     // // else if (PROPERTIES.has(name)) node[name] = value;
@@ -784,12 +802,11 @@ const {
   },
 
   insertNode(parent, node, anchor) {
-    // parent.insertBefore(node, anchor);
     parent.addView(node, anchor);
   },
 
   isTextNode(node) {
-    return node.type === 3;
+    return node.constructor.name === 'Text';
   },
 
   removeNode(parent, node) {
@@ -797,15 +814,15 @@ const {
   },
 
   getParentNode(node) {
-    return node.parentNode;
+    return node.getParent();
   },
 
   getFirstChild(node) {
-    return node.firstChild;
+    return node.getFirstChild();
   },
 
   getNextSibling(node) {
-    return node.nextSibling;
+    return node.getNextSibling();
   }
 
 }); // Forward Solid control flow

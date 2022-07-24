@@ -23,19 +23,20 @@ void Bindings::setContext(JSContextRef ctx)
     this->ctx = ctx;
 }
 
-JSObjectRef cppToJs(JSContextRef ctx, Bindings::RegisteredClass classDefine, void * obj)
+JSObjectRef cppToJs(JSContextRef ctx, ui::JscRegisteredClass classDefine, void * obj)
 {
     JSObjectRef object = JSObjectMake(ctx, classDefine.classDefine, obj);
     JSObjectSetPrototype(ctx, object, classDefine.prototype);
     return object;
 }
 
-JSObjectRef Bindings::cppToJs(void * obj, std::string className)
-{
-    JSObjectRef object = JSObjectMake(ctx, classRegistry[className].classDefine, obj);
-    JSObjectSetPrototype(ctx, object, classRegistry[className].prototype);
-    return object;
-}
+//template <typename View>
+//JSObjectRef Bindings::cppToJs(View * obj, std::string className)
+//{
+//    JSObjectRef object = JSObjectMake(ctx, classRegistry[className].classDefine, obj);
+//    JSObjectSetPrototype(ctx, object, classRegistry[className].prototype);
+//    return object;
+//}
 
 template <typename View>
 void Bindings::defineViewClass(JSContextRef ctx, std::string name, JSObjectRef parentPrototype)
@@ -57,8 +58,9 @@ void Bindings::defineViewClass(JSContextRef ctx, std::string name, JSObjectRef p
     }
     
     instanceDefine.callAsConstructor = [] (JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
-        auto classDef = static_cast<RegisteredClass *>(JSObjectGetPrivate(constructor));
+        auto classDef = static_cast<ui::JscRegisteredClass *>(JSObjectGetPrivate(constructor));
         auto view = View::Create();
+        view->containerAdditionalData = *classDef;
         return ::rehax::jsc::cppToJs(ctx, *classDef, view);
     };
     
@@ -83,8 +85,72 @@ void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype)
         auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
             auto view = (View *) JSObjectGetPrivate(thisObject);
             auto childView = (View *) JSObjectGetPrivate((JSObjectRef) arguments[0]);
-            view->addView(childView);
+            if (JSValueIsNull(ctx, arguments[1]) || JSValueIsUndefined(ctx, arguments[1])) {
+                view->addView(childView);
+            } else {
+                auto beforeView = (View *) JSObjectGetPrivate((JSObjectRef) arguments[1]);
+                view->addView(childView, beforeView);
+            }
             return JSValueMakeUndefined(ctx);
+        });
+        JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+    }
+    {
+        JSStringRef methodName = JSStringCreateWithUTF8CString("removeFromParent");
+        auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+            auto view = (View *) JSObjectGetPrivate(thisObject);
+            view->removeFromParent();
+            return JSValueMakeUndefined(ctx);
+        });
+        JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+    }
+    {
+        JSStringRef methodName = JSStringCreateWithUTF8CString("removeView");
+        auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+            auto view = (View *) JSObjectGetPrivate(thisObject);
+            auto childView = (View *) JSObjectGetPrivate((JSObjectRef) arguments[0]);
+            view->removeView(childView);
+            return JSValueMakeUndefined(ctx);
+        });
+        JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+    }
+    {
+        JSStringRef methodName = JSStringCreateWithUTF8CString("getParent");
+        auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+            auto view = (View *) JSObjectGetPrivate(thisObject);
+            auto parent = view->getParent();
+            auto classDef = parent->containerAdditionalData;
+            JSObjectRef jsParent = ::rehax::jsc::cppToJs(ctx, classDef, parent);
+            return (JSValueRef) jsParent;
+        });
+        JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+    }
+    {
+        JSStringRef methodName = JSStringCreateWithUTF8CString("getFirstChild");
+        auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+            auto view = (View *) JSObjectGetPrivate(thisObject);
+            auto children = view->children;
+            auto firstChild = * children.begin();
+            return (JSValueRef) ::rehax::jsc::cppToJs(ctx, firstChild->containerAdditionalData, firstChild);
+        });
+        JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+    }
+    {
+        JSStringRef methodName = JSStringCreateWithUTF8CString("getNextSibling");
+        auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+            auto view = (View *) JSObjectGetPrivate(thisObject);
+            // TODO this should probably be moved to the core
+            auto parent = view->getParent();
+            if (parent == nullptr) {
+                return JSValueMakeNull(ctx);
+            }
+            auto it = parent->children.find(view);
+            it++;
+            if (it == parent->children.end()) {
+                return JSValueMakeNull(ctx);
+            }
+            auto nextSibling = * it;
+            return (JSValueRef) ::rehax::jsc::cppToJs(ctx, nextSibling->containerAdditionalData, nextSibling);
         });
         JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
     }

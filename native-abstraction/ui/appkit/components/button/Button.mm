@@ -71,4 +71,4 @@ void Button<Container>::setOnPress(std::function<void(void)> onPress)
   [view setOnPress:onPress];
 }
 
-template class rehax::ui::appkit::impl::Button<rehax::ui::RawPtr>;
+template class rehax::ui::appkit::impl::Button<rehax::ui::RawPtr<rehax::ui::JscRegisteredClass>>;
