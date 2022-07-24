@@ -2,7 +2,7 @@
 
 #include "../../../../lib/common.h"
 
-namespace rehax::ui::appkit::impl {
+namespace rehax::ui::fluxe::impl {
 
 template <typename Container>
 class View : public Container

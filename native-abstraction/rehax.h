@@ -2,11 +2,24 @@
 
 #include "ui/appkit/components/view/View.h"
 #include "ui/appkit/components/button/Button.h"
+#include "ui/fluxe/components/view/View.h"
+#include "ui/fluxe/components/button/Button.h"
 
 #include "ui/base.h"
 
 namespace rehax::ui {
     namespace appkit {
+        // namespace smartptr {
+        //     using ViewBase = SmartPtrBase<impl::View>;
+        //     using View = SmartPtr<impl::View, ViewBase>;
+        //     using Button = SmartPtr<impl::Button, ViewBase>;
+        // }
+        namespace rawptr {
+            using View = impl::View<RawPtr>;
+            using Button = impl::Button<RawPtr>;
+        }
+    }
+    namespace fluxe {
         // namespace smartptr {
         //     using ViewBase = SmartPtrBase<impl::View>;
         //     using View = SmartPtr<impl::View, ViewBase>;
