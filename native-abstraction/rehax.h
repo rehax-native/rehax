@@ -1,8 +1,10 @@
 #pragma once
 
 #include "ui/appkit/components/view/View.h"
+#include "ui/appkit/components/text/Text.h"
 #include "ui/appkit/components/button/Button.h"
 #include "ui/fluxe/components/view/View.h"
+//#include "ui/fluxe/components/text/Text.h"
 #include "ui/fluxe/components/button/Button.h"
 
 #include "ui/base.h"
@@ -16,6 +18,7 @@ namespace rehax::ui {
         // }
         namespace rawptr {
             using View = impl::View<RawPtr>;
+            using Text = impl::Text<RawPtr>;
             using Button = impl::Button<RawPtr>;
         }
     }
@@ -27,6 +30,7 @@ namespace rehax::ui {
         // }
         namespace rawptr {
             using View = impl::View<RawPtr>;
+//            using Text = impl::Text<RawPtr>;
             using Button = impl::Button<RawPtr>;
         }
     }

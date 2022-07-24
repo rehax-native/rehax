@@ -91,6 +91,20 @@ void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype)
 }
 
 template <typename View>
+void bindTextClassMethods(JSContextRef ctx, JSObjectRef prototype)
+{
+    {
+        JSStringRef methodName = JSStringCreateWithUTF8CString("setText");
+        auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+            auto view = (View *) JSObjectGetPrivate(thisObject);
+            view->setText(Bindings::JSStringToStdString(ctx, (JSStringRef) arguments[0]));
+            return JSValueMakeUndefined(ctx);
+        });
+        JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+    }
+}
+
+template <typename View>
 void bindButtonClassMethods(JSContextRef ctx, JSObjectRef prototype)
 {
     {
@@ -112,6 +126,8 @@ void Bindings::bindAppkitToJsc()
 {
     defineViewClass<::rehax::ui::appkit::rawptr::View>(ctx, "View", nullptr);
     bindViewClassMethods<::rehax::ui::appkit::rawptr::View>(ctx, classRegistry["View"].prototype);
+    defineViewClass<::rehax::ui::appkit::rawptr::Text>(ctx, "Text", classRegistry["View"].prototype);
+    bindTextClassMethods<::rehax::ui::appkit::rawptr::Text>(ctx, classRegistry["Text"].prototype);
     defineViewClass<::rehax::ui::appkit::rawptr::Button>(ctx, "Button", classRegistry["View"].prototype);
     bindButtonClassMethods<::rehax::ui::appkit::rawptr::Button>(ctx, classRegistry["Button"].prototype);
 }
@@ -122,6 +138,8 @@ void Bindings::bindFluxeToJsc()
 {
     defineViewClass<::rehax::ui::fluxe::rawptr::View>(ctx, "View", nullptr);
     bindViewClassMethods<::rehax::ui::fluxe::rawptr::View>(ctx, classRegistry["View"].prototype);
+    defineViewClass<::rehax::ui::fluxe::rawptr::Text>(ctx, "Text", classRegistry["View"].prototype);
+    bindTextClassMethods<::rehax::ui::fluxe::rawptr::Text>(ctx, classRegistry["Text"].prototype);
     defineViewClass<::rehax::ui::fluxe::rawptr::Button>(ctx, "Button", classRegistry["View"].prototype);
     bindButtonClassMethods<::rehax::ui::fluxe::rawptr::Button>(ctx, classRegistry["Button"].prototype);
 }

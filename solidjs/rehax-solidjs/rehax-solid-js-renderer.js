@@ -2,6 +2,10 @@ import { createRenderer } from "solid-js/universal";
 
 // const PROPERTIES = new Set(["className", "textContent"]);
 
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export const {
   render,
   effect,
@@ -18,12 +22,14 @@ export const {
   createElement(string) {
     switch (string) {
       case "div":
-        return View.create();
+        return new View();
+      case "button":
+        return new Button();
     }
     // return document.createElement(string);
   },
   createTextNode(value) {
-    var textView = Rehax.Text.create();
+    var textView = new Text();
     textView.setText(value);
     return textView;
     // return document.createTextNode(value);
@@ -33,10 +39,14 @@ export const {
     // textNode.data = value;
   },
   setProperty(node, name, value) {
-    if (name === "style") Object.assign(node.style, value);
-    else if (name.startsWith("on")) node[name.toLowerCase()] = value;
-    // else if (PROPERTIES.has(name)) node[name] = value;
-    else node.setAttribute(name, value);
+    const setterName = `set${capitalize(name)}`;
+    if (setterName in node) {
+      node[setterName](value);
+    }
+    // if (name === "style") Object.assign(node.style, value);
+    // else if (name.startsWith("on")) node[name.toLowerCase()] = value;
+    // // else if (PROPERTIES.has(name)) node[name] = value;
+    // else node.setAttribute(name, value);
   },
   insertNode(parent, node, anchor) {
     // parent.insertBefore(node, anchor);

@@ -2,13 +2,35 @@ lockfileVersion: 5.4
 
 importers:
 
-  rehax-solidjs:
+  .:
+    specifiers: {}
+
+  examples/solidjs:
+    specifiers:
+      '@babel/cli': ^7.18.6
+      '@babel/core': ^7.18.6
+      '@rollup/plugin-babel': ^5.3.1
+      '@rollup/plugin-node-resolve': ^13.3.0
+      rehax-solidjs: ^1.0.0
+      rollup: ^2.77.0
+      solid-js: ^1.4.7
+    dependencies:
+      rehax-solidjs: link:../../solidjs/rehax-solidjs
+      solid-js: 1.4.8
+    devDependencies:
+      '@babel/cli': 7.18.9_@babel+core@7.18.9
+      '@babel/core': 7.18.9
+      '@rollup/plugin-babel': 5.3.1_palyoikx6kq4yrfoc5jsznmrdi
+      '@rollup/plugin-node-resolve': 13.3.0_rollup@2.77.0
+      rollup: 2.77.0
+
+  solidjs/rehax-solidjs:
     specifiers:
       solid-js: ^1.4.8
     devDependencies:
       solid-js: 1.4.8
 
-  template:
+  solidjs/template:
     specifiers:
       '@babel/cli': ^7.18.6
       '@babel/core': ^7.18.6

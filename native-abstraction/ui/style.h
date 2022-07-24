@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../lib/common.h"
+
 namespace rehax {
 
 namespace ui {

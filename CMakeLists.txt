@@ -16,8 +16,7 @@ file(GLOB REHAX_FLUXE_SRC_FILES
 )
 
 file(GLOB REHAX_APPKIT_SRC_FILES
-    native-abstraction/ui/appkit/components/view/*.mm
-    native-abstraction/ui/appkit/components/button/*.mm
+    native-abstraction/ui/appkit/components/**/*.mm
 )
 
 file(GLOB REHAX_SRC_FILES
@@ -42,29 +41,7 @@ target_compile_definitions(rehax-appkit-mac PUBLIC -DREHAX_WITH_APPKIT)
 
 add_subdirectory(examples/vanillajs-kitchen-sink-fluxe)
 add_subdirectory(examples/vanillajs-kitchen-sink-appkit)
-
-# # ---- Example appkit kitchen sink
-# add_executable(
-#     example-vanillajs-kitchen-sink-appkit MACOSX_BUNDLE
-#     examples/vanillajs-kitchen-sink-appkit/main.mm
-# )
-# set_target_properties(
-#     example-vanillajs-kitchen-sink-appkit PROPERTIES
-#     BUNDLE True
-#     MACOSX_BUNDLE_GUI_IDENTIFIER dev.rehax.rehax.vanillajs-kitchen-sink-appkit
-#     MACOSX_BUNDLE_BUNDLE_NAME vanillajs-kitchen-sink-appkit
-#     MACOSX_BUNDLE_BUNDLE_VERSION "0.1"
-#     MACOSX_BUNDLE_SHORT_VERSION_STRING "0.1"
-#     MACOSX_BUNDLE_INFO_PLIST examples/vanillajs-kitchen-sink-appkit/info.plist
-# )
-# target_link_libraries(
-#     example-vanillajs-kitchen-sink-appkit
-#     rehax-mac
-#     "-framework Foundation"
-#     "-framework QuartzCore"
-#     "-framework AppKit"
-#     "-framework JavascriptCore"
-# )
+add_subdirectory(examples/solidjs)
 
 
 
