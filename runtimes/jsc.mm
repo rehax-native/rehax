@@ -19,6 +19,7 @@ void JscVm::evaluate(std::string script)
     [context evaluateScript:scriptString];
 }
 
+#ifdef REHAX_WITH_FLUXE
 void JscVm::setRootView(rehax::ui::fluxe::rawptr::View * view)
 {
     auto rootView = cppToJs(view, "View");
@@ -27,7 +28,9 @@ void JscVm::setRootView(rehax::ui::fluxe::rawptr::View * view)
     JSStringRef rootName = JSStringCreateWithUTF8CString("rootView");
     JSObjectSetProperty(context.JSGlobalContextRef, globalObject, rootName, rootView, kJSPropertyAttributeReadOnly, nullptr);
 }
+#endif
 
+#ifdef REHAX_WITH_APPKIT
 void JscVm::setRootView(rehax::ui::appkit::rawptr::View * view)
 {
     auto rootView = cppToJs(view, "View");
@@ -36,3 +39,4 @@ void JscVm::setRootView(rehax::ui::appkit::rawptr::View * view)
     JSStringRef rootName = JSStringCreateWithUTF8CString("rootView");
     JSObjectSetProperty(context.JSGlobalContextRef, globalObject, rootName, rootView, kJSPropertyAttributeReadOnly, nullptr);
 }
+#endif

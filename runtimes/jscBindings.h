@@ -20,8 +20,12 @@ public:
 
     Bindings();
     void setContext(JSContextRef ctx);
+    #ifdef REHAX_WITH_APPKIT
     void bindAppkitToJsc();
+    #endif
+    #ifdef REHAX_WITH_FLUXE
     void bindFluxeToJsc();
+    #endif
     JSObjectRef cppToJs(void * obj, std::string className);
 
 private:

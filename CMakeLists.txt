@@ -28,40 +28,43 @@ file(GLOB REHAX_SRC_FILES
 add_library(
     rehax-fluxe-mac STATIC
     ${REHAX_SRC_FILES}
-    ${REHAX_APPKIT_SRC_FILES}
     ${REHAX_FLUXE_SRC_FILES}
 )
+target_compile_definitions(rehax-fluxe-mac PUBLIC -DREHAX_WITH_FLUXE)
 
-add_executable(
-    example-vanillajs-kitchen-sink-fluxe MACOSX_BUNDLE
-    examples/vanilla-js-kitchen-sink-fluxe/main.mm
+add_library(
+    rehax-appkit-mac STATIC
+    ${REHAX_SRC_FILES}
+    ${REHAX_APPKIT_SRC_FILES}
 )
-
-set_target_properties(
-    example-vanillajs-kitchen-sink-fluxe PROPERTIES
-    BUNDLE True
-    MACOSX_BUNDLE_GUI_IDENTIFIER dev.rehax.rehax.vanilla-js-kitchen-sink-fluxe
-    MACOSX_BUNDLE_BUNDLE_NAME vanilla-js-kitchen-sink-fluxe
-    MACOSX_BUNDLE_BUNDLE_VERSION "0.1"
-    MACOSX_BUNDLE_SHORT_VERSION_STRING "0.1"
-    MACOSX_BUNDLE_INFO_PLIST examples/vanilla-js-kitchen-sink-fluxe/info.plist
-)
+target_compile_definitions(rehax-appkit-mac PUBLIC -DREHAX_WITH_APPKIT)
 
 
-target_link_libraries(example-vanillajs-kitchen-sink-fluxe rehax-fluxe-mac)
-target_link_libraries(example-vanillajs-kitchen-sink-fluxe fluxe-mac)
-target_link_libraries(example-vanillajs-kitchen-sink-fluxe "-framework Foundation")
-target_link_libraries(example-vanillajs-kitchen-sink-fluxe "-framework QuartzCore")
-target_link_libraries(example-vanillajs-kitchen-sink-fluxe "-framework AppKit")
-target_link_libraries(example-vanillajs-kitchen-sink-fluxe "-framework JavascriptCore")
-target_link_libraries(example-vanillajs-kitchen-sink-fluxe icu)
-target_link_libraries(example-vanillajs-kitchen-sink-fluxe skia)
-target_link_libraries(example-vanillajs-kitchen-sink-fluxe skparagraph)
-target_link_libraries(example-vanillajs-kitchen-sink-fluxe skshaper)
-target_link_libraries(example-vanillajs-kitchen-sink-fluxe sktext)
-target_link_libraries(example-vanillajs-kitchen-sink-fluxe skunicode)
+add_subdirectory(examples/vanillajs-kitchen-sink-fluxe)
+add_subdirectory(examples/vanillajs-kitchen-sink-appkit)
 
-
+# # ---- Example appkit kitchen sink
+# add_executable(
+#     example-vanillajs-kitchen-sink-appkit MACOSX_BUNDLE
+#     examples/vanillajs-kitchen-sink-appkit/main.mm
+# )
+# set_target_properties(
+#     example-vanillajs-kitchen-sink-appkit PROPERTIES
+#     BUNDLE True
+#     MACOSX_BUNDLE_GUI_IDENTIFIER dev.rehax.rehax.vanillajs-kitchen-sink-appkit
+#     MACOSX_BUNDLE_BUNDLE_NAME vanillajs-kitchen-sink-appkit
+#     MACOSX_BUNDLE_BUNDLE_VERSION "0.1"
+#     MACOSX_BUNDLE_SHORT_VERSION_STRING "0.1"
+#     MACOSX_BUNDLE_INFO_PLIST examples/vanillajs-kitchen-sink-appkit/info.plist
+# )
+# target_link_libraries(
+#     example-vanillajs-kitchen-sink-appkit
+#     rehax-mac
+#     "-framework Foundation"
+#     "-framework QuartzCore"
+#     "-framework AppKit"
+#     "-framework JavascriptCore"
+# )
 
 
 
@@ -77,7 +80,7 @@ target_link_libraries(example-vanillajs-kitchen-sink-fluxe skunicode)
 
 # add_executable(
 #     example-vanillajs-kitchen-sink-fluxe
-#     examples/vanilla-js-kitchen-sink-fluxe/main.mm
+#     examples/vanillajs-kitchen-sink-fluxe/main.mm
 # )
 # add_dependencies(example-vanillajs-kitchen-sink-fluxe fluxe)
 

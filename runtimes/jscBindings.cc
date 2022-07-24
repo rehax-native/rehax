@@ -107,6 +107,7 @@ void bindButtonClassMethods(JSContextRef ctx, JSObjectRef prototype)
 
 
 
+#ifdef REHAX_WITH_APPKIT
 void Bindings::bindAppkitToJsc()
 {
     defineViewClass<::rehax::ui::appkit::rawptr::View>(ctx, "View", nullptr);
@@ -114,7 +115,9 @@ void Bindings::bindAppkitToJsc()
     defineViewClass<::rehax::ui::appkit::rawptr::Button>(ctx, "Button", classRegistry["View"].prototype);
     bindButtonClassMethods<::rehax::ui::appkit::rawptr::Button>(ctx, classRegistry["Button"].prototype);
 }
+#endif
 
+#ifdef REHAX_WITH_FLUXE
 void Bindings::bindFluxeToJsc()
 {
     defineViewClass<::rehax::ui::fluxe::rawptr::View>(ctx, "View", nullptr);
@@ -122,6 +125,7 @@ void Bindings::bindFluxeToJsc()
     defineViewClass<::rehax::ui::fluxe::rawptr::Button>(ctx, "Button", classRegistry["View"].prototype);
     bindButtonClassMethods<::rehax::ui::fluxe::rawptr::Button>(ctx, classRegistry["Button"].prototype);
 }
+#endif
 
 }
 }
