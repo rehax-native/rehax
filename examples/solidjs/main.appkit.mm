@@ -38,6 +38,7 @@ using namespace rehax::ui::appkit::rawptr;
 
 
   rehax::jsc::JscVm vm;
+  vm.makeConsole();
   vm.bindAppkitToJsc();
   vm.setRootView(view);
 

@@ -46,6 +46,27 @@ function createRoot(fn, detachedOwner) {
   }
 }
 
+function createSignal(value, options) {
+  options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+  const s = {
+    value,
+    observers: null,
+    observerSlots: null,
+    pending: NOTPENDING,
+    comparator: options.equals || undefined
+  };
+
+  const setter = value => {
+    if (typeof value === "function") {
+      value = value(s.pending !== NOTPENDING ? s.pending : s.value);
+    }
+
+    return writeSignal(s, value);
+  };
+
+  return [readSignal.bind(s), setter];
+}
+
 function createRenderEffect(fn, value, options) {
   const c = createComputation(fn, value, false, STALE);
   updateComputation(c);
@@ -751,6 +772,7 @@ const {
   mergeProps
 } = createRenderer({
   createElement(string) {
+    // console.log(`Create element: ${string}`);
     switch (string) {
       case "div":
         return new View();
@@ -764,16 +786,19 @@ const {
   },
 
   createTextNode(value) {
+    // console.log(`Create text: ${value}`);
     var textView = new Text();
     textView.setText(value);
     return textView;
   },
 
   replaceText(textView, value) {
+    // console.log(`Replace text: ${value}`);
     textView.setText(value);
   },
 
   setProperty(node, name, value) {
+    // console.log(`Set prope: ${name}`);
     if (name === 'style') {
       // We try to set all the properties of the style object
       // Everything we don't know we just ignore
@@ -802,26 +827,32 @@ const {
   },
 
   insertNode(parent, node, anchor) {
+    // console.log(`Insert node`);
     parent.addView(node, anchor);
   },
 
   isTextNode(node) {
-    return node.constructor.name === 'Text';
+    // console.log(`Is text ${node.__className}`);
+    return node.__className === 'Text';
   },
 
   removeNode(parent, node) {
+    // console.log('Remove node')
     parent.removeChild(node);
   },
 
   getParentNode(node) {
+    // console.log('Get parent')
     return node.getParent();
   },
 
   getFirstChild(node) {
+    // console.log('Get first child')
     return node.getFirstChild();
   },
 
   getNextSibling(node) {
+    // console.log('Get next sibling')
     return node.getNextSibling();
   }
 
@@ -830,39 +861,27 @@ function getRootView() {
   return rootView;
 }
 
-// import logo from './logo.svg';
-// import styles from './App.module.css';
 function App() {
-  return (// <div class={styles.App}>
-    //   <header class={styles.header}>
-    //     <img src={logo} class={styles.logo} alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.jsx</code> and save to reload.
-    //     </p>
-    //     <a
-    //       class={styles.link}
-    //       href="https://github.com/solidjs/solid"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       Learn Solid
-    //     </a>
-    //   </header>
-    // </div>
-    (() => {
-      const _el$ = createElement("div"),
-            _el$2 = createTextNode(`Hello rehax from solid!`),
-            _el$3 = createElement("button");
+  const [count, setCount] = createSignal(10);
+  return (() => {
+    const _el$ = createElement("div"),
+          _el$2 = createElement("button"),
+          _el$3 = createTextNode(`                       Count: `);
 
-      insertNode(_el$, _el$2);
+    insertNode(_el$, _el$2);
 
-      insertNode(_el$, _el$3);
+    insertNode(_el$, _el$3);
 
-      setProp(_el$3, "title", "Click me");
+    setProp(_el$2, "title", "Click me");
 
-      return _el$;
-    })()
-  );
+    setProp(_el$2, "onPress", () => {
+      setCount(count() + 1);
+    });
+
+    insert(_el$, count, null);
+
+    return _el$;
+  })();
 }
 
 render(() => createComponent(App, {}), getRootView());

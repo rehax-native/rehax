@@ -27,6 +27,21 @@ public:
     addNativeView(view->nativeView);
   }
 
+  void addView(PtrType view, PtrType beforeView) {
+    this->addContainerView(view, beforeView);
+    addNativeView(view->nativeView, beforeView->nativeView);
+  }
+
+  void removeView(PtrType view) {
+    this->removeContainerView(view);
+    removeNativeView(view->nativeView);
+  }
+
+  void removeFromParent() {
+    this->removeContainerFromParent();
+    removeFromNativeParent();
+  }
+
   RHX_EXPORT View();
   RHX_EXPORT virtual ~View();
 
@@ -38,7 +53,8 @@ public:
 
 
   RHX_EXPORT void addNativeView(void * child);
-  RHX_EXPORT void removeNativeChild(void * child);
+  RHX_EXPORT void addNativeView(void * child, void * beforeChild);
+  RHX_EXPORT void removeNativeView(void * child);
   RHX_EXPORT void removeFromNativeParent();
 
   // Layouting

@@ -53,7 +53,16 @@ void View<Container>::addNativeView(void * child)
 }
 
 template <typename Container>
-void View<Container>::removeNativeChild(void * child)
+void View<Container>::addNativeView(void * child, void * beforeChild)
+{
+  auto view = static_cast<::fluxe::View *>(nativeView);
+  auto childView = static_cast<::fluxe::View *>(child);
+  auto beforeChildView = static_cast<::fluxe::View *>(beforeChild);
+  // view->addSubView(childView, beforeChildView);
+}
+
+template <typename Container>
+void View<Container>::removeNativeView(void * child)
 {
   auto view = static_cast<::fluxe::View *>(nativeView);
   auto childView = static_cast<::fluxe::View *>(child);
@@ -161,4 +170,4 @@ void View<Container>::setOpacity(float opacity)
 // //   [view addGestureRecognizer:rec];
 // }
 
-template class rehax::ui::fluxe::impl::View<rehax::ui::RawPtr>;
+template class rehax::ui::fluxe::impl::View<rehax::ui::RawPtr<rehax::ui::JscRegisteredClass>>;

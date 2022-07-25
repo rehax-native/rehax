@@ -18,6 +18,7 @@ export const {
   mergeProps,
 } = createRenderer({
   createElement(string) {
+    // console.log(`Create element: ${string}`);
     switch (string) {
       case "div":
         return new View();
@@ -28,14 +29,17 @@ export const {
     }
   },
   createTextNode(value) {
+    // console.log(`Create text: ${value}`);
     var textView = new Text();
     textView.setText(value);
     return textView;
   },
   replaceText(textView, value) {
+    // console.log(`Replace text: ${value}`);
     textView.setText(value);
   },
   setProperty(node, name, value) {
+    // console.log(`Set prope: ${name}`);
     if (name === 'style') {
       // We try to set all the properties of the style object
       // Everything we don't know we just ignore
@@ -60,21 +64,27 @@ export const {
     // else node.setAttribute(name, value);
   },
   insertNode(parent, node, anchor) {
+    // console.log(`Insert node`);
     parent.addView(node, anchor);
   },
   isTextNode(node) {
-    return node.constructor.name === 'Text';
+    // console.log(`Is text ${node.__className}`);
+    return node.__className === 'Text';
   },
   removeNode(parent, node) {
+    // console.log('Remove node')
     parent.removeChild(node);
   },
   getParentNode(node) {
+    // console.log('Get parent')
     return node.getParent();
   },
   getFirstChild(node) {
+    // console.log('Get first child')
     return node.getFirstChild();
   },
   getNextSibling(node) {
+    // console.log('Get next sibling')
     return node.getNextSibling();
   },
 });

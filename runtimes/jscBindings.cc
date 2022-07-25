@@ -27,6 +27,8 @@ JSObjectRef cppToJs(JSContextRef ctx, ui::JscRegisteredClass classDefine, void *
 {
     JSObjectRef object = JSObjectMake(ctx, classDefine.classDefine, obj);
     JSObjectSetPrototype(ctx, object, classDefine.prototype);
+    auto __className = JSStringCreateWithUTF8CString(classDefine.name.c_str());
+    JSObjectSetProperty(ctx, object, JSStringCreateWithUTF8CString("__className"), (JSValueRef) JSValueMakeString(ctx, __className), kJSPropertyAttributeReadOnly, NULL);
     return object;
 }
 
@@ -49,6 +51,7 @@ void Bindings::defineViewClass(JSContextRef ctx, std::string name, JSObjectRef p
     instanceDefine.finalize = [] (JSObjectRef thiz) {
         auto * t = static_cast<View *>(JSObjectGetPrivate(thiz));
         // Not sure we should delete this here, could still be in the view hierarchy.
+        std::cout << "GC !" << std::endl;
 //            delete t;
     };
     
@@ -168,6 +171,16 @@ void bindTextClassMethods(JSContextRef ctx, JSObjectRef prototype)
         });
         JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
     }
+    {
+        JSStringRef methodName = JSStringCreateWithUTF8CString("getText");
+        auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+            auto view = (View *) JSObjectGetPrivate(thisObject);
+            auto text = view->getText();
+            JSStringRef jsText = JSStringCreateWithUTF8CString(text.c_str());
+            return JSValueMakeString(ctx, jsText);
+        });
+        JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+    }
 }
 
 template <typename View>
@@ -178,6 +191,27 @@ void bindButtonClassMethods(JSContextRef ctx, JSObjectRef prototype)
         auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
             auto view = (View *) JSObjectGetPrivate(thisObject);
             view->setTitle(Bindings::JSStringToStdString(ctx, (JSStringRef) arguments[0]));
+            return JSValueMakeUndefined(ctx);
+        });
+        JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+    }
+    {
+        JSStringRef methodName = JSStringCreateWithUTF8CString("setOnPress");
+        auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+            auto view = (View *) JSObjectGetPrivate(thisObject);
+            // view->setOnPress(Bindings::JSStringToStdString(ctx, (JSStringRef) arguments[0]));
+            JSObjectRef callback = (JSObjectRef) arguments[0];
+            JSValueProtect(ctx, callback);
+            view->setOnPress([ctx, callback] () {
+//                auto exception = JSObjectMake(ctx, nullptr, nullptr);
+                JSValueRef exception = nullptr;
+                JSObjectCallAsFunction(ctx, callback, NULL, 0, NULL, &exception);
+                if (exception != nullptr) {
+                    auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
+                    auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
+                    std::cout << message << std::endl;
+                }
+            });
             return JSValueMakeUndefined(ctx);
         });
         JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);

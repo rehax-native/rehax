@@ -28,6 +28,8 @@ public:
         obj->containerAdditionalData = classRegistry[className];
         JSObjectRef object = JSObjectMake(ctx, classRegistry[className].classDefine, obj);
         JSObjectSetPrototype(ctx, object, classRegistry[className].prototype);
+        JSStringRef __className = JSStringCreateWithUTF8CString(className.c_str());
+        JSObjectSetProperty(ctx, object, JSStringCreateWithUTF8CString("__className"), (JSValueRef) JSValueMakeString(ctx, __className), kJSPropertyAttributeReadOnly, NULL);
         return object;
     }
 

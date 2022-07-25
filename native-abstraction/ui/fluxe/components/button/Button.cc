@@ -44,4 +44,4 @@ void Button<Container>::setOnPress(std::function<void(void)> onPress)
   };
 }
 
-template class rehax::ui::fluxe::impl::Button<rehax::ui::RawPtr>;
+template class rehax::ui::fluxe::impl::Button<rehax::ui::RawPtr<rehax::ui::JscRegisteredClass>>;

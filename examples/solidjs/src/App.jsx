@@ -1,27 +1,14 @@
-// import logo from './logo.svg';
-// import styles from './App.module.css';
+import { createSignal, createMemo, createEffect } from 'solid-js';
 
 function App() {
+  const [count, setCount] = createSignal(10);
+
   return (
-    // <div class={styles.App}>
-    //   <header class={styles.header}>
-    //     <img src={logo} class={styles.logo} alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.jsx</code> and save to reload.
-    //     </p>
-    //     <a
-    //       class={styles.link}
-    //       href="https://github.com/solidjs/solid"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       Learn Solid
-    //     </a>
-    //   </header>
-    // </div>
     <div>
-      Hello rehax from solid!
-      <button title="Click me"></button>
+      <button title="Click me" onPress={() => {
+        setCount(count() + 1)
+      }}></button>
+      {'                       '}Count: {count()}
     </div>
   );
 }

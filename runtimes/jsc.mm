@@ -19,6 +19,18 @@ void JscVm::evaluate(std::string script)
     [context evaluateScript:scriptString];
 }
 
+void JscVm::makeConsole()
+{
+    context.globalObject[@"console"] = @{
+        @"log": ^(NSString * msg) {
+            NSLog(@"%@", msg);
+        },
+        @"error": ^(NSString * msg) {
+            NSLog(@"Error: %@", msg);
+        }
+    };
+}
+
 #ifdef REHAX_WITH_FLUXE
 void JscVm::setRootView(rehax::ui::fluxe::rawptr::View * view)
 {

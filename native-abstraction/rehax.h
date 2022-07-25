@@ -4,7 +4,7 @@
 #include "ui/appkit/components/text/Text.h"
 #include "ui/appkit/components/button/Button.h"
 #include "ui/fluxe/components/view/View.h"
-//#include "ui/fluxe/components/text/Text.h"
+#include "ui/fluxe/components/text/Text.h"
 #include "ui/fluxe/components/button/Button.h"
 
 #include "ui/base.h"
@@ -30,7 +30,7 @@ namespace rehax::ui {
         // }
         namespace rawptr {
             using View = impl::View<RawPtr<JscRegisteredClass>>;
-//            using Text = impl::Text<RawPtr>;
+            using Text = impl::Text<RawPtr<JscRegisteredClass>>;
             using Button = impl::Button<RawPtr<JscRegisteredClass>>;
         }
     }

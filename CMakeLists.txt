@@ -11,8 +11,7 @@ link_directories(../fluxe/dist)
 link_directories(../fluxe/build/Debug)
 
 file(GLOB REHAX_FLUXE_SRC_FILES
-    native-abstraction/ui/fluxe/components/view/*.cpp
-    native-abstraction/ui/fluxe/components/button/*.cpp
+    native-abstraction/ui/fluxe/components/**/*.cc
 )
 
 file(GLOB REHAX_APPKIT_SRC_FILES
