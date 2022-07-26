@@ -8,9 +8,6 @@
 namespace rehax {
 namespace ui {
 
-struct EmptyPointerData {};
-
-template <typename Data = EmptyPointerData>
 class RawPtr {
 
 public:
@@ -50,7 +47,6 @@ public:
 
   std::set<RawPtr *> children;
   RawPtr * parent = nullptr;
-  Data containerAdditionalData;
 };
 
 }

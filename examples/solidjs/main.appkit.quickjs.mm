@@ -1,4 +1,4 @@
-#include "../../runtimes/quickjsRuntime.h"
+#include "../../runtimes/quickjs/runtime.h"
 #include <iostream>
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
@@ -31,13 +31,13 @@ using namespace rehax::ui::appkit::rawptr;
 {
 	[self.window setContentView:self.view];
 
-  auto view = rehax::ui::appkit::impl::View<rehax::ui::RawPtr<rehax::quickjs::QuickJsContainerData>>::Create();
+  auto view = rehax::ui::appkit::impl::View<rehax::ui::RawPtr>::Create();
   view->setNativeViewRaw((__bridge void *) self.view);
   view->setWidthFill();
   view->setHeightFill();
 
 
-  rehax::quickjs::QuickJsVm vm;
+  rehax::quickjs::Runtime vm;
   vm.makeConsole();
   vm.bindAppkitToQuickJs();
   vm.setRootView(view);

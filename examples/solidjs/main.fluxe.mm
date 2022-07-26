@@ -1,4 +1,4 @@
-#include "../../runtimes/jsc.h"
+#include "../../runtimes/jsc/runtime.h"
 #include "../../../fluxe/fluxe/views/EngineUtility.h"
 #include <iostream>
 #include "../../native-abstraction/ui/fluxe/components/view/View.cc"
@@ -12,10 +12,10 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show) {
 #else
 int main() {
 #endif
-  auto container = rehax::ui::fluxe::impl::View<rehax::ui::RawPtr<rehax::jsc::JscRegisteredClass>>::Create();
+  auto container = rehax::ui::fluxe::impl::View<rehax::ui::RawPtr>::Create();
   auto view = static_cast<fluxe::View *>(container->getNativeView());
 
-  rehax::jsc::JscVm vm;
+  rehax::jsc::Runtime vm;
   vm.bindFluxeToJsc();
   vm.makeConsole();
   vm.setRootView(container);

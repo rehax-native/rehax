@@ -35,13 +35,13 @@ file(GLOB REHAX_APPKIT_SRC_FILES
 )
 
 file(GLOB REHAX_JSC_SRC_FILES
-    runtimes/jsc.mm
-    runtimes/jscBindings.mm
+    runtimes/jsc/runtime.mm
+    runtimes/jsc/bindings.mm
 )
 
 file(GLOB REHAX_QUICKJS_SRC_FILES
-    runtimes/quickjsRuntime.cc
-    runtimes/quickjsBindings.mm
+    runtimes/quickjs/runtime.cc
+    runtimes/quickjs/bindings.mm
 )
 
 file(GLOB QUICK_JS_SRCS

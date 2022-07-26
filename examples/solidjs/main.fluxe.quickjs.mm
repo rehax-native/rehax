@@ -1,4 +1,4 @@
-#include "../../runtimes/quickjsRuntime.h"
+#include "../../runtimes/quickjs/runtime.h"
 #include "../../../fluxe/fluxe/views/EngineUtility.h"
 #include <iostream>
 #include "../../native-abstraction/ui/fluxe/components/view/View.cc"
@@ -13,10 +13,10 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show) {
 #else
 int main() {
 #endif
-  auto container = rehax::ui::fluxe::impl::View<rehax::ui::RawPtr<rehax::quickjs::QuickJsContainerData>>::Create();
+  auto container = rehax::ui::fluxe::impl::View<rehax::ui::RawPtr>::Create();
   auto view = static_cast<fluxe::View *>(container->getNativeView());
 
-  rehax::quickjs::QuickJsVm vm;
+  rehax::quickjs::Runtime vm;
   vm.makeConsole();
   vm.bindFluxeToQuickJs();
   vm.setRootView(container);

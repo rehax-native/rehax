@@ -1,4 +1,4 @@
-#include "../../runtimes/jsc.h"
+#include "../../runtimes/jsc/runtime.h"
 #include <iostream>
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
@@ -32,13 +32,13 @@ using namespace rehax::ui::appkit::rawptr;
 {
 	[self.window setContentView:self.view];
 
-  auto view = rehax::ui::appkit::impl::View<rehax::ui::RawPtr<rehax::jsc::JscRegisteredClass>>::Create();
+  auto view = rehax::ui::appkit::impl::View<rehax::ui::RawPtr>::Create();
   view->setNativeViewRaw((__bridge void *) self.view);
   view->setWidthFill();
   view->setHeightFill();
 
 
-  rehax::jsc::JscVm vm;
+  rehax::jsc::Runtime vm;
   vm.makeConsole();
   vm.bindAppkitToJsc();
   vm.setRootView(view);
