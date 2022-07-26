@@ -7,7 +7,7 @@
 
 using namespace rehax::ui::appkit::rawptr;
 
-@interface AppDelegate : NSObject 
+@interface AppDelegate : NSObject<NSApplicationDelegate>
 
 @property (retain) NSWindow * window;
 @property (retain) NSView * view;
@@ -32,7 +32,7 @@ using namespace rehax::ui::appkit::rawptr;
 {
 	[self.window setContentView:self.view];
 
-  auto view = rehax::ui::appkit::impl::View<rehax::ui::RawPtr>::Create();
+  auto view = rehax::ui::appkit::impl::View<rehax::ui::RefCountedPointer>::Create();
   view->setNativeViewRaw((__bridge void *) self.view);
   view->setWidthFill();
   view->setHeightFill();

@@ -3,6 +3,7 @@
 #include <JavaScriptCore/JavaScriptCore.h>
 #include "../../native-abstraction/rehax.h"
 #include <unordered_map>
+#include <vector>
 
 namespace rehax {
 namespace jsc {
@@ -18,6 +19,8 @@ class Bindings;
 template<typename View>
 struct ViewPrivateData {
   Bindings * bindings;
+  std::vector<JSValueRef> retainedValues;
+  JSContextRef ctx;
   View * view;
 };
 
@@ -43,6 +46,8 @@ public:
     auto privateData = new ViewPrivateData<View>();
     privateData->view = obj;
     privateData->bindings = this;
+    privateData->ctx = ctx;
+    obj->increaseReferenceCount(); // decreased in finalizer
     JSObjectRef object = JSObjectMake(ctx, classRegistry[className].classDefine, privateData);
     JSObjectSetPrototype(ctx, object, classRegistry[className].prototype);
     JSStringRef __className = JSStringCreateWithUTF8CString(className.c_str());

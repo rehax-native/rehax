@@ -13,7 +13,7 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show) {
 #else
 int main() {
 #endif
-  auto container = rehax::ui::fluxe::impl::View<rehax::ui::RawPtr>::Create();
+  auto container = rehax::ui::fluxe::impl::View<rehax::ui::RefCountedPointer>::Create();
   auto view = static_cast<fluxe::View *>(container->getNativeView());
 
   rehax::quickjs::Runtime vm;

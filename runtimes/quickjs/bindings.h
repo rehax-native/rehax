@@ -10,7 +10,6 @@ namespace quickjs {
 constexpr JSClassID kPointerClassId = 0;
 constexpr JSClassID kClassClassId = 1;
 constexpr JSClassID kPrototypeClassId = 2;
-constexpr JSClassID kInstanceClassId = 3;
 
 
 struct RegisteredClass {
@@ -25,11 +24,13 @@ struct ViewPrivateData {
   Bindings * bindings;
   View * view;
   std::vector<JSValue> retainedValues;
+  JSContext * context;
 };
 
 class Bindings {
 
 public:
+  JSClassID instanceClassId = 0;
     
   Bindings();
   void setContext(JSContext * ctx, JSRuntime * runtime);
@@ -47,8 +48,11 @@ public:
     auto privateData = new ViewPrivateData<View>();
     privateData->view = obj;
     privateData->bindings = this;
+    privateData->context = ctx;
 
-    auto object = JS_NewObjectClass(ctx, kInstanceClassId);
+    obj->increaseReferenceCount(); // decreased in finalizer
+
+    auto object = JS_NewObjectClass(ctx, Bindings::instanceClassId);
     JS_SetOpaque(object, privateData);
     JS_SetPrototype(ctx, object, classRegistry[className].prototype);
     JS_SetPropertyStr(ctx, object, "__className", JS_NewAtomString(ctx, classRegistry[className].name.c_str()));

@@ -29,8 +29,8 @@ void Runtime::makeConsole() {
 }
 
 #ifdef REHAX_WITH_FLUXE
-void Runtime::setRootView(rehax::ui::fluxe::impl::View<rehax::ui::RawPtr> * view) {
-  auto rootView = cppToJs(view);
+void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::fluxe::impl::View<rehax::ui::RefCountedPointer>> view) {
+  auto rootView = cppToJs(view.get());
 
   JSObjectRef globalObject = JSContextGetGlobalObject(context.JSGlobalContextRef);
   JSStringRef rootName = JSStringCreateWithUTF8CString("rootView");
@@ -39,8 +39,8 @@ void Runtime::setRootView(rehax::ui::fluxe::impl::View<rehax::ui::RawPtr> * view
 #endif
 
 #ifdef REHAX_WITH_APPKIT
-void Runtime::setRootView(rehax::ui::appkit::impl::View<rehax::ui::RawPtr> * view) {
-  auto rootView = cppToJs(view);
+void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::appkit::impl::View<rehax::ui::RefCountedPointer>> view) {
+  auto rootView = cppToJs(view.get());
 
   JSObjectRef globalObject = JSContextGetGlobalObject(context.JSGlobalContextRef);
   JSStringRef rootName = JSStringCreateWithUTF8CString("rootView");

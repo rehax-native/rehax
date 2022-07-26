@@ -11,11 +11,11 @@
 
 namespace rehax::ui {
   namespace appkit {
-    // namespace smartptr {
-    //     using ViewBase = SmartPtrBase<impl::View>;
-    //     using View = SmartPtr<impl::View, ViewBase>;
-    //     using Button = SmartPtr<impl::Button, ViewBase>;
-    // }
+    namespace refcounted {
+      using View = impl::View<RefCountedPointer>;
+      using Text = impl::Text<RefCountedPointer>;
+      using Button = impl::Button<RefCountedPointer>;
+    }
     namespace rawptr {
       using View = impl::View<RawPtr>;
       using Text = impl::Text<RawPtr>;
@@ -23,11 +23,11 @@ namespace rehax::ui {
     }
   }
   namespace fluxe {
-    // namespace smartptr {
-    //     using ViewBase = SmartPtrBase<impl::View>;
-    //     using View = SmartPtr<impl::View, ViewBase>;
-    //     using Button = SmartPtr<impl::Button, ViewBase>;
-    // }
+    namespace refcounted {
+      using View = impl::View<RefCountedPointer>;
+      using Text = impl::Text<RefCountedPointer>;
+      using Button = impl::Button<RefCountedPointer>;
+    }
     namespace rawptr {
       using View = impl::View<RawPtr>;
       using Text = impl::Text<RawPtr>;

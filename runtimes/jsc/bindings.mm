@@ -29,8 +29,10 @@ JSObjectRef cppToJs(JSContextRef ctx, Bindings * bindings, View * obj) {
   auto privateData = new ViewPrivateData<View>();
   privateData->view = obj;
   privateData->bindings = bindings;
+  privateData->ctx = ctx;
 
   auto className = obj->viewName();
+  obj->increaseReferenceCount(); // decreased in finalizer
     
   auto registeredClass = bindings->getRegisteredClass(className);
 
@@ -49,7 +51,13 @@ void Bindings::defineViewClass(JSContextRef ctx, std::string name, JSObjectRef p
   instanceDefine.className = name.c_str();
   instanceDefine.finalize = [] (JSObjectRef thiz) {
     auto privateData = static_cast<ViewPrivateData<View> *>(JSObjectGetPrivate(thiz));
-    // t->view->decreaseReferenceCount(); // TODO
+    auto ctx = privateData->ctx;
+
+    for (auto value : privateData->retainedValues) {
+      JSValueUnprotect(ctx, value);
+    }
+
+    privateData->view->decreaseReferenceCount();
     delete privateData;
   };
   
@@ -61,7 +69,7 @@ void Bindings::defineViewClass(JSContextRef ctx, std::string name, JSObjectRef p
   instanceDefine.callAsConstructor = [] (JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
     auto bindings = static_cast<Bindings *>(JSObjectGetPrivate(constructor));
     auto view = View::Create();
-    return ::rehax::jsc::cppToJs(ctx, bindings, view);
+    return ::rehax::jsc::cppToJs(ctx, bindings, view.get());
   };
   
   auto clazz = JSClassCreate(&instanceDefine);
@@ -142,7 +150,13 @@ void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype) {
       auto view = privateData->view;
 
       auto parent = view->getParent();
-      JSObjectRef jsParent = ::rehax::jsc::cppToJs(ctx, privateData->bindings, (typename View::PtrType) parent);
+        
+      if (!parent.isValid()) {
+        return JSValueMakeNull(ctx);
+      }
+                
+      View * parentView = dynamic_cast<View *>(parent.get());
+      auto jsParent = ::rehax::jsc::cppToJs(ctx, privateData->bindings, parentView);
       return (JSValueRef) jsParent;
     });
     JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
@@ -155,8 +169,9 @@ void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype) {
 
       auto children = view->children;
       auto firstChild = * children.begin();
+      View * firstChildView = dynamic_cast<View *>(firstChild);
 
-      return (JSValueRef) ::rehax::jsc::cppToJs(ctx, privateData->bindings, (typename View::PtrType) firstChild);
+      return (JSValueRef) ::rehax::jsc::cppToJs(ctx, privateData->bindings, firstChildView);
     });
     JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
   }
@@ -168,7 +183,7 @@ void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype) {
 
       // TODO this should probably be moved to the core
       auto parent = view->getParent();
-      if (parent == nullptr) {
+      if (!parent.isValid()) {
         return JSValueMakeNull(ctx);
       }
       auto it = parent->children.find(view);
@@ -177,7 +192,8 @@ void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype) {
         return JSValueMakeNull(ctx);
       }
       auto nextSibling = * it;
-      return (JSValueRef) ::rehax::jsc::cppToJs(ctx, privateData->bindings, (typename View::PtrType) nextSibling);
+      View * siblingView = dynamic_cast<View *>(nextSibling);
+      return (JSValueRef) ::rehax::jsc::cppToJs(ctx, privateData->bindings, siblingView);
     });
     JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
   }
@@ -226,7 +242,8 @@ void bindButtonClassMethods(JSContextRef ctx, JSObjectRef prototype) {
       auto privateData = static_cast<ViewPrivateData<View> *>(JSObjectGetPrivate(thisObject));
       auto view = privateData->view;
       JSObjectRef callback = (JSObjectRef) arguments[0];
-      JSValueProtect(ctx, callback); // TODO release this value
+      JSValueProtect(ctx, callback);
+      privateData->retainedValues.push_back(callback);
       view->setOnPress([ctx, callback] () {
 //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
         JSValueRef exception = nullptr;
@@ -248,23 +265,23 @@ void bindButtonClassMethods(JSContextRef ctx, JSObjectRef prototype) {
 
 #ifdef REHAX_WITH_APPKIT
 void Bindings::bindAppkitToJsc() {
-  defineViewClass<rehax::ui::appkit::impl::View<rehax::ui::RawPtr>>(ctx, "View", nullptr);
-  bindViewClassMethods<rehax::ui::appkit::impl::View<rehax::ui::RawPtr>>(ctx, classRegistry["View"].prototype);
-  defineViewClass<rehax::ui::appkit::impl::Text<rehax::ui::RawPtr>>(ctx, "Text", classRegistry["View"].prototype);
-  bindTextClassMethods<rehax::ui::appkit::impl::Text<rehax::ui::RawPtr>>(ctx, classRegistry["Text"].prototype);
-  defineViewClass<rehax::ui::appkit::impl::Button<rehax::ui::RawPtr>>(ctx, "Button", classRegistry["View"].prototype);
-  bindButtonClassMethods<rehax::ui::appkit::impl::Button<rehax::ui::RawPtr>>(ctx, classRegistry["Button"].prototype);
+  defineViewClass<rehax::ui::appkit::impl::View<rehax::ui::RefCountedPointer>>(ctx, "View", nullptr);
+  bindViewClassMethods<rehax::ui::appkit::impl::View<rehax::ui::RefCountedPointer>>(ctx, classRegistry["View"].prototype);
+  defineViewClass<rehax::ui::appkit::impl::Text<rehax::ui::RefCountedPointer>>(ctx, "Text", classRegistry["View"].prototype);
+  bindTextClassMethods<rehax::ui::appkit::impl::Text<rehax::ui::RefCountedPointer>>(ctx, classRegistry["Text"].prototype);
+  defineViewClass<rehax::ui::appkit::impl::Button<rehax::ui::RefCountedPointer>>(ctx, "Button", classRegistry["View"].prototype);
+  bindButtonClassMethods<rehax::ui::appkit::impl::Button<rehax::ui::RefCountedPointer>>(ctx, classRegistry["Button"].prototype);
 }
 #endif
 
 #ifdef REHAX_WITH_FLUXE
 void Bindings::bindFluxeToJsc() {
-  defineViewClass<rehax::ui::fluxe::impl::View<rehax::ui::RawPtr>>(ctx, "View", nullptr);
-  bindViewClassMethods<rehax::ui::fluxe::impl::View<rehax::ui::RawPtr>>(ctx, classRegistry["View"].prototype);
-  defineViewClass<rehax::ui::fluxe::impl::Text<rehax::ui::RawPtr>>(ctx, "Text", classRegistry["View"].prototype);
-  bindTextClassMethods<rehax::ui::fluxe::impl::Text<rehax::ui::RawPtr>>(ctx, classRegistry["Text"].prototype);
-  defineViewClass<rehax::ui::fluxe::impl::Button<rehax::ui::RawPtr>>(ctx, "Button", classRegistry["View"].prototype);
-  bindButtonClassMethods<rehax::ui::fluxe::impl::Button<rehax::ui::RawPtr>>(ctx, classRegistry["Button"].prototype);
+  defineViewClass<rehax::ui::fluxe::impl::View<rehax::ui::RefCountedPointer>>(ctx, "View", nullptr);
+  bindViewClassMethods<rehax::ui::fluxe::impl::View<rehax::ui::RefCountedPointer>>(ctx, classRegistry["View"].prototype);
+  defineViewClass<rehax::ui::fluxe::impl::Text<rehax::ui::RefCountedPointer>>(ctx, "Text", classRegistry["View"].prototype);
+  bindTextClassMethods<rehax::ui::fluxe::impl::Text<rehax::ui::RefCountedPointer>>(ctx, classRegistry["Text"].prototype);
+  defineViewClass<rehax::ui::fluxe::impl::Button<rehax::ui::RefCountedPointer>>(ctx, "Button", classRegistry["View"].prototype);
+  bindButtonClassMethods<rehax::ui::fluxe::impl::Button<rehax::ui::RefCountedPointer>>(ctx, classRegistry["Button"].prototype);
 }
 #endif
 

@@ -18,8 +18,15 @@ FetchContent_Declare(quickjs
 )
 FetchContent_MakeAvailable(quickjs)
 
+FetchContent_Declare(rehaxUtils
+  GIT_REPOSITORY https://github.com/rehax-native/utils.git
+  GIT_TAG        main
+)
+FetchContent_MakeAvailable(rehaxUtils)
+
 
 include_directories(${quickjs_SOURCE_DIR}/..)
+include_directories(${rehaxUtils_SOURCE_DIR})
 
 include_directories(../fluxe)
 include_directories(../fluxe/third_party/skia)
