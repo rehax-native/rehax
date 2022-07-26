@@ -3,20 +3,15 @@
 #include <memory>
 #include <set>
 #include "../lib/common.h"
-#include <JavaScriptCore/JavaScriptCore.h>
 #include <iostream>
 
 namespace rehax {
 
 namespace ui {
 
-struct JscRegisteredClass {
-  std::string name;
-  JSClassRef classDefine;
-  JSObjectRef prototype;
-};
+struct EmptyPointerData {};
 
-template <typename Data>
+template <typename Data = EmptyPointerData>
 class RawPtr {
 public:
   template <typename View>

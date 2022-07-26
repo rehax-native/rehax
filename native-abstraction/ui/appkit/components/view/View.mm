@@ -4,19 +4,9 @@
 
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
+#import "FlippedView.h"
 
-using namespace rehax::ui::appkit::impl;
-
-@interface FlippedView : NSView
-- (BOOL)isFlipped;
-@end
-
-@implementation FlippedView
-- (BOOL)isFlipped {
-    return YES;
-}
-@end
-
+namespace rehax::ui::appkit::impl {
 
 template <typename Container>
 rehax::ui::appkit::impl::View<Container>::View()
@@ -88,26 +78,6 @@ void View<Container>::removeFromNativeParent()
 {
   NSView * view = (__bridge NSView *) nativeView;
   [view removeFromSuperview];
-}
-
-void AppKitNativeViewRemoveAllConstraintsWidthId(NSView * view, NSString * identifier)
-{
-  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %@", identifier];
-  NSArray *filteredArray = [[view constraints] filteredArrayUsingPredicate:predicate];
-
-  for (id constraint in filteredArray)
-  {
-    [view removeConstraint:constraint];
-  }
-
-//   filteredArray = [[[view superview] constraints] filteredArrayUsingPredicate:predicate];
-//   for (id constraint in filteredArray)
-//   {
-//     if ([constraint secondItem] == view)
-//     {
-//       // [[view superview] removeConstraint:constraint];
-//     }
-//   }
 }
 
 template <typename Container>
@@ -315,4 +285,4 @@ void View<Container>::setOpacity(float opacity)
 // //   [view addGestureRecognizer:rec];
 // }
 
-template class rehax::ui::appkit::impl::View<rehax::ui::RawPtr<rehax::ui::JscRegisteredClass>>;
+}

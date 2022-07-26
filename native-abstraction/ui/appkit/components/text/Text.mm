@@ -4,8 +4,7 @@
 #import <Cocoa/Cocoa.h>
 #include <iostream>
 
-using namespace rehax::ui::appkit::impl;
-
+namespace rehax::ui::appkit::impl {
 
 template <typename Container>
 void Text<Container>::createNativeView()
@@ -82,4 +81,4 @@ void Text<Container>::addNativeView(void * child)
   [view sizeToFit];
 }
 
-template class rehax::ui::appkit::impl::Text<rehax::ui::RawPtr<rehax::ui::JscRegisteredClass>>;
+}

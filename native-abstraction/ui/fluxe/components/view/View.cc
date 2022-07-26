@@ -4,7 +4,7 @@
 #include "../../../fluxe/fluxe/views/View.h"
 // #include "Gesture.h"
 
-using namespace rehax::ui::fluxe::impl;
+namespace rehax::ui::fluxe::impl {
 
 template <typename Container>
 rehax::ui::fluxe::impl::View<Container>::View()
@@ -170,4 +170,4 @@ void View<Container>::setOpacity(float opacity)
 // //   [view addGestureRecognizer:rec];
 // }
 
-template class rehax::ui::fluxe::impl::View<rehax::ui::RawPtr<rehax::ui::JscRegisteredClass>>;
+}

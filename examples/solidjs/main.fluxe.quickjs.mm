@@ -1,7 +1,8 @@
-#include "../../runtimes/jsc.h"
+#include "../../runtimes/quickjsRuntime.h"
 #include "../../../fluxe/fluxe/views/EngineUtility.h"
 #include <iostream>
 #include "../../native-abstraction/ui/fluxe/components/view/View.cc"
+#include <AppKit/AppKit.h>
 
 using namespace rehax::ui::fluxe::rawptr;
 
@@ -12,11 +13,12 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show) {
 #else
 int main() {
 #endif
-  auto container = rehax::ui::fluxe::impl::View<rehax::ui::RawPtr<rehax::jsc::JscRegisteredClass>>::Create();
+  auto container = rehax::ui::fluxe::impl::View<rehax::ui::RawPtr<rehax::quickjs::QuickJsContainerData>>::Create();
   auto view = static_cast<fluxe::View *>(container->getNativeView());
 
-  rehax::jsc::JscVm vm;
-  vm.bindFluxeToJsc();
+  rehax::quickjs::QuickJsVm vm;
+  vm.makeConsole();
+  vm.bindFluxeToQuickJs();
   vm.setRootView(container);
 
   NSString * resourcePath = [[NSBundle mainBundle] resourcePath];

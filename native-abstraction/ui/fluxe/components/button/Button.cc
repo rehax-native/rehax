@@ -3,7 +3,7 @@
 #include "../../../fluxe/fluxe/misc/Object.h"
 #include "../../../fluxe/fluxe/views/Button.h"
 
-using namespace rehax::ui::fluxe::impl;
+namespace rehax::ui::fluxe::impl {
 
 template <typename Container>
 void Button<Container>::createNativeView()
@@ -44,4 +44,4 @@ void Button<Container>::setOnPress(std::function<void(void)> onPress)
   };
 }
 
-template class rehax::ui::fluxe::impl::Button<rehax::ui::RawPtr<rehax::ui::JscRegisteredClass>>;
+}

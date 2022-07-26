@@ -23,7 +23,7 @@ void Bindings::setContext(JSContextRef ctx)
     this->ctx = ctx;
 }
 
-JSObjectRef cppToJs(JSContextRef ctx, ui::JscRegisteredClass classDefine, void * obj)
+JSObjectRef cppToJs(JSContextRef ctx, JscRegisteredClass classDefine, void * obj)
 {
     JSObjectRef object = JSObjectMake(ctx, classDefine.classDefine, obj);
     JSObjectSetPrototype(ctx, object, classDefine.prototype);
@@ -61,7 +61,7 @@ void Bindings::defineViewClass(JSContextRef ctx, std::string name, JSObjectRef p
     }
     
     instanceDefine.callAsConstructor = [] (JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
-        auto classDef = static_cast<ui::JscRegisteredClass *>(JSObjectGetPrivate(constructor));
+        auto classDef = static_cast<JscRegisteredClass *>(JSObjectGetPrivate(constructor));
         auto view = View::Create();
         view->containerAdditionalData = *classDef;
         return ::rehax::jsc::cppToJs(ctx, *classDef, view);
@@ -88,7 +88,7 @@ void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype)
         auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
             auto view = (View *) JSObjectGetPrivate(thisObject);
             auto childView = (View *) JSObjectGetPrivate((JSObjectRef) arguments[0]);
-            if (JSValueIsNull(ctx, arguments[1]) || JSValueIsUndefined(ctx, arguments[1])) {
+            if (argumentCount <= 1 || JSValueIsNull(ctx, arguments[1]) || JSValueIsUndefined(ctx, arguments[1])) {
                 view->addView(childView);
             } else {
                 auto beforeView = (View *) JSObjectGetPrivate((JSObjectRef) arguments[1]);
@@ -224,26 +224,38 @@ void bindButtonClassMethods(JSContextRef ctx, JSObjectRef prototype)
 #ifdef REHAX_WITH_APPKIT
 void Bindings::bindAppkitToJsc()
 {
-    defineViewClass<::rehax::ui::appkit::rawptr::View>(ctx, "View", nullptr);
-    bindViewClassMethods<::rehax::ui::appkit::rawptr::View>(ctx, classRegistry["View"].prototype);
-    defineViewClass<::rehax::ui::appkit::rawptr::Text>(ctx, "Text", classRegistry["View"].prototype);
-    bindTextClassMethods<::rehax::ui::appkit::rawptr::Text>(ctx, classRegistry["Text"].prototype);
-    defineViewClass<::rehax::ui::appkit::rawptr::Button>(ctx, "Button", classRegistry["View"].prototype);
-    bindButtonClassMethods<::rehax::ui::appkit::rawptr::Button>(ctx, classRegistry["Button"].prototype);
+    defineViewClass<rehax::ui::appkit::impl::View<rehax::ui::RawPtr<JscRegisteredClass>>>(ctx, "View", nullptr);
+    bindViewClassMethods<rehax::ui::appkit::impl::View<rehax::ui::RawPtr<JscRegisteredClass>>>(ctx, classRegistry["View"].prototype);
+    defineViewClass<rehax::ui::appkit::impl::Text<rehax::ui::RawPtr<JscRegisteredClass>>>(ctx, "Text", classRegistry["View"].prototype);
+    bindTextClassMethods<rehax::ui::appkit::impl::Text<rehax::ui::RawPtr<JscRegisteredClass>>>(ctx, classRegistry["Text"].prototype);
+    defineViewClass<rehax::ui::appkit::impl::Button<rehax::ui::RawPtr<JscRegisteredClass>>>(ctx, "Button", classRegistry["View"].prototype);
+    bindButtonClassMethods<rehax::ui::appkit::impl::Button<rehax::ui::RawPtr<JscRegisteredClass>>>(ctx, classRegistry["Button"].prototype);
 }
 #endif
 
 #ifdef REHAX_WITH_FLUXE
 void Bindings::bindFluxeToJsc()
 {
-    defineViewClass<::rehax::ui::fluxe::rawptr::View>(ctx, "View", nullptr);
-    bindViewClassMethods<::rehax::ui::fluxe::rawptr::View>(ctx, classRegistry["View"].prototype);
-    defineViewClass<::rehax::ui::fluxe::rawptr::Text>(ctx, "Text", classRegistry["View"].prototype);
-    bindTextClassMethods<::rehax::ui::fluxe::rawptr::Text>(ctx, classRegistry["Text"].prototype);
-    defineViewClass<::rehax::ui::fluxe::rawptr::Button>(ctx, "Button", classRegistry["View"].prototype);
-    bindButtonClassMethods<::rehax::ui::fluxe::rawptr::Button>(ctx, classRegistry["Button"].prototype);
+    defineViewClass<rehax::ui::fluxe::impl::View<rehax::ui::RawPtr<JscRegisteredClass>>>(ctx, "View", nullptr);
+    bindViewClassMethods<rehax::ui::fluxe::impl::View<rehax::ui::RawPtr<JscRegisteredClass>>>(ctx, classRegistry["View"].prototype);
+    defineViewClass<rehax::ui::fluxe::impl::Text<rehax::ui::RawPtr<JscRegisteredClass>>>(ctx, "Text", classRegistry["View"].prototype);
+    bindTextClassMethods<rehax::ui::fluxe::impl::Text<rehax::ui::RawPtr<JscRegisteredClass>>>(ctx, classRegistry["Text"].prototype);
+    defineViewClass<rehax::ui::fluxe::impl::Button<rehax::ui::RawPtr<JscRegisteredClass>>>(ctx, "Button", classRegistry["View"].prototype);
+    bindButtonClassMethods<rehax::ui::fluxe::impl::Button<rehax::ui::RawPtr<JscRegisteredClass>>>(ctx, classRegistry["Button"].prototype);
 }
 #endif
 
 }
 }
+
+#ifdef REHAX_WITH_APPKIT
+#include "../native-abstraction/ui/appkit/components/view/View.mm"
+#include "../native-abstraction/ui/appkit/components/text/Text.mm"
+#include "../native-abstraction/ui/appkit/components/button/Button.mm"
+#endif
+
+#ifdef REHAX_WITH_FLUXE
+#include "../native-abstraction/ui/fluxe/components/view/View.cc"
+#include "../native-abstraction/ui/fluxe/components/text/Text.cc"
+#include "../native-abstraction/ui/fluxe/components/button/Button.cc"
+#endif

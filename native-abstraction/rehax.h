@@ -17,9 +17,9 @@ namespace rehax::ui {
         //     using Button = SmartPtr<impl::Button, ViewBase>;
         // }
         namespace rawptr {
-            using View = impl::View<RawPtr<JscRegisteredClass>>;
-            using Text = impl::Text<RawPtr<JscRegisteredClass>>;
-            using Button = impl::Button<RawPtr<JscRegisteredClass>>;
+            using View = impl::View<RawPtr<>>;
+            using Text = impl::Text<RawPtr<>>;
+            using Button = impl::Button<RawPtr<>>;
         }
     }
     namespace fluxe {
@@ -29,9 +29,9 @@ namespace rehax::ui {
         //     using Button = SmartPtr<impl::Button, ViewBase>;
         // }
         namespace rawptr {
-            using View = impl::View<RawPtr<JscRegisteredClass>>;
-            using Text = impl::Text<RawPtr<JscRegisteredClass>>;
-            using Button = impl::Button<RawPtr<JscRegisteredClass>>;
+            using View = impl::View<RawPtr<>>;
+            using Text = impl::Text<RawPtr<>>;
+            using Button = impl::Button<RawPtr<>>;
         }
     }
 }

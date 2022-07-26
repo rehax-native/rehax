@@ -7,6 +7,12 @@
 namespace rehax {
 namespace jsc {
 
+struct JscRegisteredClass {
+  std::string name;
+  JSClassRef classDefine;
+  JSObjectRef prototype;
+};
+
 class Bindings
 {
 public:
@@ -36,7 +42,7 @@ public:
 private:
     JSContextRef ctx;
 
-    std::unordered_map<std::string, ui::JscRegisteredClass> classRegistry;
+    std::unordered_map<std::string, JscRegisteredClass> classRegistry;
     
     template <typename View>
     void defineViewClass(JSContextRef ctx, std::string name, JSObjectRef parentPrototype);

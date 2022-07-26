@@ -18,7 +18,7 @@ export const {
   mergeProps,
 } = createRenderer({
   createElement(string) {
-    // console.log(`Create element: ${string}`);
+    // console.log(`Create element: ${string} ${View}`);
     switch (string) {
       case "div":
         return new View();

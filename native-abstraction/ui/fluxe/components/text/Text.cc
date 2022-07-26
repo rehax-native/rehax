@@ -4,7 +4,7 @@
 #include "../../../fluxe/fluxe/views/Text.h"
 #include <iostream>
 
-using namespace rehax::ui::fluxe::impl;
+namespace rehax::ui::fluxe::impl {
 
 
 template <typename Container>
@@ -50,4 +50,4 @@ void Text<Container>::setFontFamilies(std::vector<std::string> fontFamilies)
   view->setFontFamilies(fontFamilies);
 }
 
-template class rehax::ui::fluxe::impl::Text<rehax::ui::RawPtr<rehax::ui::JscRegisteredClass>>;
+}

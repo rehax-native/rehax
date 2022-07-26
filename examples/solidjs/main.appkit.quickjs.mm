@@ -1,8 +1,7 @@
-#include "../../runtimes/jsc.h"
+#include "../../runtimes/quickjsRuntime.h"
 #include <iostream>
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
-#import <JavaScriptCore/JavaScriptCore.h>
 #include "../../native-abstraction/ui/appkit/components/view/View.mm"
 
 using namespace rehax::ui::appkit::rawptr;
@@ -32,15 +31,15 @@ using namespace rehax::ui::appkit::rawptr;
 {
 	[self.window setContentView:self.view];
 
-  auto view = rehax::ui::appkit::impl::View<rehax::ui::RawPtr<rehax::jsc::JscRegisteredClass>>::Create();
+  auto view = rehax::ui::appkit::impl::View<rehax::ui::RawPtr<rehax::quickjs::QuickJsContainerData>>::Create();
   view->setNativeViewRaw((__bridge void *) self.view);
   view->setWidthFill();
   view->setHeightFill();
 
 
-  rehax::jsc::JscVm vm;
+  rehax::quickjs::QuickJsVm vm;
   vm.makeConsole();
-  vm.bindAppkitToJsc();
+  vm.bindAppkitToQuickJs();
   vm.setRootView(view);
 
   NSString * resourcePath = [[NSBundle mainBundle] resourcePath];

@@ -32,7 +32,7 @@ void JscVm::makeConsole()
 }
 
 #ifdef REHAX_WITH_FLUXE
-void JscVm::setRootView(rehax::ui::fluxe::rawptr::View * view)
+void JscVm::setRootView(rehax::ui::fluxe::impl::View<rehax::ui::RawPtr<JscRegisteredClass>> * view)
 {
     auto rootView = cppToJs(view, "View");
 
@@ -43,7 +43,7 @@ void JscVm::setRootView(rehax::ui::fluxe::rawptr::View * view)
 #endif
 
 #ifdef REHAX_WITH_APPKIT
-void JscVm::setRootView(rehax::ui::appkit::rawptr::View * view)
+void JscVm::setRootView(rehax::ui::appkit::impl::View<rehax::ui::RawPtr<JscRegisteredClass>> * view)
 {
     auto rootView = cppToJs(view, "View");
 

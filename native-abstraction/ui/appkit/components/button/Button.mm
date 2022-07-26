@@ -2,36 +2,9 @@
 #include "../../../base.h"
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
+#import "FunctionalButton.h"
 
-using namespace rehax::ui::appkit::impl;
-
-@interface FunctionalNSButton : NSButton
-{
-  @public
-  std::function<void(void)> callback;
-}
-
-- (void)setOnPress:(std::function<void(void)>)callback;
-- (void)onPress:(id)sender;
-
-@end
-
-@implementation FunctionalNSButton
-
-- (void)setOnPress:(std::function<void(void)>)cb
-{
-  callback = cb;
-  [self setTarget:self];
-  [self setAction:@selector(onPress:)];
-}
-
-- (void)onPress:(id)sender
-{
-  callback();
-}
-
-@end
-
+namespace rehax::ui::appkit::impl {
 
 template <typename Container>
 void Button<Container>::createNativeView()
@@ -71,4 +44,4 @@ void Button<Container>::setOnPress(std::function<void(void)> onPress)
   [view setOnPress:onPress];
 }
 
-template class rehax::ui::appkit::impl::Button<rehax::ui::RawPtr<rehax::ui::JscRegisteredClass>>;
+}
