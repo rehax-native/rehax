@@ -79,6 +79,14 @@ void Bindings::defineViewClass(JSContext * ctx, std::string name, JSValue parent
      {
          auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
              View * view = (View *) JS_GetOpaque(this_val, kInstanceClassId);
+             return JS_NewAtomString(ctx, view->description().c_str());
+         };
+         auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, 0, {});
+         JS_SetPropertyStr(ctx, prototype, "toString", functionObject);
+     }
+     {
+         auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+             View * view = (View *) JS_GetOpaque(this_val, kInstanceClassId);
              auto childView = (View *) JS_GetOpaque(argv[0], kInstanceClassId);
              
              if (argc <= 1 || JS_IsNull(argv[1]) || JS_IsUndefined(argv[1])) {

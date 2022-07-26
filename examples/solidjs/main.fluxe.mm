@@ -17,6 +17,7 @@ int main() {
 
   rehax::jsc::JscVm vm;
   vm.bindFluxeToJsc();
+  vm.makeConsole();
   vm.setRootView(container);
 
   NSString * resourcePath = [[NSBundle mainBundle] resourcePath];

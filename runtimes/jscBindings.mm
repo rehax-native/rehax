@@ -84,6 +84,16 @@ template <typename View>
 void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype)
 {
     {
+        JSStringRef methodName = JSStringCreateWithUTF8CString("toString");
+        auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+            auto view = (View *) JSObjectGetPrivate(thisObject);
+            auto description = view->description();
+            JSStringRef jsText = JSStringCreateWithUTF8CString(description.c_str());
+            return JSValueMakeString(ctx, jsText);
+        });
+        JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+    }
+    {
         JSStringRef methodName = JSStringCreateWithUTF8CString("addView");
         auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
             auto view = (View *) JSObjectGetPrivate(thisObject);

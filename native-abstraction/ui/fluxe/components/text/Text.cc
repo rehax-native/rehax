@@ -23,6 +23,7 @@ void Text<Container>::setText(std::string text) {
 template <typename Container>
 std::string Text<Container>::getText() {
   auto view = static_cast<::fluxe::Text *>(this->nativeView);
+  return "[not implemented]";
 //  view->getText();
 }
 
