@@ -3,11 +3,9 @@
 #include "../lib/common.h"
 
 namespace rehax {
-
 namespace ui {
 
-struct Color
-{
+struct Color {
   float r;
   float g;
   float b;
@@ -16,5 +14,4 @@ struct Color
 };
 
 }
-
 }

@@ -10,30 +10,30 @@
 #include "ui/base.h"
 
 namespace rehax::ui {
-    namespace appkit {
-        // namespace smartptr {
-        //     using ViewBase = SmartPtrBase<impl::View>;
-        //     using View = SmartPtr<impl::View, ViewBase>;
-        //     using Button = SmartPtr<impl::Button, ViewBase>;
-        // }
-        namespace rawptr {
-            using View = impl::View<RawPtr<>>;
-            using Text = impl::Text<RawPtr<>>;
-            using Button = impl::Button<RawPtr<>>;
-        }
+  namespace appkit {
+    // namespace smartptr {
+    //     using ViewBase = SmartPtrBase<impl::View>;
+    //     using View = SmartPtr<impl::View, ViewBase>;
+    //     using Button = SmartPtr<impl::Button, ViewBase>;
+    // }
+    namespace rawptr {
+      using View = impl::View<RawPtr<>>;
+      using Text = impl::Text<RawPtr<>>;
+      using Button = impl::Button<RawPtr<>>;
     }
-    namespace fluxe {
-        // namespace smartptr {
-        //     using ViewBase = SmartPtrBase<impl::View>;
-        //     using View = SmartPtr<impl::View, ViewBase>;
-        //     using Button = SmartPtr<impl::Button, ViewBase>;
-        // }
-        namespace rawptr {
-            using View = impl::View<RawPtr<>>;
-            using Text = impl::Text<RawPtr<>>;
-            using Button = impl::Button<RawPtr<>>;
-        }
+  }
+  namespace fluxe {
+    // namespace smartptr {
+    //     using ViewBase = SmartPtrBase<impl::View>;
+    //     using View = SmartPtr<impl::View, ViewBase>;
+    //     using Button = SmartPtr<impl::Button, ViewBase>;
+    // }
+    namespace rawptr {
+      using View = impl::View<RawPtr<>>;
+      using Text = impl::Text<RawPtr<>>;
+      using Button = impl::Button<RawPtr<>>;
     }
+  }
 }
 
 // #include "components/view/View.h"

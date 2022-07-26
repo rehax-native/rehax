@@ -1,12 +1,12 @@
 #pragma once
 
+#include <sstream>
 #include "../../../../lib/common.h"
 
 namespace rehax::ui::appkit::impl {
 
 template <typename Container>
-class View : public Container
-{
+class View : public Container {
 
 public:
 
@@ -42,6 +42,16 @@ public:
     removeFromNativeParent();
   }
 
+  virtual std::string viewName() {
+    return "View";
+  }
+
+  virtual std::string description() {
+    std::ostringstream stringStream;
+    stringStream << viewName() << "/NSView (Appkit) " << this;
+    return stringStream.str();
+  }
+
   RHX_EXPORT View();
   RHX_EXPORT virtual ~View();
 
@@ -67,13 +77,11 @@ public:
   RHX_EXPORT void setWidthPercentage(float percent);
   RHX_EXPORT void setHeightPercentage(float percent);
 
-  RHX_EXPORT void setVerticalPositionNatural(PtrType previousNativeView)
-  {
+  RHX_EXPORT void setVerticalPositionNatural(PtrType previousNativeView) {
     setNativeVerticalPositionNatural(previousNativeView->getNativeView());
   }
 
-  RHX_EXPORT void setHorizontalPositionNatural(PtrType previousNativeView)
-  {
+  RHX_EXPORT void setHorizontalPositionNatural(PtrType previousNativeView) {
     setNativeHorizontalPositionNatural(previousNativeView->getNativeView());
   }
 

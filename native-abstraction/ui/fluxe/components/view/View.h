@@ -1,12 +1,12 @@
 #pragma once
 
+#include <sstream>
 #include "../../../../lib/common.h"
 
 namespace rehax::ui::fluxe::impl {
 
 template <typename Container>
-class View : public Container
-{
+class View : public Container {
 
 public:
 
@@ -40,6 +40,16 @@ public:
   void removeFromParent() {
     this->removeContainerFromParent();
     removeFromNativeParent();
+  }
+
+  virtual std::string viewName() {
+    return "View";
+  }
+
+  virtual std::string description() {
+    std::ostringstream stringStream;
+    stringStream << viewName() << "/fluxe::View (fluxe) " << this;
+    return stringStream.str();
   }
 
   RHX_EXPORT View();

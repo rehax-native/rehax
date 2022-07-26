@@ -7,8 +7,8 @@
 namespace rehax::ui::fluxe::impl {
 
 template <typename Container>
-class Button : public View<Container>
-{
+class Button : public View<Container> {
+
 public:
   static typename Container::template Ptr<Button<Container>> Create() {
     auto ptr = new Button<Container>();
@@ -19,6 +19,16 @@ public:
   static typename Container::template Ptr<Button<Container>> CreateWithoutCreatingNativeView() {
     auto ptr = new Button<Container>();
     return ptr;
+  }
+
+  virtual std::string viewName() override {
+    return "Button";
+  }
+
+  virtual std::string description() override {
+    std::ostringstream stringStream;
+    stringStream << viewName() << "/fluxe::Button (fluxe) " << this << ": " << getTitle();
+    return stringStream.str();
   }
 
   RHX_EXPORT virtual void createNativeView() override;

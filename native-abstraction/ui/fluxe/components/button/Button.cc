@@ -6,23 +6,20 @@
 namespace rehax::ui::fluxe::impl {
 
 template <typename Container>
-void Button<Container>::createNativeView()
-{
+void Button<Container>::createNativeView() {
   auto view = ::fluxe::Object<::fluxe::Button>::Create();
   view->increaseReferenceCount();
   this->nativeView = view.get();
 }
 
 template <typename Container>
-void Button<Container>::setTitle(std::string title)
-{
+void Button<Container>::setTitle(std::string title) {
   auto view = static_cast<::fluxe::Button *>(this->nativeView);
   view->getTitle()->setText(title);
 }
 
 template <typename Container>
-std::string Button<Container>::getTitle()
-{
+std::string Button<Container>::getTitle() {
   auto view = static_cast<::fluxe::Button *>(this->nativeView);
 //  return view->getTitle()->getText();
     return "";
@@ -36,8 +33,7 @@ std::string Button<Container>::getTitle()
 // }
 
 template <typename Container>
-void Button<Container>::setOnPress(std::function<void(void)> onPress)
-{
+void Button<Container>::setOnPress(std::function<void(void)> onPress) {
   auto view = static_cast<::fluxe::Button *>(this->nativeView);
   view->onClick = [onPress] (::fluxe::ObjectPointer<::fluxe::Button> btn) {
     onPress();

@@ -13,14 +13,15 @@ typedef void NSTimer;
 namespace rehax {
 
 class Timer {
+
 private:
-    NSTimer * timer;
-  
-    friend class Util;
+  NSTimer * timer;
+
+  friend class Util;
 };
 
-class Util
-{
+class Util {
+
 public:
   RHX_EXPORT static void openUrl(std::string url);
 

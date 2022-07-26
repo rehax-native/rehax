@@ -8,8 +8,8 @@
 namespace rehax::ui::fluxe::impl {
 
 template <typename Container>
-class Text : public View<Container>
-{
+class Text : public View<Container> {
+
 public:
   static typename Container::template Ptr<Text<Container>> Create() {
     auto ptr = new Text<Container>();
@@ -20,6 +20,16 @@ public:
   static typename Container::template Ptr<Text<Container>> CreateWithoutCreatingNativeView() {
     auto ptr = new Text<Container>();
     return ptr;
+  }
+
+  virtual std::string viewName() override {
+    return "Text";
+  }
+
+  virtual std::string description() override {
+    std::ostringstream stringStream;
+    stringStream << viewName() << "/fluxe::Text (fluxe) " << this << ": " << getText();
+    return stringStream.str();
   }
 
   RHX_EXPORT virtual void createNativeView() override;

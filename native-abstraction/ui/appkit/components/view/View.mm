@@ -9,23 +9,19 @@
 namespace rehax::ui::appkit::impl {
 
 template <typename Container>
-rehax::ui::appkit::impl::View<Container>::View()
-{}
+rehax::ui::appkit::impl::View<Container>::View() {}
 
 template <typename Container>
-rehax::ui::appkit::impl::View<Container>::~View()
-{}
+rehax::ui::appkit::impl::View<Container>::~View() {}
 
 template <typename Container>
-void View<Container>::createNativeView()
-{
+void View<Container>::createNativeView() {
   NSView * view = [FlippedView new];
   nativeView = (void *) CFBridgingRetain(view);
 }
 
 template <typename Container>
-void View<Container>::destroyNativeView()
-{
+void View<Container>::destroyNativeView() {
   if (nativeView != nullptr) {
     CFBridgingRelease(nativeView);
     nativeView = nullptr;
@@ -33,20 +29,17 @@ void View<Container>::destroyNativeView()
 }
 
 template <typename Container>
-void View<Container>::setNativeViewRaw(void * view)
-{
+void View<Container>::setNativeViewRaw(void * view) {
   nativeView = view;
 }
 
 template <typename Container>
-void * View<Container>::getNativeView()
-{
+void * View<Container>::getNativeView() {
   return nativeView;
 }
 
 template <typename Container>
-void View<Container>::addNativeView(void * child)
-{
+void View<Container>::addNativeView(void * child) {
   NSView * view = (__bridge NSView *) nativeView;
   NSView * childView = (__bridge NSView *) child;
   [childView setFrame:view.bounds];
@@ -55,8 +48,7 @@ void View<Container>::addNativeView(void * child)
 }
 
 template <typename Container>
-void View<Container>::addNativeView(void * child, void * beforeChild)
-{
+void View<Container>::addNativeView(void * child, void * beforeChild) {
   NSView * view = (__bridge NSView *) nativeView;
   NSView * childView = (__bridge NSView *) child;
   NSView * beforeChildView = (__bridge NSView *) beforeChild;
@@ -66,23 +58,19 @@ void View<Container>::addNativeView(void * child, void * beforeChild)
 }
 
 template <typename Container>
-void View<Container>::removeNativeView(void * child)
-{
-  // NSView * view = (__bridge NSView *) nativeView;
+void View<Container>::removeNativeView(void * child) {
   NSView * childView = (__bridge NSView *) child;
   [childView removeFromSuperview];
 }
 
 template <typename Container>
-void View<Container>::removeFromNativeParent()
-{
+void View<Container>::removeFromNativeParent() {
   NSView * view = (__bridge NSView *) nativeView;
   [view removeFromSuperview];
 }
 
 template <typename Container>
-void View<Container>::setWidthFill()
-{
+void View<Container>::setWidthFill() {
   NSView * view = (__bridge NSView *) nativeView;
   AppKitNativeViewRemoveAllConstraintsWidthId(view, @"hx_width");
 
@@ -100,8 +88,7 @@ void View<Container>::setWidthFill()
 }
 
 template <typename Container>
-void View<Container>::setHeightFill()
-{
+void View<Container>::setHeightFill() {
   NSView * view = (__bridge NSView *) nativeView;
   AppKitNativeViewRemoveAllConstraintsWidthId(view, @"hx_height");
 
@@ -119,22 +106,19 @@ void View<Container>::setHeightFill()
 }
 
 template <typename Container>
-void View<Container>::setWidthNatural()
-{
+void View<Container>::setWidthNatural() {
   NSView * view = (__bridge NSView *) nativeView;
   AppKitNativeViewRemoveAllConstraintsWidthId(view, @"hx_width");
 }
 
 template <typename Container>
-void View<Container>::setHeightNatural()
-{
+void View<Container>::setHeightNatural() {
   NSView * view = (__bridge NSView *) nativeView;
   AppKitNativeViewRemoveAllConstraintsWidthId(view, @"hx_height");
 }
 
 template <typename Container>
-void View<Container>::setWidthFixed(float width)
-{
+void View<Container>::setWidthFixed(float width) {
   NSView * view = (__bridge NSView *) nativeView;
   AppKitNativeViewRemoveAllConstraintsWidthId(view, @"hx_width");
 
@@ -145,8 +129,7 @@ void View<Container>::setWidthFixed(float width)
 }
 
 template <typename Container>
-void View<Container>::setHeightFixed(float height)
-{
+void View<Container>::setHeightFixed(float height) {
   NSView * view = (__bridge NSView *) nativeView;
   AppKitNativeViewRemoveAllConstraintsWidthId(view, @"hx_height");
 
@@ -157,8 +140,7 @@ void View<Container>::setHeightFixed(float height)
 }
 
 template <typename Container>
-void View<Container>::setWidthPercentage(float percentage)
-{
+void View<Container>::setWidthPercentage(float percentage) {
   NSView * view = (__bridge NSView *) nativeView;
   AppKitNativeViewRemoveAllConstraintsWidthId(view, @"hx_width");
 
@@ -169,8 +151,7 @@ void View<Container>::setWidthPercentage(float percentage)
 }
 
 template <typename Container>
-void View<Container>::setHeightPercentage(float percentage)
-{
+void View<Container>::setHeightPercentage(float percentage) {
   NSView * view = (__bridge NSView *) nativeView;
   AppKitNativeViewRemoveAllConstraintsWidthId(view, @"hx_height");
 
@@ -181,8 +162,7 @@ void View<Container>::setHeightPercentage(float percentage)
 }
 
 template <typename Container>
-void View<Container>::setNativeVerticalPositionNatural(void * previousView)
-{
+void View<Container>::setNativeVerticalPositionNatural(void * previousView) {
   NSView * view = (__bridge NSView *) nativeView;
   AppKitNativeViewRemoveAllConstraintsWidthId(view, @"hx_pos_vert");
 
@@ -205,8 +185,7 @@ void View<Container>::setNativeVerticalPositionNatural(void * previousView)
 }
 
 template <typename Container>
-void View<Container>::setNativeHorizontalPositionNatural(void * previousView)
-{
+void View<Container>::setNativeHorizontalPositionNatural(void * previousView) {
   NSView * view = (__bridge NSView *) nativeView;
   AppKitNativeViewRemoveAllConstraintsWidthId(view, @"hx_pos_horiz");
 
@@ -229,8 +208,7 @@ void View<Container>::setNativeHorizontalPositionNatural(void * previousView)
 }
 
 template <typename Container>
-void View<Container>::setVerticalPositionFixed(float y)
-{
+void View<Container>::setVerticalPositionFixed(float y) {
   NSView * view = (__bridge NSView *) nativeView;
   AppKitNativeViewRemoveAllConstraintsWidthId(view, @"hx_pos_vert");
 
@@ -241,8 +219,7 @@ void View<Container>::setVerticalPositionFixed(float y)
 }
 
 template <typename Container>
-void View<Container>::setHorizontalPositionFixed(float x)
-{
+void View<Container>::setHorizontalPositionFixed(float x) {
   NSView * view = (__bridge NSView *) nativeView;
   AppKitNativeViewRemoveAllConstraintsWidthId(view, @"hx_pos_horiz");
 
@@ -262,8 +239,7 @@ void View<Container>::setHorizontalPositionFixed(float x)
 // }
 
 template <typename Container>
-void View<Container>::setOpacity(float opacity)
-{
+void View<Container>::setOpacity(float opacity) {
   NSView * view = (__bridge NSView *) nativeView;
   [view setAlphaValue:opacity];
 }

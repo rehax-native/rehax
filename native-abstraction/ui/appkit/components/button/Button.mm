@@ -7,8 +7,7 @@
 namespace rehax::ui::appkit::impl {
 
 template <typename Container>
-void Button<Container>::createNativeView()
-{
+void Button<Container>::createNativeView() {
   FunctionalNSButton * view = [FunctionalNSButton new];
   [view setFrame:NSMakeRect(0, 0, 200, 200)];
   [view setTitle:@""];
@@ -17,15 +16,13 @@ void Button<Container>::createNativeView()
 }
 
 template <typename Container>
-void Button<Container>::setTitle(std::string title)
-{
+void Button<Container>::setTitle(std::string title) {
   FunctionalNSButton * view = (__bridge FunctionalNSButton *) this->nativeView;
   [view setTitle: [NSString stringWithUTF8String:title.c_str()]];
 }
 
 template <typename Container>
-std::string Button<Container>::getTitle()
-{
+std::string Button<Container>::getTitle() {
   FunctionalNSButton * view = (__bridge FunctionalNSButton *) this->nativeView;
   return std::string([view stringValue].UTF8String);
 }
@@ -38,8 +35,7 @@ std::string Button<Container>::getTitle()
 // }
 
 template <typename Container>
-void Button<Container>::setOnPress(std::function<void(void)> onPress)
-{
+void Button<Container>::setOnPress(std::function<void(void)> onPress) {
   FunctionalNSButton * view = (__bridge FunctionalNSButton *) this->nativeView;
   [view setOnPress:onPress];
 }
