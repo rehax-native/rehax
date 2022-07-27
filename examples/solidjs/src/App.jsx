@@ -8,7 +8,7 @@ function App() {
       <button title="Click me" onPress={() => {
         setCount(count() + 1)
       }}></button>
-      {'                       '}Count: {count()}
+      Count: {count()}
       <input />
     </div>
   );

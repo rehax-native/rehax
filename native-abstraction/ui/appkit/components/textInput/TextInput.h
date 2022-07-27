@@ -3,6 +3,7 @@
 #include "../view/View.h"
 #include <iostream>
 #include <functional>
+#include "../../../style.h"
 
 namespace rehax::ui::appkit::impl {
 
@@ -47,7 +48,7 @@ public:
   RHX_EXPORT void setPlaceholder(std::string placeholder);
 
   RHX_EXPORT void setTextAlignment(TextAlignment alignment);
-  RHX_EXPORT void setTextColor(Color color);
+  RHX_EXPORT void setTextColor(rehax::ui::Color color);
   RHX_EXPORT void setFontSize(float size);
   RHX_EXPORT void setFontFamilies(std::vector<std::string> fontFamilies);
   RHX_EXPORT virtual void addNativeView(void * child) override;

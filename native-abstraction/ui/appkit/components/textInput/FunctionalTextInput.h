@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
+#include <functional>
 
 @interface FunctionalNSTextField : NSTextField <NSTextFieldDelegate>
 {

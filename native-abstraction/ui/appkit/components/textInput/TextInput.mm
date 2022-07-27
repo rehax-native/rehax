@@ -4,6 +4,7 @@
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 #include <iostream>
+#include <vector>
 
 namespace rehax::ui::appkit::impl {
 

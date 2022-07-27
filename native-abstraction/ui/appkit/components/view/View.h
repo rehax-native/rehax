@@ -2,6 +2,8 @@
 
 #include <sstream>
 #include "../../../../lib/common.h"
+#include <rehaxUtils/pointers/Object.h>
+#include "../layouts/ILayout.h"
 
 namespace rehax::ui::appkit::impl {
 
@@ -100,6 +102,7 @@ public:
 
 protected:
   void * nativeView = nullptr;
+  rehaxUtils::ObjectPointer<ILayout> layout;
 };
 
 }

@@ -1,5 +1,6 @@
 #import "View.h"
 #include "../../../base.h"
+#include "../layouts/StackLayout.h"
 // #include "Gesture.h"
 
 #import <Foundation/Foundation.h>
@@ -9,7 +10,9 @@
 namespace rehax::ui::appkit::impl {
 
 template <typename Container>
-rehax::ui::appkit::impl::View<Container>::View() {}
+rehax::ui::appkit::impl::View<Container>::View()
+:layout(rehaxUtils::Object<StackLayout>::Create())
+{}
 
 template <typename Container>
 rehax::ui::appkit::impl::View<Container>::~View() {}
@@ -45,6 +48,8 @@ void View<Container>::addNativeView(void * child) {
   [childView setFrame:view.bounds];
   childView.translatesAutoresizingMaskIntoConstraints = NO;
   [view addSubview:childView];
+
+  layout->onViewAdded(nativeView, child);
 }
 
 template <typename Container>
@@ -55,18 +60,25 @@ void View<Container>::addNativeView(void * child, void * beforeChild) {
   [childView setFrame:view.bounds];
   childView.translatesAutoresizingMaskIntoConstraints = NO;
   [view addSubview:childView positioned:NSWindowBelow relativeTo:beforeChildView];
+
+  layout->onViewAdded(nativeView, child);
 }
 
 template <typename Container>
 void View<Container>::removeNativeView(void * child) {
   NSView * childView = (__bridge NSView *) child;
   [childView removeFromSuperview];
+
+  layout->onViewRemoved(nativeView, child);
 }
 
 template <typename Container>
 void View<Container>::removeFromNativeParent() {
   NSView * view = (__bridge NSView *) nativeView;
   [view removeFromSuperview];
+    
+  auto parent = (View<Container> *) this->getParent().get();
+  parent->layout->onViewRemoved(parent->nativeView, nativeView);
 }
 
 template <typename Container>

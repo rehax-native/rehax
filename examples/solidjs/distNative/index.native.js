@@ -869,14 +869,14 @@ function App() {
   return (() => {
     const _el$ = createElement("div"),
           _el$2 = createElement("button"),
-          _el$3 = createTextNode(`                       Count: `),
-          _el$5 = createElement("input");
+          _el$3 = createTextNode(`Count: `),
+          _el$4 = createElement("input");
 
     insertNode(_el$, _el$2);
 
     insertNode(_el$, _el$3);
 
-    insertNode(_el$, _el$5);
+    insertNode(_el$, _el$4);
 
     setProp(_el$2, "title", "Click me");
 
@@ -884,7 +884,7 @@ function App() {
       setCount(count() + 1);
     });
 
-    insert(_el$, count, _el$5);
+    insert(_el$, count, _el$4);
 
     return _el$;
   })();
