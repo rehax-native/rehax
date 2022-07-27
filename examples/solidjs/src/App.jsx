@@ -9,6 +9,7 @@ function App() {
         setCount(count() + 1)
       }}></button>
       {'                       '}Count: {count()}
+      <input />
     </div>
   );
 }

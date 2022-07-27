@@ -40,7 +40,8 @@ public:
   RHX_EXPORT void setTextColor(::rehax::ui::Color color);
   RHX_EXPORT void setFontSize(float size);
   RHX_EXPORT void setFontFamilies(std::vector<std::string> fontFamilies);
-  RHX_EXPORT void addNativeView(void * child);
+  RHX_EXPORT virtual void addNativeView(void * child) override;
+  RHX_EXPORT virtual void addNativeView(void * child, void * beforeChild) override;
 
 };
 

@@ -62,8 +62,8 @@ public:
   RHX_EXPORT void * getNativeView();
 
 
-  RHX_EXPORT void addNativeView(void * child);
-  RHX_EXPORT void addNativeView(void * child, void * beforeChild);
+  RHX_EXPORT virtual void addNativeView(void * child);
+  RHX_EXPORT virtual void addNativeView(void * child, void * beforeChild);
   RHX_EXPORT void removeNativeView(void * child);
   RHX_EXPORT void removeFromNativeParent();
 

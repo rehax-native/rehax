@@ -24,6 +24,8 @@ export const {
         return new View();
       case "button":
         return new Button();
+      case "input":
+        return new TextInput();
       default:
         return null;
     }
