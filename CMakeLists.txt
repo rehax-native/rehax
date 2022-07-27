@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.23)
 
-project(Rehax)
-set(CMAKE_CXX_STANDARD 20)
+# project(Rehax)
+# set(CMAKE_CXX_STANDARD 20)
 
 include(FetchContent)
 
+# Dependencies
 
 # FetchContent_Declare(fluxe
 #   GIT_REPOSITORY https://github.com/rehax-native/fluxe.git
@@ -33,24 +34,6 @@ include_directories(../fluxe/third_party/skia)
 link_directories(../fluxe/dist)
 link_directories(../fluxe/build/Debug)
 
-file(GLOB REHAX_FLUXE_SRC_FILES
-    native-abstraction/ui/fluxe/components/**/*.cc
-)
-
-file(GLOB REHAX_APPKIT_SRC_FILES
-    native-abstraction/ui/appkit/components/**/*.mm
-)
-
-file(GLOB REHAX_JSC_SRC_FILES
-    runtimes/jsc/runtime.mm
-    runtimes/jsc/bindings.mm
-)
-
-file(GLOB REHAX_QUICKJS_SRC_FILES
-    runtimes/quickjs/runtime.cc
-    runtimes/quickjs/bindings.mm
-)
-
 file(GLOB QUICK_JS_SRCS
     ${quickjs_SOURCE_DIR}/quickjs.c
     ${quickjs_SOURCE_DIR}/libregexp.c
@@ -65,41 +48,89 @@ add_library(
 )
 target_compile_definitions(quickjs-lib PUBLIC -DCONFIG_VERSION="1.0.0")
 
-add_library(
-    jsc-bindings STATIC
-    ${REHAX_JSC_SRC_FILES}
-    ${REHAX_APPKIT_SRC_FILES}
-)
-add_library(
-    quickjs-bindings STATIC
-    ${REHAX_QUICKJS_SRC_FILES}
-    ${REHAX_APPKIT_SRC_FILES}
-)
-target_link_libraries(
-    quickjs-bindings
-    quickjs-lib
-)
-target_compile_definitions(quickjs-bindings PUBLIC -DREHAX_WITH_FLUXE)
-target_compile_definitions(quickjs-bindings PUBLIC -DREHAX_WITH_APPKIT)
+# Source files
 
-add_library(
-    rehax-fluxe-mac STATIC
-    ${REHAX_FLUXE_SRC_FILES}
-)
-
-target_compile_definitions(jsc-bindings PUBLIC -DREHAX_WITH_FLUXE)
-target_compile_definitions(jsc-bindings PUBLIC -DREHAX_WITH_APPKIT)
-
-# add_library(
-#     rehax-appkit-mac STATIC
-# )
-
-
-add_subdirectory(examples/vanillajs-kitchen-sink-fluxe)
-add_subdirectory(examples/vanillajs-kitchen-sink-appkit)
-add_subdirectory(examples/solidjs)
-
+file(GLOB REHAX_FLUXE_SRC_FILES ${CMAKE_CURRENT_LIST_DIR}/native-abstraction/ui/fluxe/components/**/*.cc)
+file(GLOB REHAX_APPKIT_SRC_FILES ${CMAKE_CURRENT_LIST_DIR}/native-abstraction/ui/appkit/components/**/*.mm)
+file(GLOB REHAX_JSC_SRC_FILES ${CMAKE_CURRENT_LIST_DIR}/runtimes/jsc/runtime.mm ${CMAKE_CURRENT_LIST_DIR}/runtimes/jsc/bindings.mm)
+file(GLOB REHAX_QUICKJS_SRC_FILES ${CMAKE_CURRENT_LIST_DIR}/runtimes/quickjs/runtime.cc ${CMAKE_CURRENT_LIST_DIR}/runtimes/quickjs/bindings.mm)
 
 
 # # To create an xcode project for development:
-# # cmake -G Xcode -S . -B build
+# # cmake -G Xcode -S examples/solidjs -B build_examples
+
+
+## Function to add rehax to an executable 
+# rehax_add_to_executable(
+#     example-app
+#     RUNTIME jsc
+#     BACKEND appkit
+#     BUNDLE_COMMAND pnpm run build
+# )
+function (rehax_add_to_executable app_name)
+    cmake_parse_arguments(
+        PARSE_ARGV 1
+        REHAX
+        ""
+        "RUNTIME;BACKEND;BUNDLE_COMMAND"
+        ""
+    )
+
+
+    if ("${REHAX_RUNTIME}" STREQUAL "")
+        message(FATAL_ERROR "RUNTIME not set. Please set RUNTIME. Candidates: jsc, quickjs")
+    elseif (${REHAX_RUNTIME} STREQUAL jsc)
+        target_sources(${app_name} PUBLIC ${REHAX_JSC_SRC_FILES})
+        target_link_libraries(
+            ${app_name}
+            "-framework JavascriptCore"
+        )
+    elseif (${REHAX_RUNTIME} STREQUAL quickjs)
+        target_sources(${app_name} PUBLIC ${REHAX_QUICKJS_SRC_FILES})
+        target_link_libraries(
+            ${app_name}
+            quickjs-lib
+        )
+    else ()
+        message(FATAL_ERROR "Runtime not supported: ${REHAX_RUNTIME}. please set RUNTIME. Candidates: jsc, quickjs")
+    endif ()
+
+    if ("${REHAX_BACKEND}" STREQUAL "")
+        message(FATAL_ERROR "BACKEND not set. Please set BACKEND. Candidates: appkit, fluxe")
+    elseif (${REHAX_BACKEND} STREQUAL appkit)
+        target_sources(${app_name} PUBLIC ${REHAX_APPKIT_SRC_FILES})
+        target_link_libraries(
+            ${app_name}
+            "-framework AppKit"
+        )
+        target_compile_definitions(${app_name} PUBLIC -DREHAX_WITH_APPKIT)
+    elseif (${REHAX_BACKEND} STREQUAL fluxe)
+        target_sources(${app_name} PUBLIC ${REHAX_FLUXE_SRC_FILES})
+        target_link_libraries(
+            ${app_name}
+            fluxe-mac
+            "-framework Foundation"
+            "-framework QuartzCore"
+            "-framework AppKit"
+            icu
+            skia
+            skparagraph
+            skshaper
+            sktext
+            skunicode
+        )
+        target_compile_definitions(${app_name} PUBLIC -DREHAX_WITH_FLUXE)
+    else ()
+        message(FATAL_ERROR "Backend not supported: ${REHAX_BACKEND}. please set BACKEND. Candidates: appkit, fluxe")
+    endif ()
+
+    if (NOT "${REHAX_BUNDLE_COMMAND}" STREQUAL "")
+        separate_arguments(REHAX_BUNDLE_COMMAND NATIVE_COMMAND "${REHAX_BUNDLE_COMMAND}")
+        add_custom_command(
+            TARGET ${app_name} PRE_BUILD
+            COMMAND ${REHAX_BUNDLE_COMMAND}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        )
+    endif ()
+
+endfunction ()

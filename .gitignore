@@ -10,3 +10,4 @@ xcuserdata/
 *.xccheckout
 
 build
+build_examples

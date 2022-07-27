@@ -16,15 +16,15 @@ int main() {
   auto container = rehax::ui::fluxe::impl::View<rehax::ui::RefCountedPointer>::Create();
   auto view = static_cast<fluxe::View *>(container->getNativeView());
 
-  rehax::quickjs::Runtime vm;
-  vm.makeConsole();
-  vm.bindFluxeToQuickJs();
-  vm.setRootView(container);
+  auto vm = new rehax::quickjs::Runtime();
+  vm->makeConsole();
+  vm->bindFluxeToQuickJs();
+  vm->setRootView(container);
 
   NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
   NSString * scriptPath = [NSString pathWithComponents:@[resourcePath, @"index.native.js"]];
   NSString * script = [NSString stringWithContentsOfFile:scriptPath encoding:NSUTF8StringEncoding error:NULL];
-  vm.evaluate([script UTF8String]);
+  vm->evaluate([script UTF8String]);
 
   fluxe::EngineUtility::startWithView(view->getThisPointer());
 

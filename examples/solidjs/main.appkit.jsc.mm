@@ -38,18 +38,16 @@ using namespace rehax::ui::appkit::rawptr;
   view->setHeightFill();
 
 
-  rehax::jsc::Runtime vm;
-  vm.makeConsole();
-  vm.bindAppkitToJsc();
-  vm.setRootView(view);
+  auto vm = new rehax::jsc::Runtime();
+  vm->makeConsole();
+  vm->bindAppkitToJsc();
+  vm->setRootView(view);
 
   NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
   NSString * scriptPath = [NSString pathWithComponents:@[resourcePath, @"index.native.js"]];
   NSString * script = [NSString stringWithContentsOfFile:scriptPath encoding:NSUTF8StringEncoding error:NULL];
     
-  vm.evaluate([script UTF8String]);
-
-//  vm.evaluate("var btn = new Button(); btn.setTitle('Henlo'); rootView.addView(btn);");
+  vm->evaluate([script UTF8String]);
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification

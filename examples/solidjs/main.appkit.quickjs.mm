@@ -31,24 +31,22 @@ using namespace rehax::ui::appkit::rawptr;
 {
 	[self.window setContentView:self.view];
 
-  auto view = rehax::ui::appkit::impl::View<rehax::ui::RawPtr>::Create();
+  auto view = rehax::ui::appkit::impl::View<rehax::ui::RefCountedPointer>::Create();
   view->setNativeViewRaw((__bridge void *) self.view);
   view->setWidthFill();
   view->setHeightFill();
 
 
-  rehax::quickjs::Runtime vm;
-  vm.makeConsole();
-  vm.bindAppkitToQuickJs();
-  vm.setRootView(view);
+  auto vm = new rehax::quickjs::Runtime();
+  vm->makeConsole();
+  vm->bindAppkitToQuickJs();
+  vm->setRootView(view);
 
   NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
   NSString * scriptPath = [NSString pathWithComponents:@[resourcePath, @"index.native.js"]];
   NSString * script = [NSString stringWithContentsOfFile:scriptPath encoding:NSUTF8StringEncoding error:NULL];
     
-  vm.evaluate([script UTF8String]);
-
-//  vm.evaluate("var btn = new Button(); btn.setTitle('Henlo'); rootView.addView(btn);");
+  vm->evaluate([script UTF8String]);
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
