@@ -11,7 +11,7 @@ There are three parts to make this work
 #### Native UI abstraction
 
 There is a thin layer of abstraction written in C++ to support different native UI libraries.
-This way you can write C++ code that looks like this
+This way you can write C++ code that looks like this.
 
 ```c++
 auto view = View::Create();
@@ -94,7 +94,7 @@ Clone the repo, make sure you have cmake installed and run:
 cmake -S examples/solidjs -B build_examples
 ```
 
-Use the -G flag to generate a project of you choice (e.g. `-G Xcode`)
+Use the -G flag to generate a project of your choice (e.g. `-G Xcode`)
 
 This will create a project in the `build_examples` directory which you can use for development.
 
