@@ -1,6 +1,6 @@
 To use rehax in a CMake project, add this to your `CMakeLists.txt`
 
-```
+```cmake
 cmake_minimum_required(VERSION 3.23)
 
 project(ExampleApp)
