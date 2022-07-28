@@ -71,6 +71,7 @@ function (rehax_add_to_executable app_name)
     link_directories(../fluxe/build/Debug)
 
 
+    file(GLOB REHAX_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/native-abstraction/ui/style.cc)
     file(GLOB REHAX_FLUXE_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/native-abstraction/ui/fluxe/components/**/*.cc)
     file(GLOB REHAX_APPKIT_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/native-abstraction/ui/appkit/components/**/*.mm)
     file(GLOB REHAX_JSC_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/jsc/runtime.mm ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/jsc/bindings.mm)
@@ -100,14 +101,15 @@ function (rehax_add_to_executable app_name)
     if ("${REHAX_BACKEND}" STREQUAL "")
         message(FATAL_ERROR "BACKEND not set. Please set BACKEND. Candidates: appkit, fluxe")
     elseif (${REHAX_BACKEND} STREQUAL appkit)
-        target_sources(${app_name} PUBLIC ${REHAX_APPKIT_SRC_FILES})
+        target_sources(${app_name} PUBLIC ${REHAX_APPKIT_SRC_FILES} ${REHAX_SRC_FILES})
         target_link_libraries(
             ${app_name}
             "-framework AppKit"
+            "-framework QuartzCore" # For vector graphics
         )
         target_compile_definitions(${app_name} PUBLIC -DREHAX_WITH_APPKIT)
     elseif (${REHAX_BACKEND} STREQUAL fluxe)
-        target_sources(${app_name} PUBLIC ${REHAX_FLUXE_SRC_FILES})
+        target_sources(${app_name} PUBLIC ${REHAX_FLUXE_SRC_FILES} ${REHAX_SRC_FILES})
         target_link_libraries(
             ${app_name}
             fluxe-mac

@@ -1,5 +1,6 @@
 import nodeResolve from '@rollup/plugin-node-resolve';
 import babel from '@rollup/plugin-babel';
+import commonjs from "@rollup/plugin-commonjs";
 
 const extensions = ['ts', 'tsx', 'js', 'jsx'].map((x) => '.' + x);
 
@@ -13,6 +14,7 @@ export default {
     nodeResolve({
       extensions
     }),
+    commonjs(),
     // babel({ babelHelpers: 'bundled' })
     babel({
       extensions,

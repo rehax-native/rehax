@@ -754,6 +754,227 @@ function createRenderer(options) {
   return renderer;
 }
 
+var parseSvgPath = parse$1;
+/**
+ * expected argument lengths
+ * @type {Object}
+ */
+
+var length = {
+  a: 7,
+  c: 6,
+  h: 1,
+  l: 2,
+  m: 2,
+  q: 4,
+  s: 4,
+  t: 2,
+  v: 1,
+  z: 0
+};
+/**
+ * segment pattern
+ * @type {RegExp}
+ */
+
+var segment = /([astvzqmhlc])([^astvzqmhlc]*)/ig;
+/**
+ * parse an svg path data string. Generates an Array
+ * of commands where each command is an Array of the
+ * form `[command, arg1, arg2, ...]`
+ *
+ * @param {String} path
+ * @return {Array}
+ */
+
+function parse$1(path) {
+  var data = [];
+  path.replace(segment, function (_, command, args) {
+    var type = command.toLowerCase();
+    args = parseValues(args); // overloaded moveTo
+
+    if (type == 'm' && args.length > 2) {
+      data.push([command].concat(args.splice(0, 2)));
+      type = 'l';
+      command = command == 'm' ? 'l' : 'L';
+    }
+
+    while (true) {
+      if (args.length == length[type]) {
+        args.unshift(command);
+        return data.push(args);
+      }
+
+      if (args.length < length[type]) throw new Error('malformed path data');
+      data.push([command].concat(args.splice(0, length[type])));
+    }
+  });
+  return data;
+}
+
+var number = /-?[0-9]*\.?[0-9]+(?:e[-+]?\d+)?/ig;
+
+function parseValues(args) {
+  var numbers = args.match(number);
+  return numbers ? numbers.map(Number) : [];
+}
+
+var component = /-?\d+(\.\d+)?%?/g;
+
+function extractComponents$2(color) {
+  return color.match(component);
+}
+
+var extractComponents_1 = extractComponents$2;
+
+function clamp$2(val, min, max) {
+  return Math.min(Math.max(val, min), max);
+}
+
+var clamp_1 = clamp$2;
+
+var extractComponents$1 = extractComponents_1;
+var clamp$1 = clamp_1;
+
+function parseHslComponent(component, i) {
+  component = parseFloat(component);
+
+  switch (i) {
+    case 0:
+      return clamp$1(component, 0, 360);
+
+    case 1:
+    case 2:
+      return clamp$1(component, 0, 100);
+
+    case 3:
+      return clamp$1(component, 0, 1);
+  }
+}
+
+function hsl$1(color) {
+  return extractComponents$1(color).map(parseHslComponent);
+}
+
+var hsl_1 = hsl$1;
+
+function expand(hex) {
+  var result = "#";
+
+  for (var i = 1; i < hex.length; i++) {
+    var val = hex.charAt(i);
+    result += val + val;
+  }
+
+  return result;
+}
+
+function hex$1(hex) {
+  // #RGB or #RGBA
+  if (hex.length === 4 || hex.length === 5) {
+    hex = expand(hex);
+  }
+
+  var rgb = [parseInt(hex.substring(1, 3), 16), parseInt(hex.substring(3, 5), 16), parseInt(hex.substring(5, 7), 16)]; // #RRGGBBAA
+
+  if (hex.length === 9) {
+    var alpha = parseFloat((parseInt(hex.substring(7, 9), 16) / 255).toFixed(2));
+    rgb.push(alpha);
+  }
+
+  return rgb;
+}
+
+var hex_1 = hex$1;
+
+var extractComponents = extractComponents_1;
+var clamp = clamp_1;
+
+function parseRgbComponent(component, i) {
+  if (i < 3) {
+    if (component.indexOf('%') != -1) {
+      return Math.round(255 * clamp(parseInt(component, 10), 0, 100) / 100);
+    } else {
+      return clamp(parseInt(component, 10), 0, 255);
+    }
+  } else {
+    return clamp(parseFloat(component), 0, 1);
+  }
+}
+
+function rgb$1(color) {
+  return extractComponents(color).map(parseRgbComponent);
+}
+
+var rgb_1 = rgb$1;
+
+function hsl2rgb$1(hsl) {
+  var h = hsl[0] / 360,
+      s = hsl[1] / 100,
+      l = hsl[2] / 100,
+      t1,
+      t2,
+      t3,
+      rgb,
+      val;
+
+  if (s == 0) {
+    val = l * 255;
+    return [val, val, val];
+  }
+
+  if (l < 0.5) t2 = l * (1 + s);else t2 = l + s - l * s;
+  t1 = 2 * l - t2;
+  rgb = [0, 0, 0];
+
+  for (var i = 0; i < 3; i++) {
+    t3 = h + 1 / 3 * -(i - 1);
+    t3 < 0 && t3++;
+    t3 > 1 && t3--;
+    if (6 * t3 < 1) val = t1 + (t2 - t1) * 6 * t3;else if (2 * t3 < 1) val = t2;else if (3 * t3 < 2) val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;else val = t1;
+    rgb[i] = val * 255;
+  }
+
+  return rgb;
+}
+
+var hsl2rgb_1 = hsl2rgb$1;
+
+var hsl = hsl_1;
+var hex = hex_1;
+var rgb = rgb_1;
+var hsl2rgb = hsl2rgb_1;
+
+function hsl2rgbParse(color) {
+  var h = hsl(color);
+  var r = hsl2rgb(h); // handle alpha since hsl2rgb doesn't know (or care!) about it
+
+  if (h.length === 4) {
+    r.push(h[3]);
+  }
+
+  return r;
+}
+
+var space2parser = {
+  "#": hex,
+  "hsl": hsl2rgbParse,
+  "rgb": rgb
+};
+
+function parse(color) {
+  for (var scheme in space2parser) {
+    if (color.indexOf(scheme) === 0) {
+      return space2parser[scheme](color);
+    }
+  }
+}
+
+parse.rgb = rgb;
+parse.hsl = hsl;
+parse.hex = hex;
+var parse_1 = parse;
+
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -783,6 +1004,12 @@ const {
       case "input":
         return new TextInput();
 
+      case "svg":
+        return new VectorContainer();
+
+      case "path":
+        return new VectorPath();
+
       default:
         return null;
     }
@@ -801,18 +1028,59 @@ const {
   },
 
   setProperty(node, name, value) {
-    // console.log(`Set prope: ${name}`);
-    if (name === 'style') {
+    console.log(`${node}`); // console.log(`Set prope: ${name}`);
+
+    if (name === "style") {
       // We try to set all the properties of the style object
       // Everything we don't know we just ignore
-      for (let key in Object.keys(value)) {
-        const setterName = `set${capitalize(key)}`;
+      for (let key of Object.keys(value)) {
+        if (key === "width") {
+          node.setWidthFixed(Number(value[key])); // todo parse %, px, etc
+        } else if (key === "height") {
+          node.setHeightFixed(Number(value[key])); // todo parse %, px, etc
+        } else {
+          const setterName = `set${capitalize(key)}`;
 
-        if (setterName in node) {
-          node[setterName](value[key]);
+          if (setterName in node) {
+            node[setterName](value[key]);
+          }
         }
       }
 
+      return;
+    } else if (name === 'd') {
+      const parts = parseSvgPath(value);
+      const mapCommand = {
+        M: 'pathMoveTo',
+        m: 'pathMoveBy',
+        L: 'pathLineTo',
+        // l: 'pathLineBy',
+        // C: 'bezierCurveTo',
+        Z: 'closePath',
+        z: 'closePath'
+      };
+      node.beginPath();
+
+      for (let part of parts) {
+        if (mapCommand[part[0]] in node) {
+          node[mapCommand[part[0]]](...part.slice(1));
+        } else {
+          console.error(`Unknown svg path command ${part[0]}`);
+        }
+      }
+
+      node.endPath();
+      return;
+    }
+
+    if (name == 'fill') {
+      node.setFillColor(parse_1(value));
+      return;
+    } else if (name == 'stroke') {
+      node.setStrokeColor(parse_1(value));
+      return;
+    } else if (name == 'strokeWidth') {
+      node.setLineWidth(Number(value));
       return;
     }
 
@@ -821,7 +1089,7 @@ const {
     if (setterName in node) {
       node[setterName](value);
     } else {
-      console.error("Unknown property:", name);
+      console.error(`Unknown property: ${name}`);
     } // if (name === "style") Object.assign(node.style, value);
     // else if (name.startsWith("on")) node[name.toLowerCase()] = value;
     // // else if (PROPERTIES.has(name)) node[name] = value;
@@ -836,7 +1104,7 @@ const {
 
   isTextNode(node) {
     // console.log(`Is text ${node.__className}`);
-    return node.__className === 'Text';
+    return node.__className === "Text";
   },
 
   removeNode(parent, node) {
@@ -870,13 +1138,17 @@ function App() {
     const _el$ = createElement("div"),
           _el$2 = createElement("button"),
           _el$3 = createTextNode(`Count: `),
-          _el$4 = createElement("input");
+          _el$4 = createElement("input"),
+          _el$5 = createElement("svg"),
+          _el$6 = createElement("path");
 
     insertNode(_el$, _el$2);
 
     insertNode(_el$, _el$3);
 
     insertNode(_el$, _el$4);
+
+    insertNode(_el$, _el$5);
 
     setProp(_el$2, "title", "Click me");
 
@@ -885,6 +1157,21 @@ function App() {
     });
 
     insert(_el$, count, _el$4);
+
+    insertNode(_el$5, _el$6);
+
+    setProp(_el$5, "style", {
+      width: 100,
+      height: 100
+    });
+
+    setProp(_el$6, "d", "M 0 0 L 50 50 L 70 50 L 70 80 L 10 20");
+
+    setProp(_el$6, "strokeWidth", 3);
+
+    setProp(_el$6, "fill", "rgba(0, 255, 0, 1)");
+
+    setProp(_el$6, "stroke", "rgba(255, 0, 0, 1)");
 
     return _el$;
   })();

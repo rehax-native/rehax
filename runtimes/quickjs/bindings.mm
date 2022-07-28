@@ -92,26 +92,207 @@ void Bindings::defineViewClass(JSContext * ctx, std::string name, JSValue parent
   JS_SetPropertyStr(ctx, globalContext, name.c_str(), classObject);
 }
 
+template <typename T>
+T jsToCpp(JSContext * ctx, JSValue value) {
+  return T();
+}
+
+template <>
+std::string jsToCpp(JSContext * ctx, JSValue value) {
+  if (JS_IsString(value)) {
+    return JS_ToCString(ctx, value);
+  }
+  return "";
+}
+
+template <>
+float jsToCpp(JSContext * ctx, JSValue value) {
+  if (JS_IsNumber(value)) {
+    double val;
+    JS_ToFloat64(ctx, &val, value);
+    return val;
+  }
+  return 0;
+}
+
+template <typename View, void (View::*Method)(void)>
+void bindMethod(std::string name, JSContext * ctx, Bindings *bindings, JSValue prototype) {
+  auto funData = JS_NewObjectClass(ctx, kPointerClassId);
+  JS_SetOpaque(funData, bindings);
+  std::array<JSValue, 1> funDataArray {
+    funData
+  };
+  auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+    auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    View * view = privateData->view;
+    (view->*Method)();
+    return JS_UNDEFINED;
+  };
+
+  auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
+  JS_SetPropertyStr(ctx, prototype, name.c_str(), functionObject);
+  for (auto v : funDataArray) {
+    JS_FreeValue(ctx, v);
+  }
+}
+
+template <typename View, void (View::*Method)(std::string)>
+void bindMethod(std::string name, JSContext * ctx, Bindings *bindings, JSValue prototype) {
+  auto funData = JS_NewObjectClass(ctx, kPointerClassId);
+  JS_SetOpaque(funData, bindings);
+  std::array<JSValue, 1> funDataArray {
+    funData
+  };
+  auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+    auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    View * view = privateData->view;
+    (view->*Method)(jsToCpp<std::string>(ctx, argv[0]));
+    return JS_UNDEFINED;
+  };
+
+  auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
+  JS_SetPropertyStr(ctx, prototype, name.c_str(), functionObject);
+  for (auto v : funDataArray) {
+    JS_FreeValue(ctx, v);
+  }
+}
+
+template <typename View, std::string (View::*Method)(void)>
+void bindMethod(std::string name, JSContext * ctx, Bindings *bindings, JSValue prototype) {
+  auto funData = JS_NewObjectClass(ctx, kPointerClassId);
+  JS_SetOpaque(funData, bindings);
+  std::array<JSValue, 1> funDataArray {
+    funData
+  };
+  auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+    auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    View * view = privateData->view;
+    return JS_NewAtomString(ctx, (view->*Method)().c_str());
+  };
+
+  auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
+  JS_SetPropertyStr(ctx, prototype, name.c_str(), functionObject);
+  for (auto v : funDataArray) {
+    JS_FreeValue(ctx, v);
+  }
+}
+
+template <typename View, void (View::*Method)(float)>
+void bindMethod(std::string name, JSContext * ctx, Bindings *bindings, JSValue prototype) {
+  auto funData = JS_NewObjectClass(ctx, kPointerClassId);
+  JS_SetOpaque(funData, bindings);
+  std::array<JSValue, 1> funDataArray {
+    funData
+  };
+  auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+    auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    View * view = privateData->view;
+    (view->*Method)(jsToCpp<float>(ctx, argv[0]));
+    return JS_UNDEFINED;
+  };
+
+  auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
+  JS_SetPropertyStr(ctx, prototype, name.c_str(), functionObject);
+  for (auto v : funDataArray) {
+    JS_FreeValue(ctx, v);
+  }
+}
+
+template <typename View, void (View::*Method)(float, float)>
+void bindMethod(std::string name, JSContext * ctx, Bindings *bindings, JSValue prototype) {
+  auto funData = JS_NewObjectClass(ctx, kPointerClassId);
+  JS_SetOpaque(funData, bindings);
+  std::array<JSValue, 1> funDataArray {
+    funData
+  };
+  auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+    auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    View * view = privateData->view;
+    double val1;
+    JS_ToFloat64(ctx, &val1, argv[0]);
+    double val2;
+    JS_ToFloat64(ctx, &val2, argv[1]);
+    (view->*Method)(val1, val2);
+    return JS_UNDEFINED;
+  };
+
+  auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
+  JS_SetPropertyStr(ctx, prototype, name.c_str(), functionObject);
+  for (auto v : funDataArray) {
+    JS_FreeValue(ctx, v);
+  }
+}
+
+template <typename View, void (View::*Method)(std::function<void(void)>)>
+void bindMethod(std::string name, JSContext * ctx, Bindings *bindings, JSValue prototype) {
+  auto funData = JS_NewObjectClass(ctx, kPointerClassId);
+  JS_SetOpaque(funData, bindings);
+  std::array<JSValue, 1> funDataArray {
+    funData
+  };
+  auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+    auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    View * view = privateData->view;
+    JSValue callback = JS_DupValue(ctx, argv[0]);
+    privateData->retainedValues.push_back(callback);
+    (view->*Method)([ctx, callback, this_val] () {
+      JS_Call(ctx, callback, this_val, 0, {});
+    });
+    return JS_UNDEFINED;
+  };
+
+  auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
+  JS_SetPropertyStr(ctx, prototype, name.c_str(), functionObject);
+  for (auto v : funDataArray) {
+    JS_FreeValue(ctx, v);
+  }
+}
+
+template <typename View, void (View::*Method)(rehax::ui::Color)>
+void bindMethod(std::string name, JSContext * ctx, Bindings *bindings, JSValue prototype) {
+  auto funData = JS_NewObjectClass(ctx, kPointerClassId);
+  JS_SetOpaque(funData, bindings);
+  std::array<JSValue, 1> funDataArray {
+    funData
+  };
+  auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+    auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    View * view = privateData->view;
+    JSValue jr = JS_GetPropertyUint32(ctx, argv[0], 0);
+    JSValue jg = JS_GetPropertyUint32(ctx, argv[0], 1);
+    JSValue jb = JS_GetPropertyUint32(ctx, argv[0], 2);
+    JSValue ja = JS_GetPropertyUint32(ctx, argv[0], 3);
+    double r, g, b, a;
+    JS_ToFloat64(ctx, &r, jr);
+    JS_ToFloat64(ctx, &g, jg);
+    JS_ToFloat64(ctx, &b, jb);
+    JS_ToFloat64(ctx, &a, ja);
+      
+    (view->*Method)(rehax::ui::Color::RGBA(r/255.0, g/255.0, b/255.0, a));
+    return JS_UNDEFINED;
+  };
+
+  auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
+  JS_SetPropertyStr(ctx, prototype, name.c_str(), functionObject);
+  for (auto v : funDataArray) {
+    JS_FreeValue(ctx, v);
+  }
+}
+
 template <typename View>
 void bindViewClassMethods(JSContext * ctx, Bindings *bindings, JSValue prototype) {
-  {
-    auto funData = JS_NewObjectClass(ctx, kPointerClassId);
-    JS_SetOpaque(funData, bindings);
-    std::array<JSValue, 1> funDataArray {
-      funData
-    };
-    auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
-      auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-      auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
-      View * view = privateData->view;
-      return JS_NewAtomString(ctx, view->description().c_str());
-    };
-    auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
-    JS_SetPropertyStr(ctx, prototype, "toString", functionObject);
-    for (auto v : funDataArray) {
-      JS_FreeValue(ctx, v);
-    }
-  }
+  bindMethod<View, &View::description>("toString", ctx, bindings, prototype);
+  bindMethod<View, &View::removeFromParent>("removeFromParent", ctx, bindings, prototype);
+  bindMethod<View, &View::setWidthFixed>("setWidthFixed", ctx, bindings, prototype);
+  bindMethod<View, &View::setHeightFixed>("setHeightFixed", ctx, bindings, prototype);
+    
   {
     auto funData = JS_NewObjectClass(ctx, kPointerClassId);
     JS_SetOpaque(funData, bindings);
@@ -138,26 +319,6 @@ void bindViewClassMethods(JSContext * ctx, Bindings *bindings, JSValue prototype
 
     auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
     JS_SetPropertyStr(ctx, prototype, "addView", functionObject);
-    for (auto v : funDataArray) {
-      JS_FreeValue(ctx, v);
-    }
-  }
-  {
-    auto funData = JS_NewObjectClass(ctx, kPointerClassId);
-    JS_SetOpaque(funData, bindings);
-    std::array<JSValue, 1> funDataArray {
-      funData
-    };
-    auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
-      auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-      auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
-      View * view = privateData->view;
-      view->removeFromParent();
-      return JS_UNDEFINED;
-    };
-
-    auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
-    JS_SetPropertyStr(ctx, prototype, "removeFromParent", functionObject);
     for (auto v : funDataArray) {
       JS_FreeValue(ctx, v);
     }
@@ -269,162 +430,86 @@ void bindViewClassMethods(JSContext * ctx, Bindings *bindings, JSValue prototype
 
 template <typename View>
 void bindButtonClassMethods(JSContext * ctx, Bindings *bindings, JSValue prototype) {
-  {
-    auto funData = JS_NewObjectClass(ctx, kPointerClassId);
-    JS_SetOpaque(funData, bindings);
-    std::array<JSValue, 1> funDataArray {
-      funData
-    };
-    auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
-      auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-      auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
-      View * view = privateData->view;
-      view->setTitle(std::string(JS_ToCString(ctx, argv[0])));
-      return JS_UNDEFINED;
-    };
-
-    auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
-    JS_SetPropertyStr(ctx, prototype, "setTitle", functionObject);
-    for (auto v : funDataArray) {
-      JS_FreeValue(ctx, v);
-    }
-  }
-  {
-    auto funData = JS_NewObjectClass(ctx, kPointerClassId);
-    JS_SetOpaque(funData, bindings);
-    std::array<JSValue, 1> funDataArray {
-      funData
-    };
-    auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
-      auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-      auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
-      View * view = privateData->view;
-      JSValue callback = JS_DupValue(ctx, argv[0]);
-      privateData->retainedValues.push_back(callback);
-      view->setOnPress([ctx, callback, this_val] () {
-        JS_Call(ctx, callback, this_val, 0, {});
-      });
-      return JS_UNDEFINED;
-    };
-
-    auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
-    JS_SetPropertyStr(ctx, prototype, "setOnPress", functionObject);
-    for (auto v : funDataArray) {
-      JS_FreeValue(ctx, v);
-    }
-  }
+  bindMethod<View, &View::setTitle>("setTitle", ctx, bindings, prototype);
+  bindMethod<View, &View::getTitle>("getTitle", ctx, bindings, prototype);
+  bindMethod<View, &View::setOnPress>("setOnPress", ctx, bindings, prototype);
 }
 
 template <typename View>
 void bindTextClassMethods(JSContext * ctx, Bindings *bindings, JSValue prototype) {
-  {
-    auto funData = JS_NewObjectClass(ctx, kPointerClassId);
-    JS_SetOpaque(funData, bindings);
-    std::array<JSValue, 1> funDataArray {
-      funData
-    };
-    auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
-      auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-      auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
-      View * view = privateData->view;
-      view->setText(std::string(JS_ToCString(ctx, argv[0])));
-      return JS_UNDEFINED;
-    };
-
-    auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
-    JS_SetPropertyStr(ctx, prototype, "setText", functionObject);
-    for (auto v : funDataArray) {
-      JS_FreeValue(ctx, v);
-    }
-  }
-  {
-    auto funData = JS_NewObjectClass(ctx, kPointerClassId);
-    JS_SetOpaque(funData, bindings);
-    std::array<JSValue, 1> funDataArray {
-      funData
-    };
-    auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
-      auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-      auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
-      View * view = privateData->view;
-      return JS_NewAtomString(ctx, view->getText().c_str());
-    };
-
-    auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
-    JS_SetPropertyStr(ctx, prototype, "getText", functionObject);
-    for (auto v : funDataArray) {
-      JS_FreeValue(ctx, v);
-    }
-  }
+  bindMethod<View, &View::setText>("setText", ctx, bindings, prototype);
+  bindMethod<View, &View::getText>("getText", ctx, bindings, prototype);
+  bindMethod<View, &View::setTextColor>("setTextColor", ctx, bindings, prototype);
+  bindMethod<View, &View::setFontSize>("setFontSize", ctx, bindings, prototype);
 }
 
 
 template <typename View>
 void bindTextInputClassMethods(JSContext * ctx, Bindings *bindings, JSValue prototype) {
-  {
-    auto funData = JS_NewObjectClass(ctx, kPointerClassId);
-    JS_SetOpaque(funData, bindings);
-    std::array<JSValue, 1> funDataArray {
-      funData
-    };
-    auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
-      auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-      auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
-      View * view = privateData->view;
-      view->setValue(std::string(JS_ToCString(ctx, argv[0])));
-      return JS_UNDEFINED;
-    };
+  bindMethod<View, &View::setValue>("setValue", ctx, bindings, prototype);
+  bindMethod<View, &View::getValue>("getValue", ctx, bindings, prototype);
+}
 
-    auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
-    JS_SetPropertyStr(ctx, prototype, "setValue", functionObject);
-    for (auto v : funDataArray) {
-      JS_FreeValue(ctx, v);
-    }
-  }
-  {
-    auto funData = JS_NewObjectClass(ctx, kPointerClassId);
-    JS_SetOpaque(funData, bindings);
-    std::array<JSValue, 1> funDataArray {
-      funData
-    };
-    auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
-      auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-      auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
-      View * view = privateData->view;
-      return JS_NewAtomString(ctx, view->getValue().c_str());
-    };
+template <typename View>
+void bindVectorElementClassMethods(JSContext * ctx, Bindings *bindings, JSValue prototype) {
+  // RHX_EXPORT void setLineCap(int capsStyle);
+  // RHX_EXPORT void setLineJoin(int joinStyle);
+  // RHX_EXPORT void setFillGradient(Gradient gradient);
+  // RHX_EXPORT void setStrokeGradient(Gradient gradient);
+  // RHX_EXPORT void setFilters(Filters filters);
 
-    auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
-    JS_SetPropertyStr(ctx, prototype, "getValue", functionObject);
-    for (auto v : funDataArray) {
-      JS_FreeValue(ctx, v);
-    }
-  }
+  bindMethod<View, &View::setLineWidth>("setLineWidth", ctx, bindings, prototype);
+  bindMethod<View, &View::setFillColor>("setFillColor", ctx, bindings, prototype);
+  bindMethod<View, &View::setStrokeColor>("setStrokeColor", ctx, bindings, prototype);
+}
+
+template <typename View>
+void bindVectorPathClassMethods(JSContext * ctx, Bindings *bindings, JSValue prototype) {
+
+  // RHX_EXPORT void pathArc(float rx, float ry, float xAxisRotation, int largeArcFlag, int sweepFlag, float x, float y);
+  // RHX_EXPORT void pathCubicBezier(float x1, float y1, float x2, float y2, float x, float y);
+  // RHX_EXPORT void pathQuadraticBezier(float x1, float y1, float x, float y);
+    
+  bindMethod<View, &View::beginPath>("beginPath", ctx, bindings, prototype);
+  bindMethod<View, &View::pathHorizontalTo>("pathHorizontalTo", ctx, bindings, prototype);
+  bindMethod<View, &View::pathVerticalTo>("pathVerticalTo", ctx, bindings, prototype);
+  bindMethod<View, &View::pathMoveTo>("pathMoveTo", ctx, bindings, prototype);
+  bindMethod<View, &View::pathMoveBy>("pathMoveBy", ctx, bindings, prototype);
+  bindMethod<View, &View::pathLineTo>("pathLineTo", ctx, bindings, prototype);
+  bindMethod<View, &View::pathClose>("pathClose", ctx, bindings, prototype);
+  bindMethod<View, &View::endPath>("endPath", ctx, bindings, prototype);
 }
 
 
 #ifdef REHAX_WITH_APPKIT
 void Bindings::bindAppkitToQuickJs() {
   defineViewClass<rehax::ui::appkit::impl::View<rehax::ui::RefCountedPointer>>(ctx, "View", JS_NULL);
-  bindViewClassMethods<rehax::ui::appkit::impl::View<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["View"].prototype);
   defineViewClass<rehax::ui::appkit::impl::Button<rehax::ui::RefCountedPointer>>(ctx, "Button", classRegistry["View"].prototype);
-  bindButtonClassMethods<rehax::ui::appkit::impl::Button<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["Button"].prototype);
   defineViewClass<rehax::ui::appkit::impl::Text<rehax::ui::RefCountedPointer>>(ctx, "Text", classRegistry["View"].prototype);
-  bindTextClassMethods<rehax::ui::appkit::impl::Text<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["Text"].prototype);
   defineViewClass<rehax::ui::appkit::impl::TextInput<rehax::ui::RefCountedPointer>>(ctx, "TextInput", classRegistry["View"].prototype);
+  defineViewClass<rehax::ui::appkit::impl::VectorContainer<rehax::ui::RefCountedPointer>>(ctx, "VectorContainer", classRegistry["View"].prototype);
+  defineViewClass<rehax::ui::appkit::impl::VectorElement<rehax::ui::RefCountedPointer>>(ctx, "VectorElement", classRegistry["View"].prototype);
+  defineViewClass<rehax::ui::appkit::impl::VectorPath<rehax::ui::RefCountedPointer>>(ctx, "VectorPath", classRegistry["VectorElement"].prototype);
+    
+  bindViewClassMethods<rehax::ui::appkit::impl::View<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["View"].prototype);
+  bindButtonClassMethods<rehax::ui::appkit::impl::Button<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["Button"].prototype);
+  bindTextClassMethods<rehax::ui::appkit::impl::Text<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["Text"].prototype);
   bindTextInputClassMethods<rehax::ui::appkit::impl::TextInput<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["TextInput"].prototype);
+  bindVectorElementClassMethods<rehax::ui::appkit::impl::VectorElement<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["VectorElement"].prototype);
+  bindVectorPathClassMethods<rehax::ui::appkit::impl::VectorPath<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["VectorPath"].prototype);
 }
 #endif
 
 #ifdef REHAX_WITH_FLUXE
 void Bindings::bindFluxeToQuickJs() {
   defineViewClass<rehax::ui::fluxe::impl::View<rehax::ui::RefCountedPointer>>(ctx, "View", JS_NULL);
-  bindViewClassMethods<rehax::ui::fluxe::impl::View<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["View"].prototype);
   defineViewClass<rehax::ui::fluxe::impl::Button<rehax::ui::RefCountedPointer>>(ctx, "Button", classRegistry["View"].prototype);
-  bindButtonClassMethods<rehax::ui::fluxe::impl::Button<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["Button"].prototype);
   defineViewClass<rehax::ui::fluxe::impl::Text<rehax::ui::RefCountedPointer>>(ctx, "Text", classRegistry["View"].prototype);
-  bindTextClassMethods<rehax::ui::fluxe::impl::Text<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["Text"].prototype);
   defineViewClass<rehax::ui::fluxe::impl::TextInput<rehax::ui::RefCountedPointer>>(ctx, "TextInput", classRegistry["View"].prototype);
+    
+  bindViewClassMethods<rehax::ui::fluxe::impl::View<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["View"].prototype);
+  bindButtonClassMethods<rehax::ui::fluxe::impl::Button<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["Button"].prototype);
+  bindTextClassMethods<rehax::ui::fluxe::impl::Text<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["Text"].prototype);
   bindTextInputClassMethods<rehax::ui::fluxe::impl::TextInput<rehax::ui::RefCountedPointer>>(ctx, this, classRegistry["TextInput"].prototype);
 }
 #endif
@@ -438,6 +523,9 @@ void Bindings::bindFluxeToQuickJs() {
 #include "../../native-abstraction/ui/appkit/components/button/Button.mm"
 #include "../../native-abstraction/ui/appkit/components/text/Text.mm"
 #include "../../native-abstraction/ui/appkit/components/textInput/TextInput.mm"
+#include "../../native-abstraction/ui/appkit/components/vector/VectorContainer.mm"
+#include "../../native-abstraction/ui/appkit/components/vector/VectorElement.mm"
+#include "../../native-abstraction/ui/appkit/components/vector/VectorPath.mm"
 #endif
 
 #ifdef REHAX_WITH_FLUXE
