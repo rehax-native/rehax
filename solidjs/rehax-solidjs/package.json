@@ -1,10 +1,11 @@
 {
   "name": "rehax-solidjs",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "rehax-solid-js-renderer.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generateDocs": "node generateDocs.js"
   },
   "repository": {
     "type": "git",
@@ -14,6 +15,7 @@
   "author": "Denis Stadniczuk",
   "license": "ISC",
   "devDependencies": {
+    "extract-comments": "^1.1.0",
     "solid-js": "^1.4.8"
   },
   "peerDependencies": {

@@ -1,0 +1,64 @@
+{
+  "view": {
+    "jsName": "<any>",
+    "nativeName": "View",
+    "methods": [
+      {
+        "jsName": "width",
+        "nativeName": "setWidth",
+        "description": "`px` will be converted to setWidthFixed\n\n`%` will be converted to setWidthPercentage"
+      },
+      {
+        "jsName": "height",
+        "nativeName": "setHeight",
+        "description": "`px` will be converted to setHeightFixed\n\n`%` will be converted to setHeightPercentage"
+      }
+    ]
+  },
+  "div": {
+    "jsName": "div",
+    "nativeName": "View",
+    "methods": []
+  },
+  "button": {
+    "jsName": "button",
+    "nativeName": "Button",
+    "methods": []
+  },
+  "input": {
+    "jsName": "input",
+    "nativeName": "TextInput",
+    "methods": []
+  },
+  "svg": {
+    "jsName": "svg",
+    "nativeName": "VectorContainer",
+    "methods": [
+      {
+        "jsName": "fill",
+        "nativeName": "setFill",
+        "description": ""
+      },
+      {
+        "jsName": "stroke",
+        "nativeName": "setStroke",
+        "description": ""
+      },
+      {
+        "jsName": "strokeWidth",
+        "nativeName": "setLineWidth",
+        "description": ""
+      }
+    ]
+  },
+  "path": {
+    "jsName": "path",
+    "nativeName": "VectorPath",
+    "methods": [
+      {
+        "jsName": "d",
+        "description": "This takes the same format as the path attribute of a svg element\n\nIt calls the `beginPath`, then the converted commands, then `endPath` of the VectorPath\n\nM x y -> pathMoveTo(x, y)\n\nm x y -> pathMoveBy(x, y)\n\nL x y -> pathLineTo(x, y)\n\nZ -> closePath\n\nz -> closePath"
+      }
+    ]
+  }
+}

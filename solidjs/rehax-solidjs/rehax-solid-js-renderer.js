@@ -2,7 +2,6 @@ import { createRenderer } from "solid-js/universal";
 import parseSvgPath from "parse-svg-path";
 import parseColor from "pure-color/parse";
 
-
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -24,14 +23,19 @@ export const {
     // console.log(`Create element: ${string} ${View}`);
     switch (string) {
       case "div":
+        //> view: div -> View
         return new View();
       case "button":
+        //> view: button -> Button
         return new Button();
       case "input":
+        //> view: input -> TextInput
         return new TextInput();
       case "svg":
+        //> view: svg -> VectorContainer
         return new VectorContainer();
       case "path":
+        //> view: path -> VectorPath
         return new VectorPath();
       default:
         return null;
@@ -48,15 +52,24 @@ export const {
     textView.setText(value);
   },
   setProperty(node, name, value) {
-    console.log(`${node}`)
-    // console.log(`Set prope: ${name}`);
+    // console.log(`Set prop: ${node} ${name}`);
     if (name === "style") {
       // We try to set all the properties of the style object
       // Everything we don't know we just ignore
       for (let key of Object.keys(value)) {
         if (key === "width") {
+          /*>
+            view prop: width -> setWidth
+            `px` will be converted to setWidthFixed
+            `%` will be converted to setWidthPercentage
+          */
           node.setWidthFixed(Number(value[key])); // todo parse %, px, etc
         } else if (key === "height") {
+          /*>
+            view prop: height -> setHeight
+            `px` will be converted to setHeightFixed
+            `%` will be converted to setHeightPercentage
+          */
           node.setHeightFixed(Number(value[key])); // todo parse %, px, etc
         } else {
           const setterName = `set${capitalize(key)}`;
@@ -67,6 +80,16 @@ export const {
       }
       return;
     } else if (name === 'd') {
+      /*>
+        path prop: d
+        This takes the same format as the path attribute of a svg element
+        It calls the `beginPath`, then the converted commands, then `endPath` of the VectorPath
+        M x y -> pathMoveTo(x, y)
+        m x y -> pathMoveBy(x, y)
+        L x y -> pathLineTo(x, y)
+        Z -> closePath
+        z -> closePath
+      */
       const parts = parseSvgPath(value);
       const mapCommand = {
         M: 'pathMoveTo',
@@ -90,12 +113,15 @@ export const {
     }
 
     if (name == 'fill') {
+      //> svg prop: fill -> setFill
       node.setFillColor(parseColor(value));
       return;
     } else if (name == 'stroke') {
+      //> svg prop: stroke -> setStroke
       node.setStrokeColor(parseColor(value));
       return;
     } else if (name == 'strokeWidth') {
+      //> svg prop: strokeWidth -> setLineWidth
       node.setLineWidth(Number(value));
       return;
     }
