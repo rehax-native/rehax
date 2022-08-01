@@ -6,6 +6,16 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function convertColor(color) {
+  const result = parseColor(color)
+  return {
+    red: result[0],
+    green: result[1],
+    blue: result[2],
+    alpha: result[3],
+  }
+}
+
 export const {
   render,
   effect,
@@ -71,6 +81,14 @@ export const {
             `%` will be converted to setHeightPercentage
           */
           node.setHeightFixed(Number(value[key])); // todo parse %, px, etc
+        } else if (key === 'display') {
+          if (value[key] === 'flex' && node._rhx_styleDisplay !== 'flex') {
+            node._rhx_styleDisplay = 'flex';
+            node.setLayout(new FlexLayout());
+          } else if (value[key] !== 'flex' && node._rhx_styleDisplay === 'flex') {
+            node._rhx_styleDisplay = null;
+            node.setLayout(new StackLayout());
+          }
         } else {
           const setterName = `set${capitalize(key)}`;
           if (setterName in node) {
@@ -114,11 +132,11 @@ export const {
 
     if (name == 'fill') {
       //> svg prop: fill -> setFill
-      node.setFillColor(parseColor(value));
+      node.setFillColor(convertColor(value));
       return;
     } else if (name == 'stroke') {
       //> svg prop: stroke -> setStroke
-      node.setStrokeColor(parseColor(value));
+      node.setStrokeColor(convertColor(value));
       return;
     } else if (name == 'strokeWidth') {
       //> svg prop: strokeWidth -> setLineWidth

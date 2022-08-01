@@ -6,8 +6,32 @@
 
 namespace rehax::ui::appkit::impl {
 
-template <typename Container>
-void Button<Container>::createNativeView() {
+ObjectPointer<Button> Button::Create() {
+  auto ptr = Object<Button>::Create();
+  ptr->createNativeView();
+  return ptr;
+}
+
+ObjectPointer<Button> Button::CreateWithoutCreatingNativeView() {
+  auto ptr = Object<Button>::Create();
+  return ptr;
+}
+
+std::string Button::ClassName() {
+  return "Button";
+}
+
+std::string Button::instanceClassName() {
+  return Button::ClassName();
+}
+
+std::string Button::description() {
+  std::ostringstream stringStream;
+  stringStream << instanceClassName() << "/NSButton (Appkit) " << this << ": " << getTitle();
+  return stringStream.str();
+}
+
+void Button::createNativeView() {
   FunctionalNSButton * view = [FunctionalNSButton new];
   [view setFrame:NSMakeRect(0, 0, 200, 200)];
   [view setTitle:@""];
@@ -15,14 +39,12 @@ void Button<Container>::createNativeView() {
   this->nativeView = (void *) CFBridgingRetain(view);
 }
 
-template <typename Container>
-void Button<Container>::setTitle(std::string title) {
+void Button::setTitle(std::string title) {
   FunctionalNSButton * view = (__bridge FunctionalNSButton *) this->nativeView;
   [view setTitle: [NSString stringWithUTF8String:title.c_str()]];
 }
 
-template <typename Container>
-std::string Button<Container>::getTitle() {
+std::string Button::getTitle() {
   FunctionalNSButton * view = (__bridge FunctionalNSButton *) this->nativeView;
   return std::string([view stringValue].UTF8String);
 }
@@ -34,8 +56,7 @@ std::string Button<Container>::getTitle() {
 //   // [view setTextColor:c];
 // }
 
-template <typename Container>
-void Button<Container>::setOnPress(std::function<void(void)> onPress) {
+void Button::setOnPress(std::function<void(void)> onPress) {
   FunctionalNSButton * view = (__bridge FunctionalNSButton *) this->nativeView;
   [view setOnPress:onPress];
 }

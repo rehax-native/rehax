@@ -1,0 +1,300 @@
+{
+    "bindings": "JavascriptCore",
+    "types": {
+      "Color": {
+        "note": "Converts from/to an object with shape `{ red: number, green: number, blue: number, alpha: number }`. The range for `alpha` is 0.0 - 1.0, and the ranges for the others is 0.0 - 255.0."
+      },
+      "FlexLayoutOptions": {
+        "note": "Converts from/to an object with shape `{ direction: 'Column' | 'ColumnReverse' | 'Row' | 'RowReverse', TODO }`."
+      },
+      "StackLayoutOptions": {
+        "note": "Converts from/to an object with shape `{ spacing: float, direction: 'Horizontal' | 'Vertical' }`."
+      }
+    },
+    "views": {
+      "Button": {
+        "setTitle": {
+          "returnType": "",
+          "arguments": [
+            "std::string"
+          ]
+        },
+        "getTitle": {
+          "returnType": "std::string",
+          "arguments": [
+          ]
+        },
+        "setOnPress": {
+          "returnType": "",
+          "arguments": [
+            "std::function<void ()>"
+          ]
+        }
+      },
+      "FlexLayout": {
+        "setOptions": {
+          "returnType": "",
+          "arguments": [
+            "rehax::ui::appkit::impl::FlexLayoutOptions"
+          ]
+        }
+      },
+      "Gesture": {
+        "setup": {
+          "returnType": "",
+          "arguments": [
+            "std::function<void ()>",
+            "std::function<void (float, float)>",
+            "std::function<void (float, float)>",
+            "std::function<void (float, float)>"
+          ]
+        },
+        "setState": {
+          "returnType": "",
+          "arguments": [
+            "rehax::ui::appkit::impl::GestureState"
+          ]
+        }
+      },
+      "StackLayout": {
+        "setOptions": {
+          "returnType": "",
+          "arguments": [
+            "rehax::ui::appkit::impl::StackLayoutOptions"
+          ]
+        }
+      },
+      "Text": {
+        "setText": {
+          "returnType": "",
+          "arguments": [
+            "std::string"
+          ]
+        },
+        "getText": {
+          "returnType": "std::string",
+          "arguments": [
+          ]
+        },
+        "setTextColor": {
+          "returnType": "",
+          "arguments": [
+            "rehax::ui::Color"
+          ]
+        },
+        "setFontSize": {
+          "returnType": "",
+          "arguments": [
+            "float"
+          ]
+        }
+      },
+      "TextInput": {
+        "setValue": {
+          "returnType": "",
+          "arguments": [
+            "std::string"
+          ]
+        },
+        "getValue": {
+          "returnType": "std::string",
+          "arguments": [
+          ]
+        }
+      },
+      "VectorContainer": {
+      },
+      "VectorElement": {
+        "setLineWidth": {
+          "returnType": "",
+          "arguments": [
+            "float"
+          ]
+        },
+        "setLineJoin": {
+          "returnType": "",
+          "arguments": [
+            "rehax::ui::appkit::impl::VectorLineJoin"
+          ]
+        },
+        "setLineCap": {
+          "returnType": "",
+          "arguments": [
+            "rehax::ui::appkit::impl::VectorLineCap"
+          ]
+        },
+        "setFillColor": {
+          "returnType": "",
+          "arguments": [
+            "rehax::ui::Color"
+          ]
+        },
+        "setStrokeColor": {
+          "returnType": "",
+          "arguments": [
+            "rehax::ui::Color"
+          ]
+        },
+        "setFillGradient": {
+          "returnType": "",
+          "arguments": [
+            "rehax::ui::appkit::impl::Gradient"
+          ]
+        },
+        "setStrokeGradient": {
+          "returnType": "",
+          "arguments": [
+            "rehax::ui::appkit::impl::Gradient"
+          ]
+        },
+        "setFilters": {
+          "returnType": "",
+          "arguments": [
+            "rehax::ui::appkit::impl::Filters"
+          ]
+        }
+      },
+      "VectorPath": {
+        "beginPath": {
+          "returnType": "",
+          "arguments": [
+          ]
+        },
+        "pathHorizontalTo": {
+          "returnType": "",
+          "arguments": [
+            "float"
+          ]
+        },
+        "pathVerticalTo": {
+          "returnType": "",
+          "arguments": [
+            "float"
+          ]
+        },
+        "pathMoveTo": {
+          "returnType": "",
+          "arguments": [
+            "float",
+            "float"
+          ]
+        },
+        "pathMoveBy": {
+          "returnType": "",
+          "arguments": [
+            "float",
+            "float"
+          ]
+        },
+        "pathLineTo": {
+          "returnType": "",
+          "arguments": [
+            "float",
+            "float"
+          ]
+        },
+        "pathQuadraticBezier": {
+          "returnType": "",
+          "arguments": [
+            "float",
+            "float",
+            "float",
+            "float"
+          ]
+        },
+        "pathArc": {
+          "returnType": "",
+          "arguments": [
+            "float",
+            "float",
+            "float",
+            "int",
+            "int",
+            "float",
+            "float"
+          ]
+        },
+        "pathCubicBezier": {
+          "returnType": "",
+          "arguments": [
+            "float",
+            "float",
+            "float",
+            "float",
+            "float",
+            "float"
+          ]
+        },
+        "pathClose": {
+          "returnType": "",
+          "arguments": [
+          ]
+        },
+        "endPath": {
+          "returnType": "",
+          "arguments": [
+          ]
+        }
+      },
+      "View": {
+        "toString": {
+          "returnType": "std::string",
+          "arguments": [
+          ]
+        },
+        "removeFromParent": {
+          "returnType": "",
+          "arguments": [
+          ]
+        },
+        "setWidthFixed": {
+          "returnType": "",
+          "arguments": [
+            "float"
+          ]
+        },
+        "setHeightFixed": {
+          "returnType": "",
+          "arguments": [
+            "float"
+          ]
+        },
+        "addView": {
+          "returnType": "",
+          "arguments": [
+            "View"
+          ]
+        },
+        "removeView": {
+          "returnType": "",
+          "arguments": [
+            "View"
+          ]
+        },
+        "getParent": {
+          "returnType": "View",
+          "arguments": [
+            ""
+          ]
+        },
+        "getFirstChild": {
+          "returnType": "View",
+          "arguments": [
+            ""
+          ]
+        },
+        "getNextSibling": {
+          "returnType": "View",
+          "arguments": [
+            ""
+          ]
+        },
+        "setLayout": {
+          "returnType": "",
+          "arguments": [
+            "Layout"
+          ]
+        }
+      }
+    }
+  }

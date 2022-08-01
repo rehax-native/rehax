@@ -7,30 +7,15 @@
 
 namespace rehax::ui::appkit::impl {
 
-template <typename Container>
-class Text : public View<Container> {
+class Text : public View {
 
 public:
-  static typename Container::template Ptr<Text<Container>> Create() {
-    auto ptr = new Text<Container>();
-    ptr->createNativeView();
-    return ptr;
-  }
+  RHX_EXPORT static ObjectPointer<Text> Create();
+  RHX_EXPORT static ObjectPointer<Text> CreateWithoutCreatingNativeView();
+  RHX_EXPORT static std::string ClassName();
 
-  static typename Container::template Ptr<Text<Container>> CreateWithoutCreatingNativeView() {
-    auto ptr = new Text<Container>();
-    return ptr;
-  }
-
-  virtual std::string viewName() override {
-    return "Text";
-  }
-
-  virtual std::string description() override {
-    std::ostringstream stringStream;
-    stringStream << viewName() << "/NSTextField (Appkit) " << this << ": " << getText();
-    return stringStream.str();
-  }
+  RHX_EXPORT virtual std::string instanceClassName() override;
+  RHX_EXPORT virtual std::string description() override;
 
   RHX_EXPORT virtual void createNativeView() override;
 

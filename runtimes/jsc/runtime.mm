@@ -39,7 +39,7 @@ void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::fluxe::impl::View
 #endif
 
 #ifdef REHAX_WITH_APPKIT
-void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::appkit::impl::View<rehax::ui::RefCountedPointer>> view) {
+void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::appkit::View> view) {
   auto rootView = cppToJs(view.get());
 
   JSObjectRef globalObject = JSContextGetGlobalObject(context.JSGlobalContextRef);

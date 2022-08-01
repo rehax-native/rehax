@@ -13,10 +13,10 @@ public:
   void evaluate(std::string script);
   void makeConsole();
   #ifdef REHAX_WITH_FLUXE
-  void setRootView(rehaxUtils::ObjectPointer<rehax::ui::fluxe::impl::View<rehax::ui::RefCountedPointer>> view);
+  void setRootView(rehaxUtils::ObjectPointer<rehax::ui::fluxe::View> view);
   #endif
   #ifdef REHAX_WITH_APPKIT
-  void setRootView(rehaxUtils::ObjectPointer<rehax::ui::appkit::impl::View<rehax::ui::RefCountedPointer>> view);
+  void setRootView(rehaxUtils::ObjectPointer<rehax::ui::appkit::View> view);
   #endif
 
 private:

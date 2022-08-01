@@ -9,49 +9,49 @@
 
 namespace rehax::ui::appkit::impl {
 
-template <typename Container>
-void VectorElement<Container>::setLineWidth(float width) {
+std::string VectorElement::ClassName() {
+  return "VectorElement";
+}
+
+void VectorElement::setLineWidth(float width) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CAShapeLayer * shapeLayer = getShapeAtIndex(layer, 1);
   shapeLayer.lineWidth = width;
 }
 
-template <typename Container>
-void VectorElement<Container>::setLineCap(int capsStyle) {
+void VectorElement::setLineCap(VectorLineCap capsStyle) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CAShapeLayer * shapeLayer = getShapeAtIndex(layer, 1);
   switch(capsStyle) {
-    case 0:
+    case VectorLineCap::Butt:
       shapeLayer.lineCap = kCALineCapButt;
       break;
-    case 1:
+    case VectorLineCap::Square:
       shapeLayer.lineCap = kCALineCapSquare;
       break;
-    case 2:
+    case VectorLineCap::Round:
       shapeLayer.lineCap = kCALineCapRound;
       break;
   }
 }
 
-template <typename Container>
-void VectorElement<Container>::setLineJoin(int joinStyle) {
+void VectorElement::setLineJoin(VectorLineJoin joinStyle) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CAShapeLayer * shapeLayer = getShapeAtIndex(layer, 1);
   switch(joinStyle) {
-    case 0:
+    case VectorLineJoin::Miter:
       shapeLayer.lineJoin = kCALineJoinMiter;
       break;
-    case 1:
+    case VectorLineJoin::Round:
       shapeLayer.lineJoin = kCALineJoinRound;
       break;
-    case 2:
+    case VectorLineJoin::Bevel:
       shapeLayer.lineJoin = kCALineJoinBevel;
       break;
   }
 }
 
-template <typename Container>
-void VectorElement<Container>::setFillColor(ui::Color color) {
+void VectorElement::setFillColor(ui::Color color) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CAGradientLayer * fillLayer = (CAGradientLayer *) layer.sublayers[0];
   fillLayer.colors = @[
@@ -61,8 +61,7 @@ void VectorElement<Container>::setFillColor(ui::Color color) {
   fillLayer.frame = layer.bounds;
 }
 
-template <typename Container>
-void VectorElement<Container>::setStrokeColor(ui::Color color) {
+void VectorElement::setStrokeColor(ui::Color color) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CAGradientLayer * strokeLayer = (CAGradientLayer *) layer.sublayers[1];
   strokeLayer.colors = @[
@@ -71,8 +70,7 @@ void VectorElement<Container>::setStrokeColor(ui::Color color) {
   ];
 }
 
-template <typename Container>
-void VectorElement<Container>::setFillGradient(Gradient gradient) {
+void VectorElement::setFillGradient(Gradient gradient) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CAGradientLayer * fillLayer = (CAGradientLayer *) layer.sublayers[0];
   NSMutableArray * colorArr = [NSMutableArray array];
@@ -89,8 +87,7 @@ void VectorElement<Container>::setFillGradient(Gradient gradient) {
   fillLayer.frame = layer.bounds;
 }
 
-template <typename Container>
-void VectorElement<Container>::setStrokeGradient(Gradient gradient) {
+void VectorElement::setStrokeGradient(Gradient gradient) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CAGradientLayer * strokeLayer = (CAGradientLayer *) layer.sublayers[1];
   NSMutableArray * colorArr = [NSMutableArray array];
@@ -107,8 +104,7 @@ void VectorElement<Container>::setStrokeGradient(Gradient gradient) {
   strokeLayer.frame = layer.bounds;
 }
 
-template <typename Container>
-void VectorElement<Container>::setFilters(Filters filters) {
+void VectorElement::setFilters(Filters filters) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
 //    CIFilter * filter = [CIGau]
 //    filter.radius = 10;

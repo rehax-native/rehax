@@ -6,8 +6,32 @@
 
 namespace rehax::ui::appkit::impl {
 
-template <typename Container>
-void Text<Container>::createNativeView() {
+ObjectPointer<Text> Text::Create() {
+  auto ptr = Object<Text>::Create();
+  ptr->createNativeView();
+  return ptr;
+}
+
+ObjectPointer<Text> Text::CreateWithoutCreatingNativeView() {
+  auto ptr = Object<Text>::Create();
+  return ptr;
+}
+
+std::string Text::ClassName() {
+  return "Text";
+}
+
+std::string Text::instanceClassName() {
+  return Text::ClassName();
+}
+
+std::string Text::description() {
+  std::ostringstream stringStream;
+  stringStream << instanceClassName() << "/NSTextField (Appkit) " << this << ": " << getText();
+  return stringStream.str();
+}
+
+void Text::createNativeView() {
   NSTextField * view = [NSTextField new];
   [view setFrame:NSMakeRect(0, 0, 200, 200)];
   [view setStringValue:@""];
@@ -18,34 +42,29 @@ void Text<Container>::createNativeView() {
   this->nativeView = (void *) CFBridgingRetain(view);
 }
 
-template <typename Container>
-void Text<Container>::setText(std::string text) {
+void Text::setText(std::string text) {
   NSTextField * view = (__bridge NSTextField *) this->nativeView;
   [view setStringValue: [NSString stringWithUTF8String: text.c_str()]];
   [view sizeToFit];
 }
 
-template <typename Container>
-std::string Text<Container>::getText() {
+std::string Text::getText() {
   NSTextField * view = (__bridge NSTextField *) this->nativeView;
   return std::string([view stringValue].UTF8String);
 }
 
-template <typename Container>
-void Text<Container>::setTextColor(rehax::ui::Color color) {
+void Text::setTextColor(rehax::ui::Color color) {
   NSTextField * view = (__bridge NSTextField *) this->nativeView;
   NSColor * c = [NSColor colorWithRed:color.r/255.0 green:color.g/255.0 blue:color.b/255.0 alpha:color.a];
   [view setTextColor:c];
 }
 
-template <typename Container>
-void Text<Container>::setFontSize(float size) {
+void Text::setFontSize(float size) {
   NSTextField * view = (__bridge NSTextField *) this->nativeView;
   view.font = [NSFont fontWithName:view.font.fontName size:size];
 }
 
-template <typename Container>
-void Text<Container>::setFontFamilies(std::vector<std::string> fontFamilies) {
+void Text::setFontFamilies(std::vector<std::string> fontFamilies) {
   NSTextField * view = (__bridge NSTextField *) this->nativeView;
   for (int i = 0; i < fontFamilies.size(); i++)
   {
@@ -58,16 +77,14 @@ void Text<Container>::setFontFamilies(std::vector<std::string> fontFamilies) {
   }
 }
 
-template <typename Container>
-void Text<Container>::addNativeView(void * child) {
-  View<Container>::addNativeView(child);
+void Text::addNativeView(void * child) {
+  View::addNativeView(child);
   NSTextField * view = (__bridge NSTextField *) this->nativeView;
   [view sizeToFit];
 }
 
-template <typename Container>
-void Text<Container>::addNativeView(void * child, void * beforeView) {
-  View<Container>::addNativeView(child, beforeView);
+void Text::addNativeView(void * child, void * beforeView) {
+  View::addNativeView(child, beforeView);
   NSTextField * view = (__bridge NSTextField *) this->nativeView;
   [view sizeToFit];
 }

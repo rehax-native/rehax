@@ -13,30 +13,15 @@ enum TextAlignment {
   Right,
 };
 
-template <typename Container>
-class TextInput : public View<Container> {
+class TextInput : public View {
 
 public:
-  static typename Container::template Ptr<TextInput<Container>> Create() {
-    auto ptr = new TextInput<Container>();
-    ptr->createNativeView();
-    return ptr;
-  }
+  RHX_EXPORT static ObjectPointer<TextInput> Create();
+  RHX_EXPORT static ObjectPointer<TextInput> CreateWithoutCreatingNativeView();
+  RHX_EXPORT static std::string ClassName();
 
-  static typename Container::template Ptr<TextInput<Container>> CreateWithoutCreatingNativeView() {
-    auto ptr = new TextInput<Container>();
-    return ptr;
-  }
-
-  virtual std::string viewName() override {
-    return "TextInput";
-  }
-
-  virtual std::string description() override {
-    std::ostringstream stringStream;
-    stringStream << viewName() << "/NSTextField (Appkit) " << this << ": " << getValue();
-    return stringStream.str();
-  }
+  RHX_EXPORT virtual std::string instanceClassName() override;
+  RHX_EXPORT virtual std::string description() override;
 
   RHX_EXPORT virtual void createNativeView() override;
 

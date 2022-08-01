@@ -979,6 +979,16 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function convertColor(color) {
+  const result = parse_1(color);
+  return {
+    red: result[0],
+    green: result[1],
+    blue: result[2],
+    alpha: result[3]
+  };
+}
+
 const {
   render,
   effect,
@@ -996,18 +1006,23 @@ const {
     // console.log(`Create element: ${string} ${View}`);
     switch (string) {
       case "div":
+        //> view: div -> View
         return new View();
 
       case "button":
+        //> view: button -> Button
         return new Button();
 
       case "input":
+        //> view: input -> TextInput
         return new TextInput();
 
       case "svg":
+        //> view: svg -> VectorContainer
         return new VectorContainer();
 
       case "path":
+        //> view: path -> VectorPath
         return new VectorPath();
 
       default:
@@ -1028,16 +1043,33 @@ const {
   },
 
   setProperty(node, name, value) {
-    console.log(`${node}`); // console.log(`Set prope: ${name}`);
-
+    // console.log(`Set prop: ${node} ${name}`);
     if (name === "style") {
       // We try to set all the properties of the style object
       // Everything we don't know we just ignore
       for (let key of Object.keys(value)) {
         if (key === "width") {
+          /*>
+            view prop: width -> setWidth
+            `px` will be converted to setWidthFixed
+            `%` will be converted to setWidthPercentage
+          */
           node.setWidthFixed(Number(value[key])); // todo parse %, px, etc
         } else if (key === "height") {
+          /*>
+            view prop: height -> setHeight
+            `px` will be converted to setHeightFixed
+            `%` will be converted to setHeightPercentage
+          */
           node.setHeightFixed(Number(value[key])); // todo parse %, px, etc
+        } else if (key === 'display') {
+          if (value[key] === 'flex' && node._rhx_styleDisplay !== 'flex') {
+            node._rhx_styleDisplay = 'flex';
+            node.setLayout(new FlexLayout());
+          } else if (value[key] !== 'flex' && node._rhx_styleDisplay === 'flex') {
+            node._rhx_styleDisplay = null;
+            node.setLayout(new StackLayout());
+          }
         } else {
           const setterName = `set${capitalize(key)}`;
 
@@ -1049,6 +1081,16 @@ const {
 
       return;
     } else if (name === 'd') {
+      /*>
+        path prop: d
+        This takes the same format as the path attribute of a svg element
+        It calls the `beginPath`, then the converted commands, then `endPath` of the VectorPath
+        M x y -> pathMoveTo(x, y)
+        m x y -> pathMoveBy(x, y)
+        L x y -> pathLineTo(x, y)
+        Z -> closePath
+        z -> closePath
+      */
       const parts = parseSvgPath(value);
       const mapCommand = {
         M: 'pathMoveTo',
@@ -1074,12 +1116,15 @@ const {
     }
 
     if (name == 'fill') {
-      node.setFillColor(parse_1(value));
+      //> svg prop: fill -> setFill
+      node.setFillColor(convertColor(value));
       return;
     } else if (name == 'stroke') {
-      node.setStrokeColor(parse_1(value));
+      //> svg prop: stroke -> setStroke
+      node.setStrokeColor(convertColor(value));
       return;
     } else if (name == 'strokeWidth') {
+      //> svg prop: strokeWidth -> setLineWidth
       node.setLineWidth(Number(value));
       return;
     }
@@ -1140,7 +1185,11 @@ function App() {
           _el$3 = createTextNode(`Count: `),
           _el$4 = createElement("input"),
           _el$5 = createElement("svg"),
-          _el$6 = createElement("path");
+          _el$6 = createElement("path"),
+          _el$7 = createElement("div"),
+          _el$8 = createElement("div"),
+          _el$10 = createElement("div"),
+          _el$12 = createElement("div");
 
     insertNode(_el$, _el$2);
 
@@ -1149,6 +1198,8 @@ function App() {
     insertNode(_el$, _el$4);
 
     insertNode(_el$, _el$5);
+
+    insertNode(_el$, _el$7);
 
     setProp(_el$2, "title", "Click me");
 
@@ -1172,6 +1223,22 @@ function App() {
     setProp(_el$6, "fill", "rgba(0, 255, 0, 1)");
 
     setProp(_el$6, "stroke", "rgba(255, 0, 0, 1)");
+
+    insertNode(_el$7, _el$8);
+
+    insertNode(_el$7, _el$10);
+
+    insertNode(_el$7, _el$12);
+
+    setProp(_el$7, "style", {
+      display: 'flex'
+    });
+
+    insertNode(_el$8, createTextNode(`Flex item 1`));
+
+    insertNode(_el$10, createTextNode(`Flex item 2`));
+
+    insertNode(_el$12, createTextNode(`Flex item 3`));
 
     return _el$;
   })();

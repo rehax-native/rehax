@@ -6,30 +6,15 @@
 
 namespace rehax::ui::appkit::impl {
 
-template <typename Container>
-class Button : public View<Container> {
+class Button : public View {
 
 public:
-  static typename Container::template Ptr<Button<Container>> Create() {
-    auto ptr = new Button<Container>();
-    ptr->createNativeView();
-    return ptr;
-  }
+  RHX_EXPORT static ObjectPointer<Button> Create();
+  RHX_EXPORT static ObjectPointer<Button> CreateWithoutCreatingNativeView();
+  RHX_EXPORT static std::string ClassName();
 
-  static typename Container::template Ptr<Button<Container>> CreateWithoutCreatingNativeView() {
-    auto ptr = new Button<Container>();
-    return ptr;
-  }
-
-  virtual std::string viewName() override {
-    return "Button";
-  }
-
-  virtual std::string description() override {
-    std::ostringstream stringStream;
-    stringStream << viewName() << "/NSButton (Appkit) " << this << ": " << getTitle();
-    return stringStream.str();
-  }
+  RHX_EXPORT virtual std::string instanceClassName() override;
+  RHX_EXPORT virtual std::string description() override;
 
   RHX_EXPORT virtual void createNativeView() override;
 

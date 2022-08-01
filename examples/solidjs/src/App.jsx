@@ -21,6 +21,18 @@ function App() {
           stroke="rgba(255, 0, 0, 1)"
         ></path>
       </svg>
+
+      <div style={{ display: 'flex' }}>
+        <div>
+          Flex item 1
+        </div>
+        <div>
+          Flex item 2
+        </div>
+        <div>
+          Flex item 3
+        </div>
+      </div>
     </div>
   );
 }

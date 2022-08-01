@@ -6,26 +6,47 @@
 
 namespace rehax::ui::appkit::impl {
 
-template <typename Container>
-void VectorContainer<Container>::createNativeView() {
+ObjectPointer<VectorContainer> VectorContainer::Create() {
+  auto ptr = Object<VectorContainer>::Create();
+  ptr->createNativeView();
+  return ptr;
+}
 
-  View<Container>::createNativeView();
+ObjectPointer<VectorContainer> VectorContainer::CreateWithoutCreatingNativeView() {
+  auto ptr = Object<VectorContainer>::Create();
+  return ptr;
+}
+
+std::string VectorContainer::ClassName() {
+  return "VectorContainer";
+}
+
+std::string VectorContainer::instanceClassName() {
+  return VectorContainer::ClassName();
+}
+
+std::string VectorContainer::description() {
+  std::ostringstream stringStream;
+  stringStream << instanceClassName() << "/CALayer (Appkit) " << this;
+  return stringStream.str();
+}
+
+void VectorContainer::createNativeView() {
+  View::createNativeView();
 
   NSView * view = (__bridge NSView *) this->nativeView;
   view.layer = [CALayer layer];
   view.layer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
 }
 
-template <typename Container>
-void VectorContainer<Container>::addNativeView(void * child) {
+void VectorContainer::addNativeView(void * child) {
   NSView * view = (__bridge NSView *) this->nativeView;
   CALayer * childView = (__bridge CALayer *) child;
   childView.frame = view.layer.bounds;
   [view.layer addSublayer:childView];
 }
 
-template <typename Container>
-void VectorContainer<Container>::addNativeView(void * child, void * beforeView) {
+void VectorContainer::addNativeView(void * child, void * beforeView) {
   NSView * view = (__bridge NSView *) this->nativeView;
   CALayer * childView = (__bridge CALayer *) child;
   childView.frame = view.layer.bounds;

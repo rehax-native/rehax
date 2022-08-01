@@ -8,8 +8,32 @@
 
 using namespace rehax::ui::appkit::impl;
 
-template <typename Container>
-void VectorPath<Container>::createNativeView() {
+ObjectPointer<VectorPath> VectorPath::Create() {
+  auto ptr = Object<VectorPath>::Create();
+  ptr->createNativeView();
+  return ptr;
+}
+
+ObjectPointer<VectorPath> VectorPath::CreateWithoutCreatingNativeView() {
+  auto ptr = Object<VectorPath>::Create();
+  return ptr;
+}
+
+std::string VectorPath::ClassName() {
+  return "VectorPath";
+}
+
+std::string VectorPath::instanceClassName() {
+  return VectorPath::ClassName();
+}
+
+std::string VectorPath::description() {
+  std::ostringstream stringStream;
+  stringStream << instanceClassName() << "/CALayer (Appkit) " << this;
+  return stringStream.str();
+}
+
+void VectorPath::createNativeView() {
   CALayer * layer = [CALayer layer];
   layer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
   
@@ -35,8 +59,7 @@ void VectorPath<Container>::createNativeView() {
   this->nativeView = (__bridge void *) layer;
 }
 
-template <typename Container>
-void VectorPath<Container>::beginPath() {
+void VectorPath::beginPath() {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   
   CAShapeLayer * fillLayer = (CAShapeLayer *) layer.sublayers[0].mask;
@@ -49,8 +72,7 @@ void VectorPath<Container>::beginPath() {
   strokeLayer.path = path;
 }
 
-template <typename Container>
-void VectorPath<Container>::pathHorizontalTo(float x) {
+void VectorPath::pathHorizontalTo(float x) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   
   CGMutablePathRef path = getPathAtIndex(layer, 0);
@@ -62,8 +84,7 @@ void VectorPath<Container>::pathHorizontalTo(float x) {
   CGPathAddLineToPoint(path, nullptr, x, p.y);
 }
 
-template <typename Container>
-void VectorPath<Container>::pathVerticalTo(float y) {
+void VectorPath::pathVerticalTo(float y) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CGMutablePathRef path = getPathAtIndex(layer, 0);
   
@@ -75,8 +96,7 @@ void VectorPath<Container>::pathVerticalTo(float y) {
   CGPathAddLineToPoint(path, nullptr, p.x, y);
 }
 
-template <typename Container>
-void VectorPath<Container>::pathMoveTo(float x, float y) {
+void VectorPath::pathMoveTo(float x, float y) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CGMutablePathRef path = getPathAtIndex(layer, 0);
   CGPathMoveToPoint(path, nullptr, x, y);
@@ -85,8 +105,7 @@ void VectorPath<Container>::pathMoveTo(float x, float y) {
   CGPathMoveToPoint(path, nullptr, x, y);
 }
 
-template <typename Container>
-void VectorPath<Container>::pathMoveBy(float x, float y) {
+void VectorPath::pathMoveBy(float x, float y) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CGMutablePathRef path = getPathAtIndex(layer, 0);
   
@@ -98,8 +117,7 @@ void VectorPath<Container>::pathMoveBy(float x, float y) {
   CGPathMoveToPoint(path, nullptr, p.x + x, p.y + y);
 }
 
-template <typename Container>
-void VectorPath<Container>::pathLineTo(float x, float y) {
+void VectorPath::pathLineTo(float x, float y) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CGMutablePathRef path = getPathAtIndex(layer, 0);
   CGPathAddLineToPoint(path, nullptr, x, y);
@@ -108,8 +126,7 @@ void VectorPath<Container>::pathLineTo(float x, float y) {
   CGPathAddLineToPoint(path, nullptr, x, y);
 }
 
-template <typename Container>
-void VectorPath<Container>::pathArc(float rx, float ry, float xAxisRotation, int largeArcFlag, int sweepFlag, float endX, float endY) {
+void VectorPath::pathArc(float rx, float ry, float xAxisRotation, int largeArcFlag, int sweepFlag, float endX, float endY) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CGMutablePathRef path1 = getPathAtIndex(layer, 0);
   CGMutablePathRef path2 = getPathAtIndex(layer, 1);
@@ -203,8 +220,7 @@ void VectorPath<Container>::pathArc(float rx, float ry, float xAxisRotation, int
   }
 }
 
-template <typename Container>
-void VectorPath<Container>::pathCubicBezier(float x1, float y1, float x2, float y2, float x, float y) {
+void VectorPath::pathCubicBezier(float x1, float y1, float x2, float y2, float x, float y) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CGMutablePathRef path = getPathAtIndex(layer, 0);
   CGPathAddCurveToPoint(path, nullptr, x1, y1, x2, y2, x, y);
@@ -213,8 +229,7 @@ void VectorPath<Container>::pathCubicBezier(float x1, float y1, float x2, float 
   CGPathAddCurveToPoint(path, nullptr, x1, y1, x2, y2, x, y);
 }
 
-template <typename Container>
-void VectorPath<Container>::pathQuadraticBezier(float x1, float y1, float x, float y) {
+void VectorPath::pathQuadraticBezier(float x1, float y1, float x, float y) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CGMutablePathRef path1 = getPathAtIndex(layer, 0);
   CGMutablePathRef path2 = getPathAtIndex(layer, 1);
@@ -227,8 +242,7 @@ void VectorPath<Container>::pathQuadraticBezier(float x1, float y1, float x, flo
   CGPathAddCurveToPoint(path2, nullptr, p1.x, p1.y, p2.x, p2.y, x, y);
 }
 
-template <typename Container>
-void VectorPath<Container>::pathClose() {
+void VectorPath::pathClose() {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CGMutablePathRef path1 = getPathAtIndex(layer, 0);
   CGMutablePathRef path2 = getPathAtIndex(layer, 1);
@@ -236,8 +250,7 @@ void VectorPath<Container>::pathClose() {
   CGPathCloseSubpath(path2);
 }
 
-template <typename Container>
-void VectorPath<Container>::endPath() {
+void VectorPath::endPath() {
   CAShapeLayer * layer = (__bridge CAShapeLayer *) this->nativeView;
   [layer setNeedsDisplay];
 }

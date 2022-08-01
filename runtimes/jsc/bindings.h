@@ -28,7 +28,7 @@ class Bindings
 {
 public:
     
-  static std::string JSStringToStdString(JSContextRef ctx, JSStringRef str);
+  // static std::string JSStringToStdString(JSContextRef ctx, JSStringRef str);
 
   Bindings();
   void setContext(JSContextRef ctx);
@@ -42,7 +42,7 @@ public:
   template <typename View>
   JSObjectRef cppToJs(View * obj)
   {
-    auto className = obj->viewName();
+    auto className = obj->instanceClassName();
     auto privateData = new ViewPrivateData<View>();
     privateData->view = obj;
     privateData->bindings = this;

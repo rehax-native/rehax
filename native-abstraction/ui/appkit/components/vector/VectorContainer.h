@@ -7,30 +7,15 @@
 
 namespace rehax::ui::appkit::impl {
 
-template <typename Container>
-class VectorContainer : public View<Container> {
+class VectorContainer : public View {
 
 public:
-  static typename Container::template Ptr<VectorContainer<Container>> Create() {
-    auto ptr = new VectorContainer<Container>();
-    ptr->createNativeView();
-    return ptr;
-  }
+  RHX_EXPORT static ObjectPointer<VectorContainer> Create();
+  RHX_EXPORT static ObjectPointer<VectorContainer> CreateWithoutCreatingNativeView();
+  RHX_EXPORT static std::string ClassName();
 
-  static typename Container::template Ptr<VectorContainer<Container>> CreateWithoutCreatingNativeView() {
-    auto ptr = new VectorContainer<Container>();
-    return ptr;
-  }
-
-  virtual std::string viewName() override {
-    return "VectorContainer";
-  }
-
-  virtual std::string description() override {
-    std::ostringstream stringStream;
-    stringStream << viewName() << "/CALayer (Appkit) " << this;
-    return stringStream.str();
-  }
+  RHX_EXPORT virtual std::string instanceClassName() override;
+  RHX_EXPORT virtual std::string description() override;
 
   RHX_EXPORT virtual void createNativeView() override;
 
