@@ -7,14 +7,279 @@ function capitalize(str) {
 }
 
 function convertColor(color) {
-  const result = parseColor(color)
+  const result = parseColor(color);
   return {
     red: result[0],
     green: result[1],
     blue: result[2],
     alpha: result[3],
+  };
+}
+
+function parseLength(value) {
+  if (typeof value === "number") {
+    return {
+      value,
+      type: "px",
+    };
+  }
+  if (value.trim().endsWith("%")) {
+    return {
+      value: parseFloat(value),
+      type: "%",
+    };
+  }
+
+  return {
+    value: parseFloat(value),
+    type: "px",
+  };
+}
+
+function flexEnsureOptions(node) {
+  if (!node._rhx_styleFlexOptions) {
+    node._rhx_styleFlexOptions = {
+      direction: "Row",
+      justifyContent: "FlexStart",
+      alignItems: "FlexStart",
+    };
+  }
+  return node._rhx_styleFlexOptions;
+}
+
+function getureEnsure(node) {
+  if (!node._rhx_gestureHandler) {
+    const gesture = new Gesture();
+    function action() {
+      node._rhx_gestureHandler.action({ x, y });
+    }
+    function onMouseDown(x, y) {
+      node._rhx_gestureHandler.onMouseDown({ x, y });
+    }
+    function onMouseUp(x, y) {
+      node._rhx_gestureHandler.onMouseUp({ x, y });
+    }
+    function onMouseMove(x, y) {
+      node._rhx_gestureHandler.onMouseMove({ x, y });
+    }
+    gesture.setup(action, onMouseDown, onMouseUp, onMouseMove);
+    node.addGesture(gesture);
+    node._rhx_gestureHandler = {
+      gesture,
+      action: () => {},
+      onMouseDown: () => {},
+      onMouseUp: () => {},
+      onMouseMove: () => {},
+    };
   }
 }
+
+const ViewMap = {
+  div: View, //> view: div -> View
+  p: Text, //> view: p -> Text
+  button: Button, //> view: button -> Button
+  input: TextInput, //> view: input -> TextInput
+  svg: VectorContainer, //> view: svg -> VectorContainer
+  path: VectorPath, //> view: path -> VectorPath
+};
+
+const StylePropHandlers = {
+  width: (value, node) => {
+    /*>
+      view prop: width -> setWidth
+      `px` will be converted to setWidthFixed
+      `%` will be converted to setWidthPercentage
+    */
+    const length = parseLength(value);
+    if (length.type === "%") {
+      node.setWidthPercentage(length.value);
+    } else if (length.type === "px") {
+      node.setWidthFixed(length.value);
+    }
+  },
+  height: (value, node) => {
+    /*>
+      view prop: height -> setHeight
+      `px` will be converted to setHeightFixed
+      `%` will be converted to setHeightPercentage
+    */
+    const length = parseLength(value);
+    if (length.type === "%") {
+      node.setHeightPercentage(length.value);
+    } else if (length.type === "px") {
+      node.setHeightFixed(length.value);
+    }
+  },
+  display: (value, node) => {
+    /*>
+      view prop: display -> layout
+      If the display is set to `flex`, it will create a FlexLayout and assign it to the view
+      Otherwise, it will create a StackLayout and assign it to the view
+    */
+    if (value === "flex" && node._rhx_styleDisplay !== "flex") {
+      node._rhx_styleDisplay = "flex";
+      node._rhx_flexLayout = new FlexLayout();
+      node.setLayout(node._rhx_flexLayout);
+    } else if (value !== "flex" && node._rhx_styleDisplay === "flex") {
+      node._rhx_styleDisplay = null;
+      node._rhx_stackLayout = new StackLayout();
+      node.setLayout(node._rhx_stackLayout);
+    }
+  },
+
+  flexDirection: (value, node) => {
+    const options = flexEnsureOptions(node);
+    options.direction = {
+      column: "Column",
+      "column-reverse": "ColumnReverse",
+      row: "Row",
+      "row-reverse": "RowReverse",
+    }[value];
+    if (node._rhx_flexLayout) {
+      node._rhx_flexLayout.setOptions(options);
+      node.layout();
+    }
+  },
+  justifyContent: (value, node) => {
+    const options = flexEnsureOptions(node);
+    options.justifyContent = {
+      "flex-start": "FlexStart",
+      "flex-end": "FlexEnd",
+      center: "Center",
+    }[value];
+    if (node._rhx_flexLayout) {
+      node._rhx_flexLayout.setOptions(options);
+      node.layout();
+    }
+  },
+  alignItems: (value, node) => {
+    const options = flexEnsureOptions(node);
+    options.alignItems = {
+      "flex-start": "FlexStart",
+      "flex-end": "FlexEnd",
+      center: "Center",
+      stretch: "Stretch",
+    }[value];
+    if (node._rhx_flexLayout) {
+      node._rhx_flexLayout.setOptions(options);
+      node.layout();
+    }
+  },
+  color: (value, node) => {
+    //> p prop: color -> setTextColor
+    node.setTextColor(convertColor(value));
+  },
+  fontSize: (value, node) => {
+    //> p prop: fontSize -> setFontSize
+    node.setFontSize(Number(value));
+  },
+};
+
+const AttributeHandlers = {
+  style: (node, value) => {
+    // We try to set all the properties of the style object
+    // Everything we don't know we just ignore
+    for (let key of Object.keys(value)) {
+      if (StylePropHandlers[key]) {
+        StylePropHandlers[key](value[key], node);
+      } else {
+        const setterName = `set${capitalize(key)}`;
+        if (setterName in node) {
+          node[setterName](value[key]);
+        }
+      }
+    }
+  },
+
+  d: (node, value) => {
+    /*>
+      path prop: d
+      This takes the same format as the path attribute of a svg element
+      It calls the `beginPath`, then the converted commands, then `endPath` of the VectorPath
+      M x y -> pathMoveTo(x, y)
+      m x y -> pathMoveBy(x, y)
+      L x y -> pathLineTo(x, y)
+      Z -> pathClose
+      z -> pathClose
+    */
+    const parts = parseSvgPath(value);
+    const mapCommand = {
+      M: "pathMoveTo",
+      m: "pathMoveBy",
+      L: "pathLineTo",
+      A: "pathArc",
+      Q: "pathQuadraticBezier",
+      C: "pathCubicBezier",
+      Z: "pathClose",
+      z: "pathClose",
+    };
+    node.beginPath();
+    for (let part of parts) {
+      if (mapCommand[part[0]] in node) {
+        node[mapCommand[part[0]]](...part.slice(1));
+      } else {
+        console.error(`Unknown svg path command ${part[0]}`);
+      }
+    }
+    node.endPath();
+  },
+  fill: (node, value) => {
+    //> svg prop: fill -> setFill
+    node.setFillColor(convertColor(value));
+  },
+  stroke: (node, value) => {
+    //> svg prop: stroke -> setStroke
+    node.setStrokeColor(convertColor(value));
+  },
+  strokeWidth: (node, value) => {
+    //> svg prop: strokeWidth -> setLineWidth
+    node.setLineWidth(Number(value));
+  },
+  strokeLinecap: (node, value) => {
+    //> svg prop: strokeLineJoin -> setLineCap
+    node.setLineCap(
+      {
+        round: "Round",
+        square: "Square",
+        butt: "Butt",
+      }[value]
+    );
+  },
+  strokeLinejoin: (node, value) => {
+    //> svg prop: strokeLinejoin -> setLineJoin
+    node.setLineJoin(
+      {
+        miter: "Miter",
+        round: "Round",
+        bevel: "Bevel",
+      }[value]
+    );
+  },
+  filter: (node, value) => {
+    const filter = node._rhx_parent.__rhx_internal.find(
+      (item) => item.__type === "filter" && item.id === "blurry"
+    );
+    node.setFilters({
+      defs: filter.__rhx_internal.map((item) => ({
+        type: item.__type === "feGaussianBlur" ? 0 : 0,
+        blurRadius: Number(item.stdDeviation),
+      })),
+    });
+  },
+
+  onMouseDown: (node, value) => {
+    getureEnsure(node);
+    node._rhx_gestureHandler.onMouseDown = value;
+  },
+  onMouseUp: (node, value) => {
+    getureEnsure(node);
+    node._rhx_gestureHandler.onMouseUp = value;
+  },
+  onMouseMove: (node, value) => {
+    getureEnsure(node);
+    node._rhx_gestureHandler.onMouseMove = value;
+  },
+};
 
 export const {
   render,
@@ -31,28 +296,21 @@ export const {
 } = createRenderer({
   createElement(string) {
     // console.log(`Create element: ${string} ${View}`);
-    switch (string) {
-      case "div":
-        //> view: div -> View
-        return new View();
-      case "button":
-        //> view: button -> Button
-        return new Button();
-      case "input":
-        //> view: input -> TextInput
-        return new TextInput();
-      case "svg":
-        //> view: svg -> VectorContainer
-        return new VectorContainer();
-      case "path":
-        //> view: path -> VectorPath
-        return new VectorPath();
-      default:
-        return null;
+    const Component = ViewMap[string];
+    if (Component) {
+      return new Component();
     }
+    if (string === "filter" || string === "feGaussianBlur") {
+      return {
+        __internal: true,
+        __type: string,
+      };
+    }
+    return null;
   },
   createTextNode(value) {
     // console.log(`Create text: ${value}`);
+    //> view: text -> Text
     var textView = new Text();
     textView.setText(value);
     return textView;
@@ -63,100 +321,35 @@ export const {
   },
   setProperty(node, name, value) {
     // console.log(`Set prop: ${node} ${name}`);
-    if (name === "style") {
-      // We try to set all the properties of the style object
-      // Everything we don't know we just ignore
-      for (let key of Object.keys(value)) {
-        if (key === "width") {
-          /*>
-            view prop: width -> setWidth
-            `px` will be converted to setWidthFixed
-            `%` will be converted to setWidthPercentage
-          */
-          node.setWidthFixed(Number(value[key])); // todo parse %, px, etc
-        } else if (key === "height") {
-          /*>
-            view prop: height -> setHeight
-            `px` will be converted to setHeightFixed
-            `%` will be converted to setHeightPercentage
-          */
-          node.setHeightFixed(Number(value[key])); // todo parse %, px, etc
-        } else if (key === 'display') {
-          if (value[key] === 'flex' && node._rhx_styleDisplay !== 'flex') {
-            node._rhx_styleDisplay = 'flex';
-            node.setLayout(new FlexLayout());
-          } else if (value[key] !== 'flex' && node._rhx_styleDisplay === 'flex') {
-            node._rhx_styleDisplay = null;
-            node.setLayout(new StackLayout());
-          }
-        } else {
-          const setterName = `set${capitalize(key)}`;
-          if (setterName in node) {
-            node[setterName](value[key]);
-          }
-        }
-      }
-      return;
-    } else if (name === 'd') {
-      /*>
-        path prop: d
-        This takes the same format as the path attribute of a svg element
-        It calls the `beginPath`, then the converted commands, then `endPath` of the VectorPath
-        M x y -> pathMoveTo(x, y)
-        m x y -> pathMoveBy(x, y)
-        L x y -> pathLineTo(x, y)
-        Z -> closePath
-        z -> closePath
-      */
-      const parts = parseSvgPath(value);
-      const mapCommand = {
-        M: 'pathMoveTo',
-        m: 'pathMoveBy',
-        L: 'pathLineTo',
-        // l: 'pathLineBy',
-        // C: 'bezierCurveTo',
-        Z: 'closePath',
-        z: 'closePath',
-      }
-      node.beginPath();
-      for (let part of parts) {
-        if (mapCommand[part[0]] in node) {
-          node[mapCommand[part[0]]](...part.slice(1))
-        } else {
-          console.error(`Unknown svg path command ${part[0]}`)
-        }
-      }
-      node.endPath();
+    if (node.__internal) {
+      node[name] = value;
       return;
     }
-
-    if (name == 'fill') {
-      //> svg prop: fill -> setFill
-      node.setFillColor(convertColor(value));
-      return;
-    } else if (name == 'stroke') {
-      //> svg prop: stroke -> setStroke
-      node.setStrokeColor(convertColor(value));
-      return;
-    } else if (name == 'strokeWidth') {
-      //> svg prop: strokeWidth -> setLineWidth
-      node.setLineWidth(Number(value));
-      return;
-    }
-
-    const setterName = `set${capitalize(name)}`;
-    if (setterName in node) {
-      node[setterName](value);
+    const handler = AttributeHandlers[name];
+    if (handler) {
+      handler(node, value);
     } else {
-      console.error(`Unknown property: ${name}`);
+      const setterName = `set${capitalize(name)}`;
+      if (setterName in node) {
+        if (typeof value === "string") {
+          // There seems to be a bug where when we don't use the string before sending it to JavascriptCore, it will crash
+          value.trim();
+          node[setterName](String(value));
+        } else {
+          node[setterName](value);
+        }
+      } else {
+        console.error(`Unknown property: ${name}`);
+      }
     }
-    // if (name === "style") Object.assign(node.style, value);
-    // else if (name.startsWith("on")) node[name.toLowerCase()] = value;
-    // // else if (PROPERTIES.has(name)) node[name] = value;
-    // else node.setAttribute(name, value);
   },
   insertNode(parent, node, anchor) {
+    if (node.__internal) {
+      parent.__rhx_internal = [...(parent.__rhx_internal || []), node];
+      return;
+    }
     // console.log(`Insert node`);
+    node._rhx_parent = parent;
     parent.addView(node, anchor);
   },
   isTextNode(node) {
@@ -164,7 +357,11 @@ export const {
     return node.__className === "Text";
   },
   removeNode(parent, node) {
+    if (node.__internal) {
+      return;
+    }
     // console.log('Remove node')
+    node._rhx_parent = null;
     parent.removeChild(node);
   },
   getParentNode(node) {

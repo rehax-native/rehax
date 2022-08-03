@@ -1,48 +1,55 @@
 #include "Text.h"
 #include "../../../base.h"
-#include "../../../fluxe/fluxe/misc/Object.h"
 #include "../../../fluxe/fluxe/views/Text.h"
 #include <iostream>
 
 namespace rehax::ui::fluxe::impl {
 
+#include "../../../shared/components/Text.cc"
 
-template <typename Container>
-void Text<Container>::createNativeView() {
-  auto view = ::fluxe::Object<::fluxe::Text>::Create();
+std::string Text::description() {
+  std::ostringstream stringStream;
+  stringStream << instanceClassName() << "/fluxe " << this << ": " << getText();
+  return stringStream.str();
+}
+
+void Text::createNativeView() {
+  auto view = ::rehaxUtils::Object<::fluxe::Text>::Create();
   view->increaseReferenceCount();
   this->nativeView = view.get();
 }
 
-template <typename Container>
-void Text<Container>::setText(std::string text) {
+void Text::setText(std::string text) {
   auto view = static_cast<::fluxe::Text *>(this->nativeView);
   view->setText(text);
 }
 
-template <typename Container>
-std::string Text<Container>::getText() {
+std::string Text::getText() {
   auto view = static_cast<::fluxe::Text *>(this->nativeView);
-  return "[not implemented]";
-//  view->getText();
+  return view->getText();
 }
 
-template <typename Container>
-void Text<Container>::setTextColor(rehax::ui::Color color) {
+void Text::setTextColor(rehax::ui::Color color) {
   auto view = static_cast<::fluxe::Text *>(this->nativeView);
   view->setTextColor(::fluxe::Color::RGBA(color.r, color.g, color.b, color.a));
 }
 
-template <typename Container>
-void Text<Container>::setFontSize(float size) {
+void Text::setFontSize(float size) {
   auto view = static_cast<::fluxe::Text *>(this->nativeView);
   view->setTextSize(size);
 }
 
-template <typename Container>
-void Text<Container>::setFontFamilies(std::vector<std::string> fontFamilies) {
+void Text::setFontFamilies(std::vector<std::string> fontFamilies) {
   auto view = static_cast<::fluxe::Text *>(this->nativeView);
   view->setFontFamilies(fontFamilies);
+}
+
+void Text::addNativeView(void * child) {
+  View::addNativeView(child);
+}
+
+void Text::addNativeView(void * child, void * beforeView) {
+  View::addNativeView(child, beforeView);
 }
 
 }

@@ -1,9 +1,8 @@
 #include "../../runtimes/jsc/runtime.h"
 #include "../../../fluxe/fluxe/views/EngineUtility.h"
 #include <iostream>
-#include "../../native-abstraction/ui/fluxe/components/view/View.cc"
 
-using namespace rehax::ui::fluxe::rawptr;
+using namespace rehax::ui::fluxe;
 
 #if _WIN32
 #include <windows.h>
@@ -12,7 +11,7 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show) {
 #else
 int main() {
 #endif
-  auto container = rehax::ui::fluxe::impl::View<rehax::ui::RawPtr>::Create();
+  auto container = View::Create();
   auto view = static_cast<fluxe::View *>(container->getNativeView());
 
   auto vm = new rehax::jsc::Runtime();

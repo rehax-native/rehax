@@ -518,19 +518,19 @@ void Bindings::bindFluxeToQuickJs() {
 }
 
 
-#ifdef REHAX_WITH_APPKIT
-#include "../../native-abstraction/ui/appkit/components/view/View.mm"
-#include "../../native-abstraction/ui/appkit/components/button/Button.mm"
-#include "../../native-abstraction/ui/appkit/components/text/Text.mm"
-#include "../../native-abstraction/ui/appkit/components/textInput/TextInput.mm"
-#include "../../native-abstraction/ui/appkit/components/vector/VectorContainer.mm"
-#include "../../native-abstraction/ui/appkit/components/vector/VectorElement.mm"
-#include "../../native-abstraction/ui/appkit/components/vector/VectorPath.mm"
-#endif
+// #ifdef REHAX_WITH_APPKIT
+// #include "../../native-abstraction/ui/appkit/components/view/View.mm"
+// #include "../../native-abstraction/ui/appkit/components/button/Button.mm"
+// #include "../../native-abstraction/ui/appkit/components/text/Text.mm"
+// #include "../../native-abstraction/ui/appkit/components/textInput/TextInput.mm"
+// #include "../../native-abstraction/ui/appkit/components/vector/VectorContainer.mm"
+// #include "../../native-abstraction/ui/appkit/components/vector/VectorElement.mm"
+// #include "../../native-abstraction/ui/appkit/components/vector/VectorPath.mm"
+// #endif
 
-#ifdef REHAX_WITH_FLUXE
-#include "../../native-abstraction/ui/fluxe/components/view/View.cc"
-#include "../../native-abstraction/ui/fluxe/components/button/Button.cc"
-#include "../../native-abstraction/ui/fluxe/components/text/Text.cc"
-#include "../../native-abstraction/ui/fluxe/components/textInput/TextInput.cc"
-#endif
+// #ifdef REHAX_WITH_FLUXE
+// #include "../../native-abstraction/ui/fluxe/components/view/View.cc"
+// #include "../../native-abstraction/ui/fluxe/components/button/Button.cc"
+// #include "../../native-abstraction/ui/fluxe/components/text/Text.cc"
+// #include "../../native-abstraction/ui/fluxe/components/textInput/TextInput.cc"
+// #endif

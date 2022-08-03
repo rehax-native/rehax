@@ -65,10 +65,10 @@ function (rehax_add_to_executable app_name)
     include_directories(${quickjs_SOURCE_DIR}/..)
     include_directories(${rehaxUtils_SOURCE_DIR})
 
-    include_directories(../fluxe)
-    include_directories(../fluxe/third_party/skia)
-    link_directories(../fluxe/dist)
-    link_directories(../fluxe/build/Debug)
+    include_directories(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe)
+    include_directories(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/third_party/skia)
+    link_directories(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist)
+    link_directories(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug)
 
 
     file(GLOB REHAX_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/native-abstraction/ui/style.cc)

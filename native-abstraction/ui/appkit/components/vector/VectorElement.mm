@@ -9,9 +9,7 @@
 
 namespace rehax::ui::appkit::impl {
 
-std::string VectorElement::ClassName() {
-  return "VectorElement";
-}
+#include "../../../shared/components/VectorElement.cc"
 
 void VectorElement::setLineWidth(float width) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;

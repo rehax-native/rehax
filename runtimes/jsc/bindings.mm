@@ -23,13 +23,19 @@ struct Converter<std::string> {
     return (JSValueRef) jsText;
   }
   static std::string toCpp(JSContextRef ctx, const JSValueRef str, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    size_t maxBufferSize = JSStringGetMaximumUTF8CStringSize((JSStringRef) str);
-    char* utf8Buffer = new char[maxBufferSize];
-    size_t bytesWritten = JSStringGetUTF8CString((JSStringRef) str, utf8Buffer, maxBufferSize);
-    utf8Buffer[bytesWritten] = '\0';
-    std::string ret = std::string(utf8Buffer);
-    delete [] utf8Buffer;
-    return ret;
+    if (JSValueIsString(ctx, str)) {
+      if (JSStringGetLength((JSStringRef) str) == 0) {
+        return "";
+      }
+      size_t maxBufferSize = JSStringGetMaximumUTF8CStringSize((JSStringRef) str);
+      char* utf8Buffer = new char[maxBufferSize];
+      size_t bytesWritten = JSStringGetUTF8CString((JSStringRef) str, utf8Buffer, maxBufferSize);
+      utf8Buffer[bytesWritten] = '\0';
+      std::string ret = std::string(utf8Buffer);
+      delete [] utf8Buffer;
+      return ret;
+    }
+    return "";
   }
 };
 
@@ -165,133 +171,137 @@ struct Converter<std::function<void(float, float)>> {
 };
 
 template <>
-struct Converter<rehax::ui::appkit::StackLayoutDirection> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::appkit::StackLayoutDirection& value) {
-    if (value == ui::appkit::StackLayoutDirection::Vertical) {
+struct Converter<rehax::ui::StackLayoutDirection> {
+  static JSValueRef toScript(JSContextRef ctx, rehax::ui::StackLayoutDirection& value) {
+    if (value == ui::StackLayoutDirection::Vertical) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Vertical"));
     }
-    if (value == ui::appkit::StackLayoutDirection::Horizontal) {
+    if (value == ui::StackLayoutDirection::Horizontal) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Horizontal"));
     }
   }
-  static rehax::ui::appkit::StackLayoutDirection toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("Horizontal"), (JSStringRef) value)) {
-      return ui::appkit::StackLayoutDirection::Horizontal;
+  static rehax::ui::StackLayoutDirection toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+    if (val == "Horizontal") {
+      return ui::StackLayoutDirection::Horizontal;
     }
-    return ui::appkit::StackLayoutDirection::Vertical;
+    return ui::StackLayoutDirection::Vertical;
   }
 };
 
 template <>
-struct Converter<rehax::ui::appkit::StackLayoutOptions> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::appkit::StackLayoutOptions& value) {
+struct Converter<rehax::ui::StackLayoutOptions> {
+  static JSValueRef toScript(JSContextRef ctx, rehax::ui::StackLayoutOptions& value) {
     auto obj = JSObjectMake(ctx, nullptr, nullptr);
     JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("spacing"), Converter<float>::toScript(ctx, value.spacing), kJSPropertyAttributeNone, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("direction"), Converter<rehax::ui::appkit::StackLayoutDirection>::toScript(ctx, value.direction), kJSPropertyAttributeNone, nullptr);
+    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("direction"), Converter<rehax::ui::StackLayoutDirection>::toScript(ctx, value.direction), kJSPropertyAttributeNone, nullptr);
     return obj;
   }
-  static rehax::ui::appkit::StackLayoutOptions toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    rehax::ui::appkit::StackLayoutOptions options;
+  static rehax::ui::StackLayoutOptions toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    rehax::ui::StackLayoutOptions options;
     if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("spacing"))) {
       options.spacing = Converter<float>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("spacing"), nullptr), bindings, retainedValues);
     }
     if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("direction"))) {
-      options.direction = Converter<rehax::ui::appkit::StackLayoutDirection>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("direction"), nullptr), bindings, retainedValues);
+      options.direction = Converter<rehax::ui::StackLayoutDirection>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("direction"), nullptr), bindings, retainedValues);
     }
     return options;
   }
 };
 
 template <>
-struct Converter<rehax::ui::appkit::FlexLayoutDirection> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::appkit::FlexLayoutDirection& value) {
-    if (value == ui::appkit::FlexLayoutDirection::Column) {
+struct Converter<rehax::ui::FlexLayoutDirection> {
+  static JSValueRef toScript(JSContextRef ctx, rehax::ui::FlexLayoutDirection& value) {
+    if (value == ui::FlexLayoutDirection::Column) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Column"));
     }
-    if (value == ui::appkit::FlexLayoutDirection::ColumnReverse) {
+    if (value == ui::FlexLayoutDirection::ColumnReverse) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("ColumnReverse"));
     }
-    if (value == ui::appkit::FlexLayoutDirection::Row) {
+    if (value == ui::FlexLayoutDirection::Row) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Row"));
     }
-    if (value == ui::appkit::FlexLayoutDirection::RowReverse) {
+    if (value == ui::FlexLayoutDirection::RowReverse) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("RowReverse"));
     }
   }
-  static rehax::ui::appkit::FlexLayoutDirection toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("Column"), (JSStringRef) value)) {
-      return ui::appkit::FlexLayoutDirection::Column;
+  static rehax::ui::FlexLayoutDirection toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+    if (val == "Column") {
+      return ui::FlexLayoutDirection::Column;
     }
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("ColumnReverse"), (JSStringRef) value)) {
-      return ui::appkit::FlexLayoutDirection::ColumnReverse;
+    if (val == "ColumnReverse") {
+      return ui::FlexLayoutDirection::ColumnReverse;
     }
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("RowReverse"), (JSStringRef) value)) {
-      return ui::appkit::FlexLayoutDirection::RowReverse;
+    if (val == "RowReverse") {
+      return ui::FlexLayoutDirection::RowReverse;
     }
-    return ui::appkit::FlexLayoutDirection::Row;
+    return ui::FlexLayoutDirection::Row;
   }
 };
 
 template <>
-struct Converter<rehax::ui::appkit::FlexJustifyContent> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::appkit::FlexJustifyContent& value) {
-    if (value == ui::appkit::FlexJustifyContent::FlexStart) {
+struct Converter<rehax::ui::FlexJustifyContent> {
+  static JSValueRef toScript(JSContextRef ctx, rehax::ui::FlexJustifyContent& value) {
+    if (value == ui::FlexJustifyContent::FlexStart) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("FlexStart"));
     }
-    if (value == ui::appkit::FlexJustifyContent::FlexEnd) {
+    if (value == ui::FlexJustifyContent::FlexEnd) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("FlexEnd"));
     }
-    if (value == ui::appkit::FlexJustifyContent::Center) {
+    if (value == ui::FlexJustifyContent::Center) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Center"));
     }
   }
-  static rehax::ui::appkit::FlexJustifyContent toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("FlexEnd"), (JSStringRef) value)) {
-      return ui::appkit::FlexJustifyContent::FlexEnd;
+  static rehax::ui::FlexJustifyContent toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+    if (val == "FlexEnd") {
+      return ui::FlexJustifyContent::FlexEnd;
     }
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("Center"), (JSStringRef) value)) {
-      return ui::appkit::FlexJustifyContent::Center;
+    if (val == "Center") {
+      return ui::FlexJustifyContent::Center;
     }
-    return ui::appkit::FlexJustifyContent::FlexStart;
+    return ui::FlexJustifyContent::FlexStart;
   }
 };
 
 template <>
-struct Converter<rehax::ui::appkit::FlexAlignItems> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::appkit::FlexAlignItems& value) {
-    if (value == ui::appkit::FlexAlignItems::FlexStart) {
+struct Converter<rehax::ui::FlexAlignItems> {
+  static JSValueRef toScript(JSContextRef ctx, rehax::ui::FlexAlignItems& value) {
+    if (value == ui::FlexAlignItems::FlexStart) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("FlexStart"));
     }
-    if (value == ui::appkit::FlexAlignItems::FlexEnd) {
+    if (value == ui::FlexAlignItems::FlexEnd) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("FlexEnd"));
     }
-    if (value == ui::appkit::FlexAlignItems::Center) {
+    if (value == ui::FlexAlignItems::Center) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Center"));
     }
   }
-  static rehax::ui::appkit::FlexAlignItems toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("FlexEnd"), (JSStringRef) value)) {
-      return ui::appkit::FlexAlignItems::FlexEnd;
+  static rehax::ui::FlexAlignItems toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+    if (val == "FlexEnd") {
+      return ui::FlexAlignItems::FlexEnd;
     }
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("Center"), (JSStringRef) value)) {
-      return ui::appkit::FlexAlignItems::Center;
+    if (val == "Center") {
+      return ui::FlexAlignItems::Center;
     }
-    return ui::appkit::FlexAlignItems::FlexStart;
+    return ui::FlexAlignItems::FlexStart;
   }
 };
 
 template <>
-struct Converter<rehax::ui::appkit::impl::FlexItem> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::appkit::impl::FlexItem& value) {
+struct Converter<rehax::ui::FlexItem> {
+  static JSValueRef toScript(JSContextRef ctx, rehax::ui::FlexItem& value) {
     auto obj = JSObjectMake(ctx, nullptr, nullptr);
     JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("flexGrow"), Converter<float>::toScript(ctx, value.flexGrow), kJSPropertyAttributeNone, nullptr);
     JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("hasFlexGrow"), Converter<bool>::toScript(ctx, value.hasFlexGrow), kJSPropertyAttributeNone, nullptr);
     JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("order"), Converter<int>::toScript(ctx, value.order), kJSPropertyAttributeNone, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("alignSelf"), Converter<rehax::ui::appkit::FlexAlignItems>::toScript(ctx, value.alignSelf), kJSPropertyAttributeNone, nullptr);
+    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("alignSelf"), Converter<rehax::ui::FlexAlignItems>::toScript(ctx, value.alignSelf), kJSPropertyAttributeNone, nullptr);
     return obj;
   }
-  static rehax::ui::appkit::impl::FlexItem toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    rehax::ui::appkit::impl::FlexItem flexItem;
+  static rehax::ui::FlexItem toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    rehax::ui::FlexItem flexItem;
     if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("flexGrow"))) {
       flexItem.flexGrow = Converter<float>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("flexGrow"), nullptr), bindings, retainedValues);
     }
@@ -302,44 +312,44 @@ struct Converter<rehax::ui::appkit::impl::FlexItem> {
       flexItem.hasFlexGrow = Converter<int>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("order"), nullptr), bindings, retainedValues);
     }
     if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("alignSelf"))) {
-      flexItem.alignSelf = Converter<rehax::ui::appkit::FlexAlignItems>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("alignSelf"), nullptr), bindings, retainedValues);
+      flexItem.alignSelf = Converter<rehax::ui::FlexAlignItems>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("alignSelf"), nullptr), bindings, retainedValues);
     }
     return flexItem;
   }
 };
 
 template <>
-struct Converter<rehax::ui::appkit::FlexLayoutOptions> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::appkit::FlexLayoutOptions& value) {
+struct Converter<rehax::ui::FlexLayoutOptions> {
+  static JSValueRef toScript(JSContextRef ctx, rehax::ui::FlexLayoutOptions& value) {
     auto obj = JSObjectMake(ctx, nullptr, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("direction"), Converter<rehax::ui::appkit::FlexLayoutDirection>::toScript(ctx, value.direction), kJSPropertyAttributeNone, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("justifyContent"), Converter<rehax::ui::appkit::FlexJustifyContent>::toScript(ctx, value.justifyContent), kJSPropertyAttributeNone, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("alignItems"), Converter<rehax::ui::appkit::FlexAlignItems>::toScript(ctx, value.alignItems), kJSPropertyAttributeNone, nullptr);
+    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("direction"), Converter<rehax::ui::FlexLayoutDirection>::toScript(ctx, value.direction), kJSPropertyAttributeNone, nullptr);
+    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("justifyContent"), Converter<rehax::ui::FlexJustifyContent>::toScript(ctx, value.justifyContent), kJSPropertyAttributeNone, nullptr);
+    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("alignItems"), Converter<rehax::ui::FlexAlignItems>::toScript(ctx, value.alignItems), kJSPropertyAttributeNone, nullptr);
     auto arr = JSObjectMakeArray(ctx, 0, {}, NULL);
     for (int i = 0; i < value.items.size(); i++) {
-      auto js = Converter<rehax::ui::appkit::impl::FlexItem>::toScript(ctx, value.items[i]);
+      auto js = Converter<rehax::ui::FlexItem>::toScript(ctx, value.items[i]);
       JSObjectSetPropertyAtIndex(ctx, arr, i, js, nullptr);
     }
     JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("items"), arr, kJSPropertyAttributeNone, nullptr);
     return obj;
   }
-  static rehax::ui::appkit::FlexLayoutOptions toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    rehax::ui::appkit::FlexLayoutOptions options;
+  static rehax::ui::FlexLayoutOptions toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    rehax::ui::FlexLayoutOptions options;
     if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("direction"))) {
-      options.direction = Converter<rehax::ui::appkit::FlexLayoutDirection>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("direction"), nullptr), bindings, retainedValues);
+      options.direction = Converter<rehax::ui::FlexLayoutDirection>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("direction"), nullptr), bindings, retainedValues);
     }
     if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("justifyContent"))) {
-      options.justifyContent = Converter<rehax::ui::appkit::FlexJustifyContent>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("justifyContent"), nullptr), bindings, retainedValues);
+      options.justifyContent = Converter<rehax::ui::FlexJustifyContent>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("justifyContent"), nullptr), bindings, retainedValues);
     }
     if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("alignItems"))) {
-      options.alignItems = Converter<rehax::ui::appkit::FlexAlignItems>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("alignItems"), nullptr), bindings, retainedValues);
+      options.alignItems = Converter<rehax::ui::FlexAlignItems>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("alignItems"), nullptr), bindings, retainedValues);
     }
     if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("items"))) {
       JSValueRef items = JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("items"), nullptr);
       int length = Converter<int>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("length"), nullptr), bindings, retainedValues);
       for (int i = 0; i < length; i++) {
         auto item = JSObjectGetPropertyAtIndex(ctx, (JSObjectRef) items, i, nullptr);
-        options.items.push_back(Converter<rehax::ui::appkit::impl::FlexItem>::toCpp(ctx, item, bindings, retainedValues));
+        options.items.push_back(Converter<rehax::ui::FlexItem>::toCpp(ctx, item, bindings, retainedValues));
       }
     }
     return options;
@@ -347,105 +357,108 @@ struct Converter<rehax::ui::appkit::FlexLayoutOptions> {
 };
 
 template <>
-struct Converter<rehax::ui::appkit::GestureState> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::appkit::GestureState& value) {
-    if (value == ui::appkit::GestureState::Possible) {
+struct Converter<rehax::ui::GestureState> {
+  static JSValueRef toScript(JSContextRef ctx, rehax::ui::GestureState& value) {
+    if (value == ui::GestureState::Possible) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Possible"));
     }
-    if (value == ui::appkit::GestureState::Recognized) {
+    if (value == ui::GestureState::Recognized) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Recognized"));
     }
-    if (value == ui::appkit::GestureState::Began) {
+    if (value == ui::GestureState::Began) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Began"));
     }
-    if (value == ui::appkit::GestureState::Changed) {
+    if (value == ui::GestureState::Changed) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Changed"));
     }
-    if (value == ui::appkit::GestureState::Canceled) {
+    if (value == ui::GestureState::Canceled) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Canceled"));
     }
-    if (value == ui::appkit::GestureState::Ended) {
+    if (value == ui::GestureState::Ended) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Ended"));
     }
   }
-  static rehax::ui::appkit::GestureState toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("Recognized"), (JSStringRef) value)) {
-      return ui::appkit::GestureState::Recognized;
+  static rehax::ui::GestureState toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+    if (val == "Recognized") {
+      return ui::GestureState::Recognized;
     }
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("Began"), (JSStringRef) value)) {
-      return ui::appkit::GestureState::Began;
+    if (val == "Began") {
+      return ui::GestureState::Began;
     }
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("Changed"), (JSStringRef) value)) {
-      return ui::appkit::GestureState::Changed;
+    if (val == "Changed") {
+      return ui::GestureState::Changed;
     }
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("Canceled"), (JSStringRef) value)) {
-      return ui::appkit::GestureState::Canceled;
+    if (val == "Canceled") {
+      return ui::GestureState::Canceled;
     }
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("Ended"), (JSStringRef) value)) {
-      return ui::appkit::GestureState::Ended;
+    if (val == "Ended") {
+      return ui::GestureState::Ended;
     }
-    return ui::appkit::GestureState::Possible;
+    return ui::GestureState::Possible;
   }
 };
 
 template <>
-struct Converter<rehax::ui::appkit::VectorLineCap> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::appkit::VectorLineCap& value) {
-    if (value == ui::appkit::VectorLineCap::Butt) {
+struct Converter<rehax::ui::VectorLineCap> {
+  static JSValueRef toScript(JSContextRef ctx, rehax::ui::VectorLineCap& value) {
+    if (value == ui::VectorLineCap::Butt) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Butt"));
     }
-    if (value == ui::appkit::VectorLineCap::Square) {
+    if (value == ui::VectorLineCap::Square) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Square"));
     }
-    if (value == ui::appkit::VectorLineCap::Round) {
+    if (value == ui::VectorLineCap::Round) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Round"));
     }
   }
-  static rehax::ui::appkit::VectorLineCap toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("Square"), (JSStringRef) value)) {
-      return ui::appkit::VectorLineCap::Square;
+  static rehax::ui::VectorLineCap toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+    if (val == "Square") {
+      return ui::VectorLineCap::Square;
     }
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("Round"), (JSStringRef) value)) {
-      return ui::appkit::VectorLineCap::Round;
+    if (val == "Round") {
+      return ui::VectorLineCap::Round;
     }
-    return ui::appkit::VectorLineCap::Butt;
+    return ui::VectorLineCap::Butt;
   }
 };
 
 template <>
-struct Converter<rehax::ui::appkit::VectorLineJoin> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::appkit::VectorLineJoin& value) {
-    if (value == ui::appkit::VectorLineJoin::Miter) {
+struct Converter<rehax::ui::VectorLineJoin> {
+  static JSValueRef toScript(JSContextRef ctx, rehax::ui::VectorLineJoin& value) {
+    if (value == ui::VectorLineJoin::Miter) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Miter"));
     }
-    if (value == ui::appkit::VectorLineJoin::Round) {
+    if (value == ui::VectorLineJoin::Round) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Round"));
     }
-    if (value == ui::appkit::VectorLineJoin::Bevel) {
+    if (value == ui::VectorLineJoin::Bevel) {
       return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Bevel"));
     }
   }
-  static rehax::ui::appkit::VectorLineJoin toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("Round"), (JSStringRef) value)) {
-      return ui::appkit::VectorLineJoin::Round;
+  static rehax::ui::VectorLineJoin toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+    if (val == "Round") {
+      return ui::VectorLineJoin::Round;
     }
-    if (JSStringIsEqual(JSStringCreateWithUTF8CString("Bevel"), (JSStringRef) value)) {
-      return ui::appkit::VectorLineJoin::Bevel;
+    if (val == "Bevel") {
+      return ui::VectorLineJoin::Bevel;
     }
-    return ui::appkit::VectorLineJoin::Miter;
+    return ui::VectorLineJoin::Miter;
   }
 };
 
 template <>
-struct Converter<rehax::ui::appkit::GradientStop> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::appkit::GradientStop& value) {
+struct Converter<rehax::ui::GradientStop> {
+  static JSValueRef toScript(JSContextRef ctx, rehax::ui::GradientStop& value) {
     auto obj = JSObjectMake(ctx, nullptr, nullptr);
     JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("color"), Converter<rehax::ui::Color>::toScript(ctx, value.color), kJSPropertyAttributeNone, nullptr);
     JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("offset"), Converter<float>::toScript(ctx, value.offset), kJSPropertyAttributeNone, nullptr);
     return obj;
   }
-  static rehax::ui::appkit::GradientStop toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    rehax::ui::appkit::impl::GradientStop stop;
+  static rehax::ui::GradientStop toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    rehax::ui::GradientStop stop;
     if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("color"))) {
       stop.color = Converter<rehax::ui::Color>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("color"), nullptr), bindings, retainedValues);
     }
@@ -457,25 +470,25 @@ struct Converter<rehax::ui::appkit::GradientStop> {
 };
 
 template <>
-struct Converter<rehax::ui::appkit::Gradient> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::appkit::Gradient& value) {
+struct Converter<rehax::ui::Gradient> {
+  static JSValueRef toScript(JSContextRef ctx, rehax::ui::Gradient& value) {
     auto obj = JSObjectMake(ctx, nullptr, nullptr);
     auto arr = JSObjectMakeArray(ctx, 0, {}, NULL);
     for (int i = 0; i < value.stops.size(); i++) {
-      auto js = Converter<rehax::ui::appkit::GradientStop>::toScript(ctx, value.stops[i]);
+      auto js = Converter<rehax::ui::GradientStop>::toScript(ctx, value.stops[i]);
       JSObjectSetPropertyAtIndex(ctx, arr, i, js, nullptr);
     }
     JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("stops"), arr, kJSPropertyAttributeNone, nullptr);
     return obj;
   }
-  static rehax::ui::appkit::Gradient toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    rehax::ui::appkit::Gradient gradient;
+  static rehax::ui::Gradient toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    rehax::ui::Gradient gradient;
     if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("stops"))) {
       JSValueRef items = JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("stops"), nullptr);
       int length = Converter<int>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("length"), nullptr), bindings, retainedValues);
       for (int i = 0; i < length; i++) {
         auto item = JSObjectGetPropertyAtIndex(ctx, (JSObjectRef) items, i, nullptr);
-        gradient.stops.push_back(Converter<rehax::ui::appkit::GradientStop>::toCpp(ctx, item, bindings, retainedValues));
+        gradient.stops.push_back(Converter<rehax::ui::GradientStop>::toCpp(ctx, item, bindings, retainedValues));
       }
     }
     return gradient;
@@ -483,15 +496,15 @@ struct Converter<rehax::ui::appkit::Gradient> {
 };
 
 template <>
-struct Converter<rehax::ui::appkit::FilterDef> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::appkit::FilterDef& value) {
+struct Converter<rehax::ui::FilterDef> {
+  static JSValueRef toScript(JSContextRef ctx, rehax::ui::FilterDef& value) {
     auto obj = JSObjectMake(ctx, nullptr, nullptr);
     JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("type"), Converter<int>::toScript(ctx, value.type), kJSPropertyAttributeNone, nullptr);
     JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("blurRadius"), Converter<float>::toScript(ctx, value.blurRadius), kJSPropertyAttributeNone, nullptr);
     return obj;
   }
-  static rehax::ui::appkit::FilterDef toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    rehax::ui::appkit::impl::FilterDef def;
+  static rehax::ui::FilterDef toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    rehax::ui::FilterDef def;
     if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("type"))) {
       def.type = Converter<int>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("type"), nullptr), bindings, retainedValues);
     }
@@ -503,25 +516,25 @@ struct Converter<rehax::ui::appkit::FilterDef> {
 };
 
 template <>
-struct Converter<rehax::ui::appkit::Filters> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::appkit::Filters& value) {
+struct Converter<rehax::ui::Filters> {
+  static JSValueRef toScript(JSContextRef ctx, rehax::ui::Filters& value) {
     auto obj = JSObjectMake(ctx, nullptr, nullptr);
     auto arr = JSObjectMakeArray(ctx, 0, {}, NULL);
     for (int i = 0; i < value.defs.size(); i++) {
-      auto js = Converter<rehax::ui::appkit::FilterDef>::toScript(ctx, value.defs[i]);
+      auto js = Converter<rehax::ui::FilterDef>::toScript(ctx, value.defs[i]);
       JSObjectSetPropertyAtIndex(ctx, arr, i, js, nullptr);
     }
     JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("defs"), arr, kJSPropertyAttributeNone, nullptr);
     return obj;
   }
-  static rehax::ui::appkit::Filters toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    rehax::ui::appkit::Filters filters;
+  static rehax::ui::Filters toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    rehax::ui::Filters filters;
     if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("defs"))) {
       JSValueRef items = JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("defs"), nullptr);
-      int length = Converter<int>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("length"), nullptr), bindings, retainedValues);
+      int length = Converter<int>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) items, JSStringCreateWithUTF8CString("length"), nullptr), bindings, retainedValues);
       for (int i = 0; i < length; i++) {
         auto item = JSObjectGetPropertyAtIndex(ctx, (JSObjectRef) items, i, nullptr);
-        filters.defs.push_back(Converter<rehax::ui::appkit::FilterDef>::toCpp(ctx, item, bindings, retainedValues));
+        filters.defs.push_back(Converter<rehax::ui::FilterDef>::toCpp(ctx, item, bindings, retainedValues));
       }
     }
     return filters;
@@ -574,9 +587,13 @@ void Bindings::defineViewClass(JSContextRef ctx, std::string name, JSObjectRef p
   instanceDefine.finalize = [] (JSObjectRef thiz) {
     auto privateData = static_cast<ViewPrivateData<View> *>(JSObjectGetPrivate(thiz));
     auto ctx = privateData->ctx;
+      
+      std::cout << "GC " << privateData->view->instanceClassName() << " " << privateData->view->getReferenceCount() << std::endl;
 
+    // The value cannot be unprotected here, as GCing views doesn't mean the're actually destroyed.
+    // Therefore the retainted values can still be used in callbacks etc.
     for (auto value : privateData->retainedValues) {
-      JSValueUnprotect(ctx, value);
+//      JSValueUnprotect(ctx, value);
     }
 
     privateData->view->decreaseReferenceCount();
@@ -584,6 +601,7 @@ void Bindings::defineViewClass(JSContextRef ctx, std::string name, JSObjectRef p
   };
   
   JSObjectRef prototypeObject = JSObjectMake(ctx, nullptr, nullptr);
+  JSValueProtect(ctx, prototypeObject);
   if (parentPrototype != nullptr) {
     JSObjectSetPrototype(ctx, prototypeObject, parentPrototype);
   }
@@ -858,12 +876,15 @@ void bindMethod(std::string name, JSContextRef ctx, JSObjectRef prototype) {
 }
 
 
-template <typename View, typename Layout>
+template <typename View, typename Layout, typename Gesture>
 void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype) {
   bindMethod<View, std::string, &View::description>("toString", ctx, prototype);
   bindMethod<View, &View::removeFromParent>("removeFromParent", ctx, prototype);
   bindMethod<View, float, &View::setWidthFixed>("setWidthFixed", ctx, prototype);
   bindMethod<View, float, &View::setHeightFixed>("setHeightFixed", ctx, prototype);
+  bindMethod<View, float, &View::setWidthPercentage>("setWidthPercentage", ctx, prototype);
+  bindMethod<View, float, &View::setWidthPercentage>("setWidthPercentage", ctx, prototype);
+  bindMethod<View, &View::layout>("layout", ctx, prototype);
     
   {
     JSStringRef methodName = JSStringCreateWithUTF8CString("addView");
@@ -978,7 +999,7 @@ void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype) {
         return JSValueMakeNull(ctx);
       }
       auto children = parent->getChildren();
-      auto it = children.find(view);
+      auto it = std::find(children.end(), children.begin(), view);
       it++;
       if (it == children.end()) {
         return JSValueMakeNull(ctx);
@@ -1019,6 +1040,29 @@ void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype) {
     });
     #endif
   }
+  {
+    JSStringRef methodName = JSStringCreateWithUTF8CString("addGesture");
+    auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+      auto privateData = static_cast<ViewPrivateData<View> *>(JSObjectGetPrivate(thisObject));
+      auto view = privateData->view;
+
+      auto gesturePrivateData = static_cast<ViewPrivateData<Gesture> *>(JSObjectGetPrivate((JSObjectRef) arguments[0]));
+      auto gesture = gesturePrivateData->view;
+
+      view->addGesture(gesture);
+      return JSValueMakeUndefined(ctx);
+    });
+    JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+      
+    #if RHX_GEN_DOCS
+    jscDocs.collectMethod<View>({
+      .name = std::string("addGesture"),
+      .arguments = std::vector<rehax::docs::ArgumentDocs> {
+        rehax::docs::ArgumentDocs { .type = std::string_view("Gesture"), },
+      }
+    });
+    #endif
+  }
 
 }
 
@@ -1046,13 +1090,13 @@ void bindTextInputClassMethods(JSContextRef ctx, JSObjectRef prototype) {
 template <typename View>
 void bindVectorElementClassMethods(JSContextRef ctx, JSObjectRef prototype) {
   bindMethod<View, float, &View::setLineWidth>("setLineWidth", ctx, prototype);
-  bindMethod<View, rehax::ui::appkit::VectorLineJoin, &View::setLineJoin>("setLineJoin", ctx, prototype);
-  bindMethod<View, rehax::ui::appkit::VectorLineCap, &View::setLineCap>("setLineCap", ctx, prototype);
+  bindMethod<View, rehax::ui::VectorLineJoin, &View::setLineJoin>("setLineJoin", ctx, prototype);
+  bindMethod<View, rehax::ui::VectorLineCap, &View::setLineCap>("setLineCap", ctx, prototype);
   bindMethod<View, rehax::ui::Color, &View::setFillColor>("setFillColor", ctx, prototype);
   bindMethod<View, rehax::ui::Color, &View::setStrokeColor>("setStrokeColor", ctx, prototype);
-  bindMethod<View, rehax::ui::appkit::Gradient, &View::setFillGradient>("setFillGradient", ctx, prototype);
-  bindMethod<View, rehax::ui::appkit::Gradient, &View::setStrokeGradient>("setStrokeGradient", ctx, prototype);
-  bindMethod<View, rehax::ui::appkit::Filters, &View::setFilters>("setFilters", ctx, prototype);
+  bindMethod<View, rehax::ui::Gradient, &View::setFillGradient>("setFillGradient", ctx, prototype);
+  bindMethod<View, rehax::ui::Gradient, &View::setStrokeGradient>("setStrokeGradient", ctx, prototype);
+  bindMethod<View, rehax::ui::Filters, &View::setFilters>("setFilters", ctx, prototype);
 }
 
 template <typename View>
@@ -1070,20 +1114,20 @@ void bindVectorPathClassMethods(JSContextRef ctx, JSObjectRef prototype) {
   bindMethod<View, &View::endPath>("endPath", ctx, prototype);
 }
 
-template <typename Layout>
+template <typename Layout, typename View>
 void bindStackLayoutClassMethods(JSContextRef ctx, JSObjectRef prototype) {
-  bindMethod<Layout, rehax::ui::appkit::StackLayoutOptions, &Layout::setOptions>("setOptions", ctx, prototype);
+  bindMethod<Layout, rehax::ui::StackLayoutOptions, &Layout::setOptions>("setOptions", ctx, prototype);
 }
 
-template <typename Layout>
+template <typename Layout, typename View>
 void bindFlexLayoutClassMethods(JSContextRef ctx, JSObjectRef prototype) {
-  bindMethod<Layout, rehax::ui::appkit::FlexLayoutOptions, &Layout::setOptions>("setOptions", ctx, prototype);
+  bindMethod<Layout, rehax::ui::FlexLayoutOptions, &Layout::setOptions>("setOptions", ctx, prototype);
 }
 
 template <typename Gesture>
 void bindGestureClassMethods(JSContextRef ctx, JSObjectRef prototype) {
   bindMethod<Gesture, std::function<void(void)>, std::function<void(float, float)>, std::function<void(float, float)>, std::function<void(float, float)>, &Gesture::setup>("setup", ctx, prototype);
-  bindMethod<Gesture, rehax::ui::appkit::GestureState, &Gesture::setState>("setState", ctx, prototype);
+  bindMethod<Gesture, rehax::ui::GestureState, &Gesture::setState>("setState", ctx, prototype);
 }
 
 
@@ -1097,13 +1141,13 @@ void Bindings::bindAppkitToJsc() {
 #endif
 #if RHX_GEN_DOCS
   jscDocs.collectType("StackLayoutOptions", rehax::docs::TypeDocs {
-    .type = rehax::docs::get_type_name<rehax::ui::appkit::StackLayoutOptions>(),
+    .type = rehax::docs::get_type_name<rehax::ui::StackLayoutOptions>(),
     .note = "Converts from/to an object with shape `{ spacing: float, direction: 'Horizontal' | 'Vertical' }`.",
   });
 #endif
 #if RHX_GEN_DOCS
   jscDocs.collectType("FlexLayoutOptions", rehax::docs::TypeDocs {
-    .type = rehax::docs::get_type_name<rehax::ui::appkit::FlexLayoutOptions>(),
+    .type = rehax::docs::get_type_name<rehax::ui::FlexLayoutOptions>(),
     .note = "Converts from/to an object with shape `{ direction: 'Column' | 'ColumnReverse' | 'Row' | 'RowReverse', TODO }`.",
   });
 #endif
@@ -1119,15 +1163,15 @@ void Bindings::bindAppkitToJsc() {
   defineViewClass<rehax::ui::appkit::VectorElement>(ctx, "VectorElement", classRegistry["View"].prototype);
   defineViewClass<rehax::ui::appkit::VectorPath>(ctx, "VectorPath", classRegistry["VectorElement"].prototype);
 
-  bindViewClassMethods<rehax::ui::appkit::View, rehax::ui::appkit::impl::ILayout>(ctx, classRegistry["View"].prototype);
+  bindViewClassMethods<rehax::ui::appkit::View, rehax::ui::appkit::impl::ILayout, rehax::ui::appkit::Gesture>(ctx, classRegistry["View"].prototype);
   bindButtonClassMethods<rehax::ui::appkit::Button>(ctx, classRegistry["Button"].prototype);
   bindTextClassMethods<rehax::ui::appkit::Text>(ctx, classRegistry["Text"].prototype);
   bindTextInputClassMethods<rehax::ui::appkit::TextInput>(ctx, classRegistry["TextInput"].prototype);
   bindVectorElementClassMethods<rehax::ui::appkit::VectorElement>(ctx, classRegistry["VectorElement"].prototype);
   bindVectorPathClassMethods<rehax::ui::appkit::VectorPath>(ctx, classRegistry["VectorPath"].prototype);
 
-  bindStackLayoutClassMethods<rehax::ui::appkit::StackLayout>(ctx, classRegistry["StackLayout"].prototype);
-  bindFlexLayoutClassMethods<rehax::ui::appkit::FlexLayout>(ctx, classRegistry["FlexLayout"].prototype);
+  bindStackLayoutClassMethods<rehax::ui::appkit::StackLayout, rehax::ui::appkit::View>(ctx, classRegistry["StackLayout"].prototype);
+  bindFlexLayoutClassMethods<rehax::ui::appkit::FlexLayout, rehax::ui::appkit::View>(ctx, classRegistry["FlexLayout"].prototype);
 
   defineViewClass<rehax::ui::appkit::Gesture>(ctx, "Gesture", nullptr);
   bindGestureClassMethods<rehax::ui::appkit::Gesture>(ctx, classRegistry["Gesture"].prototype);
@@ -1139,15 +1183,51 @@ void Bindings::bindAppkitToJsc() {
 
 #ifdef REHAX_WITH_FLUXE
 void Bindings::bindFluxeToJsc() {
-  defineViewClass<rehax::ui::fluxe::impl::View<rehax::ui::RefCountedPointer>>(ctx, "View", nullptr);
-  defineViewClass<rehax::ui::fluxe::impl::Button<rehax::ui::RefCountedPointer>>(ctx, "Button", classRegistry["View"].prototype);
-  defineViewClass<rehax::ui::fluxe::impl::Text<rehax::ui::RefCountedPointer>>(ctx, "Text", classRegistry["View"].prototype);
-  defineViewClass<rehax::ui::fluxe::impl::TextInput<rehax::ui::RefCountedPointer>>(ctx, "TextInput", classRegistry["View"].prototype);
+#if RHX_GEN_DOCS
+  jscDocs.collectType("Color", rehax::docs::TypeDocs {
+    .type = rehax::docs::get_type_name<rehax::ui::Color>(),
+    .note = "Converts from/to an object with shape `{ red: number, green: number, blue: number, alpha: number }`. The range for `alpha` is 0.0 - 1.0, and the ranges for the others is 0.0 - 255.0.",
+  });
+#endif
+#if RHX_GEN_DOCS
+  jscDocs.collectType("StackLayoutOptions", rehax::docs::TypeDocs {
+    .type = rehax::docs::get_type_name<rehax::ui::StackLayoutOptions>(),
+    .note = "Converts from/to an object with shape `{ spacing: float, direction: 'Horizontal' | 'Vertical' }`.",
+  });
+#endif
+#if RHX_GEN_DOCS
+  jscDocs.collectType("FlexLayoutOptions", rehax::docs::TypeDocs {
+    .type = rehax::docs::get_type_name<rehax::ui::FlexLayoutOptions>(),
+    .note = "Converts from/to an object with shape `{ direction: 'Column' | 'ColumnReverse' | 'Row' | 'RowReverse', TODO }`.",
+  });
+#endif
+    
+  defineViewClass<rehax::ui::fluxe::StackLayout>(ctx, "StackLayout", nullptr);
+  defineViewClass<rehax::ui::fluxe::FlexLayout>(ctx, "FlexLayout", nullptr);
 
-  bindViewClassMethods<rehax::ui::fluxe::impl::View<rehax::ui::RefCountedPointer>>(ctx, classRegistry["View"].prototype);
-  bindButtonClassMethods<rehax::ui::fluxe::impl::Button<rehax::ui::RefCountedPointer>>(ctx, classRegistry["Button"].prototype);
-  bindTextClassMethods<rehax::ui::fluxe::impl::Text<rehax::ui::RefCountedPointer>>(ctx, classRegistry["Text"].prototype);
-  bindTextInputClassMethods<rehax::ui::fluxe::impl::TextInput<rehax::ui::RefCountedPointer>>(ctx, classRegistry["TextInput"].prototype);
+  defineViewClass<rehax::ui::fluxe::View>(ctx, "View", nullptr);
+  defineViewClass<rehax::ui::fluxe::Button>(ctx, "Button", classRegistry["View"].prototype);
+  defineViewClass<rehax::ui::fluxe::Text>(ctx, "Text", classRegistry["View"].prototype);
+  defineViewClass<rehax::ui::fluxe::TextInput>(ctx, "TextInput", classRegistry["View"].prototype);
+  defineViewClass<rehax::ui::fluxe::VectorContainer>(ctx, "VectorContainer", classRegistry["View"].prototype);
+  defineViewClass<rehax::ui::fluxe::VectorElement>(ctx, "VectorElement", classRegistry["View"].prototype);
+  defineViewClass<rehax::ui::fluxe::VectorPath>(ctx, "VectorPath", classRegistry["VectorElement"].prototype);
+
+  bindViewClassMethods<rehax::ui::fluxe::View, rehax::ui::fluxe::impl::ILayout, rehax::ui::fluxe::Gesture>(ctx, classRegistry["View"].prototype);
+  bindButtonClassMethods<rehax::ui::fluxe::Button>(ctx, classRegistry["Button"].prototype);
+  bindTextClassMethods<rehax::ui::fluxe::Text>(ctx, classRegistry["Text"].prototype);
+  bindTextInputClassMethods<rehax::ui::fluxe::TextInput>(ctx, classRegistry["TextInput"].prototype);
+  bindVectorElementClassMethods<rehax::ui::fluxe::VectorElement>(ctx, classRegistry["VectorElement"].prototype);
+  bindVectorPathClassMethods<rehax::ui::fluxe::VectorPath>(ctx, classRegistry["VectorPath"].prototype);
+
+  bindStackLayoutClassMethods<rehax::ui::fluxe::StackLayout, rehax::ui::fluxe::View>(ctx, classRegistry["StackLayout"].prototype);
+  bindFlexLayoutClassMethods<rehax::ui::fluxe::FlexLayout, rehax::ui::fluxe::View>(ctx, classRegistry["FlexLayout"].prototype);
+
+  defineViewClass<rehax::ui::fluxe::Gesture>(ctx, "Gesture", nullptr);
+  bindGestureClassMethods<rehax::ui::fluxe::Gesture>(ctx, classRegistry["Gesture"].prototype);
+
+  jscDocs.printJson();
+  jscDocs.printMarkdown();
 }
 #endif
 

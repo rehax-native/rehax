@@ -6,24 +6,7 @@
 
 namespace rehax::ui::appkit::impl {
 
-ObjectPointer<Text> Text::Create() {
-  auto ptr = Object<Text>::Create();
-  ptr->createNativeView();
-  return ptr;
-}
-
-ObjectPointer<Text> Text::CreateWithoutCreatingNativeView() {
-  auto ptr = Object<Text>::Create();
-  return ptr;
-}
-
-std::string Text::ClassName() {
-  return "Text";
-}
-
-std::string Text::instanceClassName() {
-  return Text::ClassName();
-}
+#include "../../../shared/components/Text.cc"
 
 std::string Text::description() {
   std::ostringstream stringStream;

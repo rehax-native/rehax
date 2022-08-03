@@ -17,19 +17,19 @@ using namespace rehax::ui::appkit;
 
 - (id)init
 {
-	if (self = [super init])
+  if (self = [super init])
   {
-		NSRect contentSize = NSMakeRect(0.0f, 0.0f, 480.0f, 320.0f);
-		self.window = [[NSWindow alloc] initWithContentRect:contentSize styleMask:NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:YES];
-		self.view = [[NSView alloc] initWithFrame:contentSize];
-	}
-	return self;
+    NSRect contentSize = NSMakeRect(0.0f, 0.0f, 480.0f, 320.0f);
+    self.window = [[NSWindow alloc] initWithContentRect:contentSize styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskResizable backing:NSBackingStoreBuffered defer:YES];
+    self.view = [[NSView alloc] initWithFrame:contentSize];
+  }
+  return self;
 }
 
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification
 {
-	[self.window setContentView:self.view];
+  [self.window setContentView:self.view];
 
   auto view = View::Create();
   view->setNativeViewRaw((__bridge void *) self.view);
@@ -51,7 +51,7 @@ using namespace rehax::ui::appkit;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-	[self.window makeKeyAndOrderFront:self];
+  [self.window makeKeyAndOrderFront:self];
 }
 
 @end
@@ -60,16 +60,16 @@ int main()
 {
   @autoreleasepool
   {
-		NSApplication * application = [NSApplication sharedApplication];
-		AppDelegate * applicationDelegate = [AppDelegate new];
-		[application setDelegate:applicationDelegate];
+    NSApplication * application = [NSApplication sharedApplication];
+    AppDelegate * applicationDelegate = [AppDelegate new];
+    [application setDelegate:applicationDelegate];
 		
-		ProcessSerialNumber psn = { 0, kCurrentProcess }; 
-		OSStatus returnCode = TransformProcessType(& psn, kProcessTransformToForegroundApplication);
+    ProcessSerialNumber psn = { 0, kCurrentProcess };
+    OSStatus returnCode = TransformProcessType(& psn, kProcessTransformToForegroundApplication);
 
-		[NSApp activateIgnoringOtherApps:YES];
-		[application run];
-	}
+    [NSApp activateIgnoringOtherApps:YES];
+    [application run];
+  }
 
   return 0;
 }

@@ -3,37 +3,14 @@
 #import <Cocoa/Cocoa.h>
 
 using namespace rehax::ui::appkit::impl;
+using namespace rehax::ui;
 
-ObjectPointer<FlexLayout> FlexLayout::Create() {
-  auto ptr = Object<FlexLayout>::Create();
-  return ptr;
-}
-
-std::string FlexLayout::ClassName() {
-  return "FlexLayout";
-}
-
-std::string FlexLayout::instanceClassName() {
-  return FlexLayout::ClassName();
-}
+#include "../../../shared/components/FlexLayout.cc"
 
 std::string FlexLayout::description() {
   std::ostringstream stringStream;
   stringStream << instanceClassName() << "/NSLayoutConstraints (Appkit) " << this;
   return stringStream.str();
-}
-
-FlexLayout::FlexLayout() {}
-
-FlexLayout::~FlexLayout() {
-  removeLayout(nullptr);
-}
-
-void FlexLayout::setOptions(FlexLayoutOptions flexLayoutOptions) {
-  isHorizontal = flexLayoutOptions.direction == FlexLayoutDirection::Column || flexLayoutOptions.direction == FlexLayoutDirection::ColumnReverse;
-  isReverse = flexLayoutOptions.direction == FlexLayoutDirection::RowReverse || flexLayoutOptions.direction == FlexLayoutDirection::ColumnReverse;
-  justifyContent = flexLayoutOptions.justifyContent;
-  alignItems = flexLayoutOptions.alignItems;
 }
 
 std::tuple<NSLayoutAttribute, NSLayoutAttribute, bool, NSLayoutAttribute> flexLayoutAttributeForAlign(bool isHorizontal, FlexAlignItems alignment) {

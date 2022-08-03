@@ -1,26 +1,20 @@
 #include "View.h"
 #include "../../../base.h"
-#include "../../../fluxe/fluxe/misc/Object.h"
 #include "../../../fluxe/fluxe/views/View.h"
-// #include "Gesture.h"
+#include "../layouts/StackLayout.h"
+#include "Gesture.h"
 
 namespace rehax::ui::fluxe::impl {
 
-template <typename Container>
-rehax::ui::fluxe::impl::View<Container>::View() {}
+#include "../../../shared/components/View.cc"
 
-template <typename Container>
-rehax::ui::fluxe::impl::View<Container>::~View() {}
-
-template <typename Container>
-void View<Container>::createNativeView() {
-  auto view = ::fluxe::Object<::fluxe::View>::Create();
+void View::createNativeView() {
+  auto view = ::rehaxUtils::Object<::fluxe::View>::Create();
   view->increaseReferenceCount();
   nativeView = view.get();
 }
 
-template <typename Container>
-void View<Container>::destroyNativeView() {
+void View::destroyNativeView() {
   if (nativeView != nullptr) {
     auto view = static_cast<::fluxe::View *>(nativeView);
     view->decreaseReferenceCount();
@@ -28,40 +22,32 @@ void View<Container>::destroyNativeView() {
   }
 }
 
-template <typename Container>
-void View<Container>::setNativeViewRaw(void * view) {
-  nativeView = view;
+std::string View::description() {
+  std::ostringstream stringStream;
+  stringStream << instanceClassName() << "/fluxe " << this;
+  return stringStream.str();
 }
 
-template <typename Container>
-void * View<Container>::getNativeView() {
-  return nativeView;
-}
-
-template <typename Container>
-void View<Container>::addNativeView(void * child) {
+void View::addNativeView(void * child) {
   auto view = static_cast<::fluxe::View *>(nativeView);
   auto childView = static_cast<::fluxe::View *>(child);
   view->addSubView(childView);
 }
 
-template <typename Container>
-void View<Container>::addNativeView(void * child, void * beforeChild) {
+void View::addNativeView(void * child, void * beforeChild) {
   auto view = static_cast<::fluxe::View *>(nativeView);
   auto childView = static_cast<::fluxe::View *>(child);
   auto beforeChildView = static_cast<::fluxe::View *>(beforeChild);
-  // view->addSubView(childView, beforeChildView);
+  view->addSubView(childView, beforeChildView);
 }
 
-template <typename Container>
-void View<Container>::removeNativeView(void * child) {
+void View::removeNativeView(void * child) {
   auto view = static_cast<::fluxe::View *>(nativeView);
   auto childView = static_cast<::fluxe::View *>(child);
   view->removeSubView(childView);
 }
 
-template <typename Container>
-void View<Container>::removeFromNativeParent() {
+void View::removeFromNativeParent() {
   auto view = static_cast<::fluxe::View *>(nativeView);
   auto parent = view->getParent();
   if (parent.isValid()) {
@@ -69,52 +55,40 @@ void View<Container>::removeFromNativeParent() {
   }
 }
 
-template <typename Container>
-void View<Container>::setWidthFill() {
+void View::setWidthFill() {
 }
 
-template <typename Container>
-void View<Container>::setHeightFill() {
+void View::setHeightFill() {
 }
 
-template <typename Container>
-void View<Container>::setWidthNatural() {
+void View::setWidthNatural() {
 }
 
-template <typename Container>
-void View<Container>::setHeightNatural() {
+void View::setHeightNatural() {
 }
 
-template <typename Container>
-void View<Container>::setWidthFixed(float width) {
+void View::setWidthFixed(float width) {
 }
 
-template <typename Container>
-void View<Container>::setHeightFixed(float height) {
+void View::setHeightFixed(float height) {
 }
 
-template <typename Container>
-void View<Container>::setWidthPercentage(float percentage) {
+void View::setWidthPercentage(float percentage) {
 }
 
-template <typename Container>
-void View<Container>::setHeightPercentage(float percentage) {
+void View::setHeightPercentage(float percentage) {
 }
 
-template <typename Container>
-void View<Container>::setNativeVerticalPositionNatural(void * previousView) {
+void View::setVerticalPositionNatural(ObjectPointer<View> previousView) {
 }
 
-template <typename Container>
-void View<Container>::setNativeHorizontalPositionNatural(void * previousView) {
+void View::setHorizontalPositionNatural(ObjectPointer<View> previousView) {
 }
 
-template <typename Container>
-void View<Container>::setVerticalPositionFixed(float y) {
+void View::setVerticalPositionFixed(float y) {
 }
 
-template <typename Container>
-void View<Container>::setHorizontalPositionFixed(float x) {
+void View::setHorizontalPositionFixed(float x) {
 }
 
 // void View<Container>::setBackgroundColor(rehax::ui::Color color)
@@ -126,25 +100,24 @@ void View<Container>::setHorizontalPositionFixed(float x) {
 //   [view.layer setBackgroundColor:[col CGColor]];
 // }
 
-template <typename Container>
-void View<Container>::setOpacity(float opacity) {
+void View::setOpacity(float opacity) {
 }
 
-// void rehax::View<Container>::addGesture(rehax::Gesture nativeGesture)
-// {
+void View::addGesture(ObjectPointer<Gesture> gesture) {
+  auto view = static_cast<::fluxe::View *>(nativeView);
+
+  auto listener = view->addEventListener<RehaxFluxeIEventListener>();
+  listener->callbacks = static_cast<GestureCallbackContainer *>(gesture->native);
+//  gesture->native = listener;
+}
+
+void View::removeGesture(ObjectPointer<Gesture> gesture)
+{
+    // [ TODO ]
 //   NSView * view = (__bridge NSView *) nativeView;
 //   NSGestureRecognizer * rec = (__bridge NSGestureRecognizer *) nativeGesture.native;
 
 //   [view addGestureRecognizer:rec];
-// }
-
-// void rehax::View<Container>::removeGesture(rehax::Gesture nativeGesture)
-// {
-//     // [ TODO ]
-// //   NSView * view = (__bridge NSView *) nativeView;
-// //   NSGestureRecognizer * rec = (__bridge NSGestureRecognizer *) nativeGesture.native;
-
-// //   [view addGestureRecognizer:rec];
-// }
+}
 
 }

@@ -1,28 +1,31 @@
 #include "Button.h"
 #include "../../../base.h"
-#include "../../../fluxe/fluxe/misc/Object.h"
 #include "../../../fluxe/fluxe/views/Button.h"
 
 namespace rehax::ui::fluxe::impl {
 
-template <typename Container>
-void Button<Container>::createNativeView() {
-  auto view = ::fluxe::Object<::fluxe::Button>::Create();
+#include "../../../shared/components/Button.cc"
+
+std::string Button::description() {
+  std::ostringstream stringStream;
+  stringStream << instanceClassName() << "/fluxe::Button (fluxe) " << this << ": " << getTitle();
+  return stringStream.str();
+}
+
+void Button::createNativeView() {
+  auto view = ::rehaxUtils::Object<::fluxe::Button>::Create();
   view->increaseReferenceCount();
   this->nativeView = view.get();
 }
 
-template <typename Container>
-void Button<Container>::setTitle(std::string title) {
+void Button::setTitle(std::string title) {
   auto view = static_cast<::fluxe::Button *>(this->nativeView);
   view->getTitle()->setText(title);
 }
 
-template <typename Container>
-std::string Button<Container>::getTitle() {
+std::string Button::getTitle() {
   auto view = static_cast<::fluxe::Button *>(this->nativeView);
-//  return view->getTitle()->getText();
-    return "";
+  return view->getTitle()->getText();
 }
 
 // void Button::setTitleColor(Color color)
@@ -32,10 +35,9 @@ std::string Button<Container>::getTitle() {
 //   // [view setTextColor:c];
 // }
 
-template <typename Container>
-void Button<Container>::setOnPress(std::function<void(void)> onPress) {
+void Button::setOnPress(std::function<void(void)> onPress) {
   auto view = static_cast<::fluxe::Button *>(this->nativeView);
-  view->onClick = [onPress] (::fluxe::ObjectPointer<::fluxe::Button> btn) {
+  view->onClick = [onPress] (::rehaxUtils::ObjectPointer<::fluxe::Button> btn) {
     onPress();
   };
 }

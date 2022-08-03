@@ -1,35 +1,15 @@
 #import "View.h"
 #include "../../../base.h"
 #include "../layouts/StackLayout.h"
-// #include "Gesture.h"
+#include "Gesture.h"
 
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 #import "FlippedView.h"
-#include "Gesture.h"
 
 namespace rehax::ui::appkit::impl {
 
-ObjectPointer<View> View::Create() {
-  auto ptr = rehaxUtils::Object<View>::Create();
-  ptr->createNativeView();
-  return ptr;
-}
-
-ObjectPointer<View> View::CreateWithoutCreatingNativeView() {
-  auto ptr = rehaxUtils::Object<View>::Create();
-  return ptr;
-}
-
-std::string View::ClassName() {
-  return "View";
-}
-
-rehax::ui::appkit::impl::View::View()
-:layout(rehaxUtils::Object<StackLayout>::Create())
-{}
-
-rehax::ui::appkit::impl::View::~View() {}
+#include "../../../shared/components/View.cc"
 
 void View::createNativeView() {
   NSView * view = [FlippedView new];
@@ -41,42 +21,6 @@ void View::destroyNativeView() {
     CFBridgingRelease(nativeView);
     nativeView = nullptr;
   }
-}
-
-void View::setNativeViewRaw(void * view) {
-  nativeView = view;
-}
-
-void * View::getNativeView() {
-  return nativeView;
-}
-
-void View::addView(ObjectPointer<View> view) {
-  this->addContainerView(view);
-  addNativeView(view->nativeView);
-}
-
-void View::addView(ObjectPointer<View> view, ObjectPointer<View> beforeView) {
-  this->addContainerView(view, beforeView);
-  addNativeView(view->nativeView, beforeView->nativeView);
-}
-
-void View::removeView(ObjectPointer<View> view) {
-  this->removeContainerView(view);
-  removeNativeView(view->nativeView);
-}
-
-void View::removeFromParent() {
-  this->removeContainerFromParent();
-  removeFromNativeParent();
-}
-
-std::set<View *> View::getChildren() {
-  return children;
-}
-
-std::string View::instanceClassName() {
-  return View::ClassName();
 }
 
 std::string View::description() {
@@ -92,7 +36,7 @@ void View::addNativeView(void * child) {
   childView.translatesAutoresizingMaskIntoConstraints = NO;
   [view addSubview:childView];
 
-  layout->onViewAdded(nativeView, child);
+  _layout->onViewAdded(nativeView, child);
 }
 
 void View::addNativeView(void * child, void * beforeChild) {
@@ -103,14 +47,14 @@ void View::addNativeView(void * child, void * beforeChild) {
   childView.translatesAutoresizingMaskIntoConstraints = NO;
   [view addSubview:childView positioned:NSWindowBelow relativeTo:beforeChildView];
 
-  layout->onViewAdded(nativeView, child);
+  _layout->onViewAdded(nativeView, child);
 }
 
 void View::removeNativeView(void * child) {
   NSView * childView = (__bridge NSView *) child;
   [childView removeFromSuperview];
 
-  layout->onViewRemoved(nativeView, child);
+  _layout->onViewRemoved(nativeView, child);
 }
 
 void View::removeFromNativeParent() {
@@ -118,42 +62,7 @@ void View::removeFromNativeParent() {
   [view removeFromSuperview];
     
   auto parent = (View *) this->getParent().get();
-  parent->layout->onViewRemoved(parent->nativeView, nativeView);
-}
-
-void View::addContainerView(rehaxUtils::ObjectPointer<View> view) {
-  view->increaseReferenceCount();
-  view->removeContainerFromParent();
-  view->parent = getThisPointer();
-  children.insert(view.get());
-}
-
-void View::addContainerView(rehaxUtils::ObjectPointer<View> view, rehaxUtils::ObjectPointer<View> beforeView) {
-  view->increaseReferenceCount();
-  view->removeContainerFromParent();
-  view->parent = getThisPointer();
-  auto it = children.find(beforeView.get());
-  children.insert(it, view.get());
-}
-
-void View::removeContainerFromParent() {
-  if (parent.isValid()) {
-    parent->children.erase(this);
-    parent = rehaxUtils::WeakObjectPointer<View>();
-    decreaseReferenceCount();
-  }
-}
-
-void View::removeContainerView(rehaxUtils::ObjectPointer<View> view) {
-  if (children.find(view.get()) != children.end()) {
-    children.erase(view.get());
-    view->parent = rehaxUtils::WeakObjectPointer<View>();
-    view->decreaseReferenceCount();
-  }
-}
-
-rehaxUtils::WeakObjectPointer<View> View::getParent() {
-  return parent;
+  parent->_layout->onViewRemoved(parent->nativeView, nativeView);
 }
 
 void View::setWidthFill() {
@@ -238,11 +147,6 @@ void View::setHeightPercentage(float percentage) {
   constraint.identifier = @"hx_height";
   constraint.priority = 100;
   [[view superview] addConstraint:constraint];
-}
-
-void View::setLayout(rehaxUtils::ObjectPointer<ILayout> layout) {
-  this->layout = layout;
-  layout->layoutContainer(nativeView);
 }
 
 void View::setVerticalPositionNatural(ObjectPointer<View> previousView) {

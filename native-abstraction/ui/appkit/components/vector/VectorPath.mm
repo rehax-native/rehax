@@ -8,24 +8,7 @@
 
 using namespace rehax::ui::appkit::impl;
 
-ObjectPointer<VectorPath> VectorPath::Create() {
-  auto ptr = Object<VectorPath>::Create();
-  ptr->createNativeView();
-  return ptr;
-}
-
-ObjectPointer<VectorPath> VectorPath::CreateWithoutCreatingNativeView() {
-  auto ptr = Object<VectorPath>::Create();
-  return ptr;
-}
-
-std::string VectorPath::ClassName() {
-  return "VectorPath";
-}
-
-std::string VectorPath::instanceClassName() {
-  return VectorPath::ClassName();
-}
+#include "../../../shared/components/VectorPath.cc"
 
 std::string VectorPath::description() {
   std::ostringstream stringStream;
