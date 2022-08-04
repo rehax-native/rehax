@@ -5,7 +5,7 @@
 
 using namespace rehax::ui::appkit;
 
-@interface AppDelegate : NSObject 
+@interface AppDelegate : NSObject<NSApplicationDelegate>
 
 @property (retain) NSWindow * window;
 @property (retain) NSView * view;

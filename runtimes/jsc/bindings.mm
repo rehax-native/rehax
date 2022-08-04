@@ -10,6 +10,47 @@ rehax::docs::Docs<rehax::ui::appkit::View> jscDocs("JavascriptCore");
 namespace rehax {
 namespace jsc {
 
+
+namespace runtime {
+
+typedef ::JSContextRef Context;
+typedef ::JSValueRef Value;
+
+Value MakeObject(Context ctx) {
+  JSObjectRef object = JSObjectMake(ctx, nullptr, nullptr);
+  return object;
+}
+
+Value MakeArray(Context ctx) {
+  auto object = JSObjectMakeArray(ctx, 0, {}, NULL);
+  return object;
+}
+
+void SetObjectProperty(Context ctx, Value object, std::string property, Value value) {
+  auto propName = JSStringCreateWithUTF8CString(property.c_str());
+  JSObjectSetProperty(ctx, (JSObjectRef) object, propName, value, kJSPropertyAttributeNone, nullptr);
+}
+
+Value GetObjectProperty(Context ctx, Value object, std::string property) {
+  auto propName = JSStringCreateWithUTF8CString(property.c_str());
+  return JSObjectGetProperty(ctx, (JSObjectRef) object, propName, NULL);
+}
+
+bool HasObjectProperty(Context ctx, Value object, std::string property) {
+  return JSObjectHasProperty(ctx, (JSObjectRef) object, JSStringCreateWithUTF8CString(property.c_str()));
+}
+
+void SetArrayValue(Context ctx, Value object, int index, Value value) {
+  JSObjectSetPropertyAtIndex(ctx, (JSObjectRef) object, index, value, nullptr);
+}
+
+Value GetArrayValue(Context ctx, Value object, int index) {
+  return JSObjectGetPropertyAtIndex(ctx, (JSObjectRef) object, index, nullptr);
+}
+
+}
+
+
 template <typename T>
 struct Converter {
   static JSValueRef toScript(JSContextRef ctx, T& value);
@@ -18,7 +59,7 @@ struct Converter {
 
 template <>
 struct Converter<std::string> {
-  static JSValueRef toScript(JSContextRef ctx, std::string& value) {
+  static JSValueRef toScript(JSContextRef ctx, std::string value) {
     JSStringRef jsText = JSStringCreateWithUTF8CString(value.c_str());
     return (JSValueRef) jsText;
   }
@@ -39,20 +80,9 @@ struct Converter<std::string> {
   }
 };
 
-//template <typename T>
-//struct Converter<std::vector<T>> {
-//  static JSValueRef toScript(JSContextRef ctx, std::vector<T>& value) {
-//    return JSValueMakeBoolean(ctx, value);
-//  }
-//  static std::vector<T> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-//    std::vector<T> arr;
-//    return arr;
-//  }
-//};
-
 template <>
 struct Converter<bool> {
-  static JSValueRef toScript(JSContextRef ctx, bool& value) {
+  static JSValueRef toScript(JSContextRef ctx, bool value) {
     return JSValueMakeBoolean(ctx, value);
   }
   static bool toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
@@ -62,7 +92,7 @@ struct Converter<bool> {
 
 template <>
 struct Converter<int> {
-  static JSValueRef toScript(JSContextRef ctx, int& value) {
+  static JSValueRef toScript(JSContextRef ctx, int value) {
       return JSValueMakeNumber(ctx, (double) value);
   }
   static int toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
@@ -72,7 +102,7 @@ struct Converter<int> {
 
 template <>
 struct Converter<float> {
-  static JSValueRef toScript(JSContextRef ctx, float& value) {
+  static JSValueRef toScript(JSContextRef ctx, float value) {
       return JSValueMakeNumber(ctx, (double) value);
   }
   static float toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
@@ -82,38 +112,11 @@ struct Converter<float> {
 
 template <>
 struct Converter<double> {
-  static JSValueRef toScript(JSContextRef ctx, double& value) {
+  static JSValueRef toScript(JSContextRef ctx, double value) {
       return JSValueMakeNumber(ctx, (double) value);
   }
   static double toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
     return (double) JSValueToNumber(ctx, value, nullptr);
-  }
-};
-
-template <>
-struct Converter<rehax::ui::Color> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::Color& value) {
-    JSObjectRef object = JSObjectMake(ctx, nullptr, nullptr);
-    auto propName = JSStringCreateWithUTF8CString("red");
-    JSObjectSetProperty(ctx, object, propName, JSValueMakeNumber(ctx, value.r * 255.0), kJSPropertyAttributeNone, nullptr);
-    propName = JSStringCreateWithUTF8CString("green");
-    JSObjectSetProperty(ctx, object, propName, JSValueMakeNumber(ctx, value.g * 255.0), kJSPropertyAttributeNone, nullptr);
-    propName = JSStringCreateWithUTF8CString("blue");
-    JSObjectSetProperty(ctx, object, propName, JSValueMakeNumber(ctx, value.b * 255.0), kJSPropertyAttributeNone, nullptr);
-    propName = JSStringCreateWithUTF8CString("alpha");
-    JSObjectSetProperty(ctx, object, propName, JSValueMakeNumber(ctx, value.a), kJSPropertyAttributeNone, nullptr);
-    return (JSValueRef) object;
-  }
-  static rehax::ui::Color toCpp(JSContextRef ctx, const JSValueRef& colorValue, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    auto propName = JSStringCreateWithUTF8CString("red");
-    auto r = JSValueToNumber(ctx, JSObjectGetProperty(ctx, (JSObjectRef) colorValue, propName, NULL), NULL);
-    propName = JSStringCreateWithUTF8CString("green");
-    auto g = JSValueToNumber(ctx, JSObjectGetProperty(ctx, (JSObjectRef) colorValue, propName, NULL), NULL);
-    propName = JSStringCreateWithUTF8CString("blue");
-    auto b = JSValueToNumber(ctx, JSObjectGetProperty(ctx, (JSObjectRef) colorValue, propName, NULL), NULL);
-    propName = JSStringCreateWithUTF8CString("alpha");
-    auto a = JSValueToNumber(ctx, JSObjectGetProperty(ctx, (JSObjectRef) colorValue, propName, NULL), NULL);
-    return ui::Color::RGBA(r/255.0, g/255.0, b/255.0, a);
   }
 };
 
@@ -170,377 +173,8 @@ struct Converter<std::function<void(float, float)>> {
   }
 };
 
-template <>
-struct Converter<rehax::ui::StackLayoutDirection> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::StackLayoutDirection& value) {
-    if (value == ui::StackLayoutDirection::Vertical) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Vertical"));
-    }
-    if (value == ui::StackLayoutDirection::Horizontal) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Horizontal"));
-    }
-  }
-  static rehax::ui::StackLayoutDirection toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "Horizontal") {
-      return ui::StackLayoutDirection::Horizontal;
-    }
-    return ui::StackLayoutDirection::Vertical;
-  }
-};
 
-template <>
-struct Converter<rehax::ui::StackLayoutOptions> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::StackLayoutOptions& value) {
-    auto obj = JSObjectMake(ctx, nullptr, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("spacing"), Converter<float>::toScript(ctx, value.spacing), kJSPropertyAttributeNone, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("direction"), Converter<rehax::ui::StackLayoutDirection>::toScript(ctx, value.direction), kJSPropertyAttributeNone, nullptr);
-    return obj;
-  }
-  static rehax::ui::StackLayoutOptions toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    rehax::ui::StackLayoutOptions options;
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("spacing"))) {
-      options.spacing = Converter<float>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("spacing"), nullptr), bindings, retainedValues);
-    }
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("direction"))) {
-      options.direction = Converter<rehax::ui::StackLayoutDirection>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("direction"), nullptr), bindings, retainedValues);
-    }
-    return options;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::FlexLayoutDirection> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::FlexLayoutDirection& value) {
-    if (value == ui::FlexLayoutDirection::Column) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Column"));
-    }
-    if (value == ui::FlexLayoutDirection::ColumnReverse) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("ColumnReverse"));
-    }
-    if (value == ui::FlexLayoutDirection::Row) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Row"));
-    }
-    if (value == ui::FlexLayoutDirection::RowReverse) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("RowReverse"));
-    }
-  }
-  static rehax::ui::FlexLayoutDirection toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "Column") {
-      return ui::FlexLayoutDirection::Column;
-    }
-    if (val == "ColumnReverse") {
-      return ui::FlexLayoutDirection::ColumnReverse;
-    }
-    if (val == "RowReverse") {
-      return ui::FlexLayoutDirection::RowReverse;
-    }
-    return ui::FlexLayoutDirection::Row;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::FlexJustifyContent> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::FlexJustifyContent& value) {
-    if (value == ui::FlexJustifyContent::FlexStart) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("FlexStart"));
-    }
-    if (value == ui::FlexJustifyContent::FlexEnd) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("FlexEnd"));
-    }
-    if (value == ui::FlexJustifyContent::Center) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Center"));
-    }
-  }
-  static rehax::ui::FlexJustifyContent toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "FlexEnd") {
-      return ui::FlexJustifyContent::FlexEnd;
-    }
-    if (val == "Center") {
-      return ui::FlexJustifyContent::Center;
-    }
-    return ui::FlexJustifyContent::FlexStart;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::FlexAlignItems> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::FlexAlignItems& value) {
-    if (value == ui::FlexAlignItems::FlexStart) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("FlexStart"));
-    }
-    if (value == ui::FlexAlignItems::FlexEnd) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("FlexEnd"));
-    }
-    if (value == ui::FlexAlignItems::Center) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Center"));
-    }
-  }
-  static rehax::ui::FlexAlignItems toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "FlexEnd") {
-      return ui::FlexAlignItems::FlexEnd;
-    }
-    if (val == "Center") {
-      return ui::FlexAlignItems::Center;
-    }
-    return ui::FlexAlignItems::FlexStart;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::FlexItem> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::FlexItem& value) {
-    auto obj = JSObjectMake(ctx, nullptr, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("flexGrow"), Converter<float>::toScript(ctx, value.flexGrow), kJSPropertyAttributeNone, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("hasFlexGrow"), Converter<bool>::toScript(ctx, value.hasFlexGrow), kJSPropertyAttributeNone, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("order"), Converter<int>::toScript(ctx, value.order), kJSPropertyAttributeNone, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("alignSelf"), Converter<rehax::ui::FlexAlignItems>::toScript(ctx, value.alignSelf), kJSPropertyAttributeNone, nullptr);
-    return obj;
-  }
-  static rehax::ui::FlexItem toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    rehax::ui::FlexItem flexItem;
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("flexGrow"))) {
-      flexItem.flexGrow = Converter<float>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("flexGrow"), nullptr), bindings, retainedValues);
-    }
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("hasFlexGrow"))) {
-      flexItem.hasFlexGrow = Converter<bool>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("hasFlexGrow"), nullptr), bindings, retainedValues);
-    }
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("order"))) {
-      flexItem.hasFlexGrow = Converter<int>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("order"), nullptr), bindings, retainedValues);
-    }
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("alignSelf"))) {
-      flexItem.alignSelf = Converter<rehax::ui::FlexAlignItems>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("alignSelf"), nullptr), bindings, retainedValues);
-    }
-    return flexItem;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::FlexLayoutOptions> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::FlexLayoutOptions& value) {
-    auto obj = JSObjectMake(ctx, nullptr, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("direction"), Converter<rehax::ui::FlexLayoutDirection>::toScript(ctx, value.direction), kJSPropertyAttributeNone, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("justifyContent"), Converter<rehax::ui::FlexJustifyContent>::toScript(ctx, value.justifyContent), kJSPropertyAttributeNone, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("alignItems"), Converter<rehax::ui::FlexAlignItems>::toScript(ctx, value.alignItems), kJSPropertyAttributeNone, nullptr);
-    auto arr = JSObjectMakeArray(ctx, 0, {}, NULL);
-    for (int i = 0; i < value.items.size(); i++) {
-      auto js = Converter<rehax::ui::FlexItem>::toScript(ctx, value.items[i]);
-      JSObjectSetPropertyAtIndex(ctx, arr, i, js, nullptr);
-    }
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("items"), arr, kJSPropertyAttributeNone, nullptr);
-    return obj;
-  }
-  static rehax::ui::FlexLayoutOptions toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    rehax::ui::FlexLayoutOptions options;
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("direction"))) {
-      options.direction = Converter<rehax::ui::FlexLayoutDirection>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("direction"), nullptr), bindings, retainedValues);
-    }
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("justifyContent"))) {
-      options.justifyContent = Converter<rehax::ui::FlexJustifyContent>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("justifyContent"), nullptr), bindings, retainedValues);
-    }
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("alignItems"))) {
-      options.alignItems = Converter<rehax::ui::FlexAlignItems>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("alignItems"), nullptr), bindings, retainedValues);
-    }
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("items"))) {
-      JSValueRef items = JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("items"), nullptr);
-      int length = Converter<int>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) items, JSStringCreateWithUTF8CString("length"), nullptr), bindings, retainedValues);
-      for (int i = 0; i < length; i++) {
-        auto item = JSObjectGetPropertyAtIndex(ctx, (JSObjectRef) items, i, nullptr);
-        options.items.push_back(Converter<rehax::ui::FlexItem>::toCpp(ctx, item, bindings, retainedValues));
-      }
-    }
-    return options;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::GestureState> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::GestureState& value) {
-    if (value == ui::GestureState::Possible) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Possible"));
-    }
-    if (value == ui::GestureState::Recognized) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Recognized"));
-    }
-    if (value == ui::GestureState::Began) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Began"));
-    }
-    if (value == ui::GestureState::Changed) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Changed"));
-    }
-    if (value == ui::GestureState::Canceled) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Canceled"));
-    }
-    if (value == ui::GestureState::Ended) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Ended"));
-    }
-  }
-  static rehax::ui::GestureState toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "Recognized") {
-      return ui::GestureState::Recognized;
-    }
-    if (val == "Began") {
-      return ui::GestureState::Began;
-    }
-    if (val == "Changed") {
-      return ui::GestureState::Changed;
-    }
-    if (val == "Canceled") {
-      return ui::GestureState::Canceled;
-    }
-    if (val == "Ended") {
-      return ui::GestureState::Ended;
-    }
-    return ui::GestureState::Possible;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::VectorLineCap> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::VectorLineCap& value) {
-    if (value == ui::VectorLineCap::Butt) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Butt"));
-    }
-    if (value == ui::VectorLineCap::Square) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Square"));
-    }
-    if (value == ui::VectorLineCap::Round) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Round"));
-    }
-  }
-  static rehax::ui::VectorLineCap toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "Square") {
-      return ui::VectorLineCap::Square;
-    }
-    if (val == "Round") {
-      return ui::VectorLineCap::Round;
-    }
-    return ui::VectorLineCap::Butt;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::VectorLineJoin> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::VectorLineJoin& value) {
-    if (value == ui::VectorLineJoin::Miter) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Miter"));
-    }
-    if (value == ui::VectorLineJoin::Round) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Round"));
-    }
-    if (value == ui::VectorLineJoin::Bevel) {
-      return JSValueMakeString(ctx, JSStringCreateWithUTF8CString("Bevel"));
-    }
-  }
-  static rehax::ui::VectorLineJoin toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "Round") {
-      return ui::VectorLineJoin::Round;
-    }
-    if (val == "Bevel") {
-      return ui::VectorLineJoin::Bevel;
-    }
-    return ui::VectorLineJoin::Miter;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::GradientStop> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::GradientStop& value) {
-    auto obj = JSObjectMake(ctx, nullptr, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("color"), Converter<rehax::ui::Color>::toScript(ctx, value.color), kJSPropertyAttributeNone, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("offset"), Converter<float>::toScript(ctx, value.offset), kJSPropertyAttributeNone, nullptr);
-    return obj;
-  }
-  static rehax::ui::GradientStop toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    rehax::ui::GradientStop stop;
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("color"))) {
-      stop.color = Converter<rehax::ui::Color>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("color"), nullptr), bindings, retainedValues);
-    }
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("offset"))) {
-      stop.offset = Converter<float>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("offset"), nullptr), bindings, retainedValues);
-    }
-    return stop;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::Gradient> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::Gradient& value) {
-    auto obj = JSObjectMake(ctx, nullptr, nullptr);
-    auto arr = JSObjectMakeArray(ctx, 0, {}, NULL);
-    for (int i = 0; i < value.stops.size(); i++) {
-      auto js = Converter<rehax::ui::GradientStop>::toScript(ctx, value.stops[i]);
-      JSObjectSetPropertyAtIndex(ctx, arr, i, js, nullptr);
-    }
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("stops"), arr, kJSPropertyAttributeNone, nullptr);
-    return obj;
-  }
-  static rehax::ui::Gradient toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    rehax::ui::Gradient gradient;
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("stops"))) {
-      JSValueRef items = JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("stops"), nullptr);
-      int length = Converter<int>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) items, JSStringCreateWithUTF8CString("length"), nullptr), bindings, retainedValues);
-      for (int i = 0; i < length; i++) {
-        auto item = JSObjectGetPropertyAtIndex(ctx, (JSObjectRef) items, i, nullptr);
-        gradient.stops.push_back(Converter<rehax::ui::GradientStop>::toCpp(ctx, item, bindings, retainedValues));
-      }
-    }
-    return gradient;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::FilterDef> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::FilterDef& value) {
-    auto obj = JSObjectMake(ctx, nullptr, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("type"), Converter<int>::toScript(ctx, value.type), kJSPropertyAttributeNone, nullptr);
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("blurRadius"), Converter<float>::toScript(ctx, value.blurRadius), kJSPropertyAttributeNone, nullptr);
-    return obj;
-  }
-  static rehax::ui::FilterDef toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    rehax::ui::FilterDef def;
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("type"))) {
-      def.type = Converter<int>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("type"), nullptr), bindings, retainedValues);
-    }
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("blurRadius"))) {
-      def.blurRadius = Converter<float>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("blurRadius"), nullptr), bindings, retainedValues);
-    }
-    return def;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::Filters> {
-  static JSValueRef toScript(JSContextRef ctx, rehax::ui::Filters& value) {
-    auto obj = JSObjectMake(ctx, nullptr, nullptr);
-    auto arr = JSObjectMakeArray(ctx, 0, {}, NULL);
-    for (int i = 0; i < value.defs.size(); i++) {
-      auto js = Converter<rehax::ui::FilterDef>::toScript(ctx, value.defs[i]);
-      JSObjectSetPropertyAtIndex(ctx, arr, i, js, nullptr);
-    }
-    JSObjectSetProperty(ctx, obj, JSStringCreateWithUTF8CString("defs"), arr, kJSPropertyAttributeNone, nullptr);
-    return obj;
-  }
-  static rehax::ui::Filters toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    rehax::ui::Filters filters;
-    if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("defs"))) {
-      JSValueRef items = JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("defs"), nullptr);
-      int length = Converter<int>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) items, JSStringCreateWithUTF8CString("length"), nullptr), bindings, retainedValues);
-      for (int i = 0; i < length; i++) {
-        auto item = JSObjectGetPropertyAtIndex(ctx, (JSObjectRef) items, i, nullptr);
-        filters.defs.push_back(Converter<rehax::ui::FilterDef>::toCpp(ctx, item, bindings, retainedValues));
-      }
-    }
-    return filters;
-  }
-};
-
+#include "../common/converters.h"
 
 
 Bindings::Bindings() {}

@@ -4,39 +4,43 @@
 namespace rehax {
 namespace quickjs {
 
-Bindings::Bindings() {}
 
-void finalizeViewInstance(JSRuntime *rt, JSValue val) {
-  auto bindings = static_cast<Bindings*>(JS_GetRuntimeOpaque(rt));
-  auto privateData = static_cast<ViewPrivateData<rehax::ui::fluxe::impl::View> *>(JS_GetOpaque(val, bindings->instanceClassId));
-  auto ctx = privateData->context;
-  for (auto value : privateData->retainedValues) {
-    JS_FreeValue(ctx, value);
-  }
-   std::cout << "GC" << std::endl;
-  auto view = privateData->view;
-  view->decreaseReferenceCount();
-  delete privateData;
+namespace runtime {
+
+typedef ::JSContext * Context;
+typedef ::JSValue Value;
+
+Value MakeObject(Context ctx) {
+  auto object = JS_NewObject(ctx);
+  return object;
 }
 
-void Bindings::setContext(JSContext * ctx, JSRuntime * runtime) {
-  this->ctx = ctx;
-  this->rt = runtime;
-  JS_SetRuntimeOpaque(rt, this);
-    
-  JS_NewClassID(&instanceClassId);
-  JSClassDef classDef;
-  classDef.class_name = "ViewInstance";
-  classDef.finalizer = finalizeViewInstance;
-  auto classId = JS_NewClass(runtime, instanceClassId, &classDef);
-  instanceClassId = classId;
+Value MakeArray(Context ctx) {
+  auto object = JS_NewArray(ctx);
+  return object;
 }
 
-RegisteredClass Bindings::getRegisteredClass(std::string name) {
-  return classRegistry[name];
+void SetObjectProperty(Context ctx, Value object, std::string property, Value value) {
+  JS_SetPropertyStr(ctx, object, property.c_str(), value);
 }
 
+Value GetObjectProperty(Context ctx, Value object, std::string property) {
+  return JS_GetPropertyStr(ctx, object, property.c_str());
+}
 
+bool HasObjectProperty(Context ctx, Value object, std::string property) {
+  return JS_HasProperty(ctx, object, JS_NewAtom(ctx, property.c_str()));
+}
+
+void SetArrayValue(Context ctx, Value object, int index, Value value) {
+  JS_SetPropertyInt64(ctx, object, index, value);
+}
+
+Value GetArrayValue(Context ctx, Value object, int index) {
+  return JS_GetPropertyUint32(ctx, object, index);
+}
+
+}
 
 
 template <typename T>
@@ -105,25 +109,6 @@ struct Converter<double> {
 };
 
 template <>
-struct Converter<rehax::ui::Color> {
-  static JSValue toScript(JSContext * ctx, rehax::ui::Color& value) {
-    JSValue object = JS_NewObject(ctx);
-    JS_SetPropertyStr(ctx, object, "green", Converter<float>::toScript(ctx, value.r * 255.0));
-    JS_SetPropertyStr(ctx, object, "blue", Converter<float>::toScript(ctx, value.g * 255.0));
-    JS_SetPropertyStr(ctx, object, "green", Converter<float>::toScript(ctx, value.b * 255.0));
-    JS_SetPropertyStr(ctx, object, "alpha", Converter<float>::toScript(ctx, value.a));
-    return object;
-  }
-  static rehax::ui::Color toCpp(JSContext * ctx, const JSValue& colorValue, Bindings * bindings, std::vector<JSValue>& retainedValues) {
-    auto r = Converter<float>::toCpp(ctx, JS_GetPropertyStr(ctx, colorValue, "red"), bindings, retainedValues);
-    auto g = Converter<float>::toCpp(ctx, JS_GetPropertyStr(ctx, colorValue, "green"), bindings, retainedValues);
-    auto b = Converter<float>::toCpp(ctx, JS_GetPropertyStr(ctx, colorValue, "blue"), bindings, retainedValues);
-    auto a = Converter<float>::toCpp(ctx, JS_GetPropertyStr(ctx, colorValue, "alpha"), bindings, retainedValues);
-    return ui::Color::RGBA(r/255.0, g/255.0, b/255.0, a);
-  }
-};
-
-template <>
 struct Converter<std::function<void(void)>> {
   static JSValue toScript(JSContext * ctx, std::function<void(void)>&& value) {
       // TODO
@@ -159,377 +144,40 @@ struct Converter<std::function<void(float, float)>> {
   }
 };
 
-template <>
-struct Converter<rehax::ui::StackLayoutDirection> {
-  static JSValue toScript(JSContext * ctx, rehax::ui::StackLayoutDirection& value) {
-    if (value == ui::StackLayoutDirection::Vertical) {
-      return Converter<std::string>::toScript(ctx, "Vertical");
-    }
-    if (value == ui::StackLayoutDirection::Horizontal) {
-      return Converter<std::string>::toScript(ctx, "Horizontal");
-    }
-  }
-  static rehax::ui::StackLayoutDirection toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "Horizontal") {
-      return ui::StackLayoutDirection::Horizontal;
-    }
-    return ui::StackLayoutDirection::Vertical;
-  }
-};
+#include "../common/converters.h"
 
-template <>
-struct Converter<rehax::ui::StackLayoutOptions> {
-  static JSValue toScript(JSContext * ctx, rehax::ui::StackLayoutOptions& value) {
-    auto obj = JS_NewObject(ctx);
-    JS_SetPropertyStr(ctx, obj, "spacing", Converter<float>::toScript(ctx, value.spacing));
-    JS_SetPropertyStr(ctx, obj, "direction", Converter<rehax::ui::StackLayoutDirection>::toScript(ctx, value.direction));
-    return obj;
-  }
-  static rehax::ui::StackLayoutOptions toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
-    rehax::ui::StackLayoutOptions options;
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "spacing"))) {
-      options.spacing = Converter<float>::toCpp(ctx, JS_GetPropertyStr(ctx, value, "spacing"), bindings, retainedValues);
-    }
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "direction"))) {
-      options.direction = Converter<rehax::ui::StackLayoutDirection>::toCpp(ctx, JS_GetPropertyStr(ctx, value, "direction"), bindings, retainedValues);
-    }
-    return options;
-  }
-};
+Bindings::Bindings() {}
 
-template <>
-struct Converter<rehax::ui::FlexLayoutDirection> {
-  static JSValue toScript(JSContext * ctx, rehax::ui::FlexLayoutDirection& value) {
-    if (value == ui::FlexLayoutDirection::Column) {
-      return Converter<std::string>::toScript(ctx, "Column");
-    }
-    if (value == ui::FlexLayoutDirection::ColumnReverse) {
-      return Converter<std::string>::toScript(ctx, "ColumnReverse");
-    }
-    if (value == ui::FlexLayoutDirection::Row) {
-      return Converter<std::string>::toScript(ctx, "Row");
-    }
-    if (value == ui::FlexLayoutDirection::RowReverse) {
-      return Converter<std::string>::toScript(ctx, "RowReverse");
-    }
+void finalizeViewInstance(JSRuntime *rt, JSValue val) {
+  auto bindings = static_cast<Bindings*>(JS_GetRuntimeOpaque(rt));
+  auto privateData = static_cast<ViewPrivateData<rehax::ui::fluxe::impl::View> *>(JS_GetOpaque(val, bindings->instanceClassId));
+  auto ctx = privateData->context;
+  for (auto value : privateData->retainedValues) {
+    JS_FreeValue(ctx, value);
   }
-  static rehax::ui::FlexLayoutDirection toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "Column") {
-      return ui::FlexLayoutDirection::Column;
-    }
-    if (val == "ColumnReverse") {
-      return ui::FlexLayoutDirection::ColumnReverse;
-    }
-    if (val == "RowReverse") {
-      return ui::FlexLayoutDirection::RowReverse;
-    }
-    return ui::FlexLayoutDirection::Row;
-  }
-};
+   std::cout << "GC" << std::endl;
+  auto view = privateData->view;
+  view->decreaseReferenceCount();
+  delete privateData;
+}
 
-template <>
-struct Converter<rehax::ui::FlexJustifyContent> {
-  static JSValue toScript(JSContext * ctx, rehax::ui::FlexJustifyContent& value) {
-    if (value == ui::FlexJustifyContent::FlexStart) {
-      return Converter<std::string>::toScript(ctx, "FlexStart");
-    }
-    if (value == ui::FlexJustifyContent::FlexEnd) {
-      return Converter<std::string>::toScript(ctx, "FlexEnd");
-    }
-    if (value == ui::FlexJustifyContent::Center) {
-      return Converter<std::string>::toScript(ctx, "Center");
-    }
-  }
-  static rehax::ui::FlexJustifyContent toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "FlexEnd") {
-      return ui::FlexJustifyContent::FlexEnd;
-    }
-    if (val == "Center") {
-      return ui::FlexJustifyContent::Center;
-    }
-    return ui::FlexJustifyContent::FlexStart;
-  }
-};
+void Bindings::setContext(JSContext * ctx, JSRuntime * runtime) {
+  this->ctx = ctx;
+  this->rt = runtime;
+  JS_SetRuntimeOpaque(rt, this);
+    
+  JS_NewClassID(&instanceClassId);
+  JSClassDef classDef;
+  classDef.class_name = "ViewInstance";
+  classDef.finalizer = finalizeViewInstance;
+  auto classId = JS_NewClass(runtime, instanceClassId, &classDef);
+  instanceClassId = classId;
+}
 
-template <>
-struct Converter<rehax::ui::FlexAlignItems> {
-  static JSValue toScript(JSContext * ctx, rehax::ui::FlexAlignItems& value) {
-    if (value == ui::FlexAlignItems::FlexStart) {
-      return Converter<std::string>::toScript(ctx, "FlexStart");
-    }
-    if (value == ui::FlexAlignItems::FlexEnd) {
-      return Converter<std::string>::toScript(ctx, "FlexEnd");
-    }
-    if (value == ui::FlexAlignItems::Center) {
-      return Converter<std::string>::toScript(ctx, "Center");
-    }
-  }
-  static rehax::ui::FlexAlignItems toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "FlexEnd") {
-      return ui::FlexAlignItems::FlexEnd;
-    }
-    if (val == "Center") {
-      return ui::FlexAlignItems::Center;
-    }
-    return ui::FlexAlignItems::FlexStart;
-  }
-};
+RegisteredClass Bindings::getRegisteredClass(std::string name) {
+  return classRegistry[name];
+}
 
-template <>
-struct Converter<rehax::ui::FlexItem> {
-  static JSValue toScript(JSContext * ctx, rehax::ui::FlexItem& value) {
-    auto obj = JS_NewObject(ctx);
-    JS_SetPropertyStr(ctx, obj, "flexGrow", Converter<float>::toScript(ctx, value.flexGrow));
-    JS_SetPropertyStr(ctx, obj, "hasFlexGrow", Converter<bool>::toScript(ctx, value.hasFlexGrow));
-    JS_SetPropertyStr(ctx, obj, "order", Converter<int>::toScript(ctx, value.order));
-    JS_SetPropertyStr(ctx, obj, "alignSelf", Converter<rehax::ui::FlexAlignItems>::toScript(ctx, value.alignSelf));
-    return obj;
-  }
-  static rehax::ui::FlexItem toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
-    rehax::ui::FlexItem flexItem;
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "flexGrow"))) {
-      flexItem.flexGrow = Converter<float>::toCpp(ctx, JS_GetPropertyStr(ctx, value, "flexGrow"), bindings, retainedValues);
-    }
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "hasFlexGrow"))) {
-      flexItem.hasFlexGrow = Converter<bool>::toCpp(ctx, JS_GetPropertyStr(ctx, value, "hasFlexGrow"), bindings, retainedValues);
-    }
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "order"))) {
-      flexItem.order = Converter<int>::toCpp(ctx, JS_GetPropertyStr(ctx, value, "order"), bindings, retainedValues);
-    }
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "alignSelf"))) {
-      flexItem.alignSelf = Converter<rehax::ui::FlexAlignItems>::toCpp(ctx, JS_GetPropertyStr(ctx, value, "alignSelf"), bindings, retainedValues);
-    }
-    return flexItem;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::FlexLayoutOptions> {
-  static JSValue toScript(JSContext * ctx, rehax::ui::FlexLayoutOptions& value) {
-    auto obj = JS_NewObject(ctx);
-    JS_SetPropertyStr(ctx, obj, "direction", Converter<rehax::ui::FlexLayoutDirection>::toScript(ctx, value.direction));
-    JS_SetPropertyStr(ctx, obj, "justifyContent", Converter<rehax::ui::FlexJustifyContent>::toScript(ctx, value.justifyContent));
-    JS_SetPropertyStr(ctx, obj, "alignItems", Converter<rehax::ui::FlexAlignItems>::toScript(ctx, value.alignItems));
-
-    auto arr = JS_NewArray(ctx);
-    for (int i = 0; i < value.items.size(); i++) {
-      auto js = Converter<rehax::ui::FlexItem>::toScript(ctx, value.items[i]);
-      JS_SetPropertyInt64(ctx, arr, i, js);
-    }
-    JS_SetPropertyStr(ctx, obj, "items", arr);
-    return obj;
-  }
-  static rehax::ui::FlexLayoutOptions toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
-    rehax::ui::FlexLayoutOptions options;
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "direction"))) {
-      options.direction = Converter<rehax::ui::FlexLayoutDirection>::toCpp(ctx, JS_GetPropertyStr(ctx, value, "direction"), bindings, retainedValues);
-    }
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "justifyContent"))) {
-      options.justifyContent = Converter<rehax::ui::FlexJustifyContent>::toCpp(ctx, JS_GetPropertyStr(ctx, value, "justifyContent"), bindings, retainedValues);
-    }
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "alignItems"))) {
-      options.alignItems = Converter<rehax::ui::FlexAlignItems>::toCpp(ctx, JS_GetPropertyStr(ctx, value, "alignItems"), bindings, retainedValues);
-    }
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "items"))) {
-      JSValue items = JS_GetPropertyStr(ctx, value, "items");
-      int length = Converter<int>::toCpp(ctx, JS_GetPropertyStr(ctx, items, "length"), bindings, retainedValues);
-      for (int i = 0; i < length; i++) {
-        auto item = JS_GetPropertyUint32(ctx, items, i);
-        options.items.push_back(Converter<rehax::ui::FlexItem>::toCpp(ctx, item, bindings, retainedValues));
-      }
-    }
-    return options;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::GestureState> {
-  static JSValue toScript(JSContext * ctx, rehax::ui::GestureState& value) {
-    if (value == ui::GestureState::Possible) {
-      return Converter<std::string>::toScript(ctx, "Possible");
-    }
-    if (value == ui::GestureState::Recognized) {
-      return Converter<std::string>::toScript(ctx, "Recognized");
-    }
-    if (value == ui::GestureState::Began) {
-      return Converter<std::string>::toScript(ctx, "Began");
-    }
-    if (value == ui::GestureState::Changed) {
-      return Converter<std::string>::toScript(ctx, "Changed");
-    }
-    if (value == ui::GestureState::Canceled) {
-      return Converter<std::string>::toScript(ctx, "Canceled");
-    }
-    if (value == ui::GestureState::Ended) {
-      return Converter<std::string>::toScript(ctx, "Ended");
-    }
-  }
-  static rehax::ui::GestureState toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "Recognized") {
-      return ui::GestureState::Recognized;
-    }
-    if (val == "Began") {
-      return ui::GestureState::Began;
-    }
-    if (val == "Changed") {
-      return ui::GestureState::Changed;
-    }
-    if (val == "Canceled") {
-      return ui::GestureState::Canceled;
-    }
-    if (val == "Ended") {
-      return ui::GestureState::Ended;
-    }
-    return ui::GestureState::Possible;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::VectorLineCap> {
-  static JSValue toScript(JSContext * ctx, rehax::ui::VectorLineCap& value) {
-    if (value == ui::VectorLineCap::Butt) {
-      return Converter<std::string>::toScript(ctx, "Butt");
-    }
-    if (value == ui::VectorLineCap::Square) {
-      return Converter<std::string>::toScript(ctx, "Square");
-    }
-    if (value == ui::VectorLineCap::Round) {
-      return Converter<std::string>::toScript(ctx, "Round");
-    }
-  }
-  static rehax::ui::VectorLineCap toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "Square") {
-      return ui::VectorLineCap::Square;
-    }
-    if (val == "Round") {
-      return ui::VectorLineCap::Round;
-    }
-    return ui::VectorLineCap::Butt;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::VectorLineJoin> {
-  static JSValue toScript(JSContext * ctx, rehax::ui::VectorLineJoin& value) {
-    if (value == ui::VectorLineJoin::Miter) {
-      return Converter<std::string>::toScript(ctx, "Miter");
-    }
-    if (value == ui::VectorLineJoin::Round) {
-      return Converter<std::string>::toScript(ctx, "Round");
-    }
-    if (value == ui::VectorLineJoin::Bevel) {
-      return Converter<std::string>::toScript(ctx, "Bevel");
-    }
-  }
-  static rehax::ui::VectorLineJoin toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "Round") {
-      return ui::VectorLineJoin::Round;
-    }
-    if (val == "Bevel") {
-      return ui::VectorLineJoin::Bevel;
-    }
-    return ui::VectorLineJoin::Miter;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::GradientStop> {
-  static JSValue toScript(JSContext * ctx, rehax::ui::GradientStop& value) {
-    auto obj = JS_NewObject(ctx);
-    JS_SetPropertyStr(ctx, obj, "color", Converter<rehax::ui::Color>::toScript(ctx, value.color));
-    JS_SetPropertyStr(ctx, obj, "offset", Converter<float>::toScript(ctx, value.offset));
-    return obj;
-  }
-  static rehax::ui::GradientStop toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
-    rehax::ui::GradientStop stop;
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "color"))) {
-      stop.color = Converter<rehax::ui::Color>::toCpp(ctx, JS_GetPropertyStr(ctx, value, "color"), bindings, retainedValues);
-    }
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "offset"))) {
-      stop.offset = Converter<float>::toCpp(ctx, JS_GetPropertyStr(ctx, value, "offset"), bindings, retainedValues);
-    }
-    return stop;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::Gradient> {
-  static JSValue toScript(JSContext * ctx, rehax::ui::Gradient& value) {
-    auto obj = JS_NewObject(ctx);
-    auto arr = JS_NewArray(ctx);
-    for (int i = 0; i < value.stops.size(); i++) {
-      auto js = Converter<rehax::ui::GradientStop>::toScript(ctx, value.stops[i]);
-      JS_SetPropertyInt64(ctx, arr, i, js);
-    }
-    JS_SetPropertyStr(ctx, obj, "stops", arr);
-    return obj;
-  }
-  static rehax::ui::Gradient toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
-    rehax::ui::Gradient gradient;
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "stops"))) {
-      JSValue items = JS_GetPropertyStr(ctx, value, "stops");
-      int length = Converter<int>::toCpp(ctx, JS_GetPropertyStr(ctx, items, "length"), bindings, retainedValues);
-      for (int i = 0; i < length; i++) {
-        auto item = JS_GetPropertyUint32(ctx, items, i);
-        gradient.stops.push_back(Converter<rehax::ui::GradientStop>::toCpp(ctx, item, bindings, retainedValues));
-      }
-    }
-    return gradient;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::FilterDef> {
-  static JSValue toScript(JSContext * ctx, rehax::ui::FilterDef& value) {
-    auto obj = JS_NewObject(ctx);
-    JS_SetPropertyStr(ctx, obj, "type", Converter<int>::toScript(ctx, value.type));
-    JS_SetPropertyStr(ctx, obj, "blurRadius", Converter<float>::toScript(ctx, value.blurRadius));
-    return obj;
-  }
-  static rehax::ui::FilterDef toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
-    rehax::ui::FilterDef def;
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "type"))) {
-      def.type = Converter<int>::toCpp(ctx, JS_GetPropertyStr(ctx, value, "type"), bindings, retainedValues);
-    }
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "blurRadius"))) {
-      def.blurRadius = Converter<float>::toCpp(ctx, JS_GetPropertyStr(ctx, value, "blurRadius"), bindings, retainedValues);
-    }
-    return def;
-  }
-};
-
-template <>
-struct Converter<rehax::ui::Filters> {
-  static JSValue toScript(JSContext * ctx, rehax::ui::Filters& value) {
-    auto obj = JS_NewObject(ctx);
-    auto arr = JS_NewArray(ctx);
-    for (int i = 0; i < value.defs.size(); i++) {
-      auto js = Converter<rehax::ui::FilterDef>::toScript(ctx, value.defs[i]);
-      JS_SetPropertyInt64(ctx, arr, i, js);
-    }
-    JS_SetPropertyStr(ctx, obj, "defs", arr);
-    return obj;
-  }
-  static rehax::ui::Filters toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
-    rehax::ui::Filters filters;
-    if (JS_HasProperty(ctx, value, JS_NewAtom(ctx, "defs"))) {
-      JSValue items = JS_GetPropertyStr(ctx, value, "defs");
-      int length = Converter<int>::toCpp(ctx, JS_GetPropertyStr(ctx, items, "length"), bindings, retainedValues);
-      for (int i = 0; i < length; i++) {
-        auto item = JS_GetPropertyUint32(ctx, items, i);
-        filters.defs.push_back(Converter<rehax::ui::FilterDef>::toCpp(ctx, item, bindings, retainedValues));
-      }
-    }
-    return filters;
-  }
-};
 
 template <typename View>
 JSValue cppToJs(JSContext * ctx, Bindings * bindings, View * obj) {
