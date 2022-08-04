@@ -44,7 +44,7 @@ public:
   template <typename View>
   JSValue cppToJs(View * obj)
   {
-    auto className = obj->viewName();
+    auto className = obj->instanceClassName();
     auto privateData = new ViewPrivateData<View>();
     privateData->view = obj;
     privateData->bindings = this;
@@ -69,6 +69,21 @@ private:
   
   template <typename View>
   void defineViewClass(JSContext * ctx, std::string name, JSValue parentPrototype);
+    
+  template <
+    typename StackLayout,
+    typename FlexLayout,
+    typename View,
+    typename Button,
+    typename Text,
+    typename TextInput,
+    typename VectorContainer,
+    typename VectorElement,
+    typename VectorPath,
+    typename ILayout,
+    typename Gesture
+  >
+  void bindToQuickJs();
 
 };
 

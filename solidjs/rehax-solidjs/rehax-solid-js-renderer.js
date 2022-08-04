@@ -47,7 +47,7 @@ function flexEnsureOptions(node) {
   return node._rhx_styleFlexOptions;
 }
 
-function getureEnsure(node) {
+function gestureEnsure(node) {
   if (!node._rhx_gestureHandler) {
     const gesture = new Gesture();
     function action() {
@@ -268,15 +268,15 @@ const AttributeHandlers = {
   },
 
   onMouseDown: (node, value) => {
-    getureEnsure(node);
+    gestureEnsure(node);
     node._rhx_gestureHandler.onMouseDown = value;
   },
   onMouseUp: (node, value) => {
-    getureEnsure(node);
+    gestureEnsure(node);
     node._rhx_gestureHandler.onMouseUp = value;
   },
   onMouseMove: (node, value) => {
-    getureEnsure(node);
+    gestureEnsure(node);
     node._rhx_gestureHandler.onMouseMove = value;
   },
 };

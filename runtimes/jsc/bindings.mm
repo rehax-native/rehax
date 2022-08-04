@@ -346,7 +346,7 @@ struct Converter<rehax::ui::FlexLayoutOptions> {
     }
     if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("items"))) {
       JSValueRef items = JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("items"), nullptr);
-      int length = Converter<int>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("length"), nullptr), bindings, retainedValues);
+      int length = Converter<int>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) items, JSStringCreateWithUTF8CString("length"), nullptr), bindings, retainedValues);
       for (int i = 0; i < length; i++) {
         auto item = JSObjectGetPropertyAtIndex(ctx, (JSObjectRef) items, i, nullptr);
         options.items.push_back(Converter<rehax::ui::FlexItem>::toCpp(ctx, item, bindings, retainedValues));
@@ -485,7 +485,7 @@ struct Converter<rehax::ui::Gradient> {
     rehax::ui::Gradient gradient;
     if (JSObjectHasProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("stops"))) {
       JSValueRef items = JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("stops"), nullptr);
-      int length = Converter<int>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) value, JSStringCreateWithUTF8CString("length"), nullptr), bindings, retainedValues);
+      int length = Converter<int>::toCpp(ctx, JSObjectGetProperty(ctx, (JSObjectRef) items, JSStringCreateWithUTF8CString("length"), nullptr), bindings, retainedValues);
       for (int i = 0; i < length; i++) {
         auto item = JSObjectGetPropertyAtIndex(ctx, (JSObjectRef) items, i, nullptr);
         gradient.stops.push_back(Converter<rehax::ui::GradientStop>::toCpp(ctx, item, bindings, retainedValues));

@@ -5,6 +5,8 @@ using namespace rehax::quickjs;
 Runtime::Runtime() {
   runtime = JS_NewRuntime();
   context = JS_NewContext(runtime);
+
+  JS_SetMaxStackSize(runtime, 10 * 1024 * 1024);
   
   Bindings::setContext(context, runtime);
 }
@@ -67,7 +69,7 @@ void Runtime::evaluate(std::string script) {
 }
 
 #ifdef REHAX_WITH_FLUXE
-void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::fluxe::impl::View<rehax::ui::RefCountedPointer>> view) {
+void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::fluxe::View> view) {
   auto rootView = cppToJs(view.get());
   auto globalContext = JS_GetGlobalObject(context);
   JS_SetPropertyStr(context, globalContext, "rootView", rootView);
@@ -75,7 +77,7 @@ void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::fluxe::impl::View
 #endif
 
 #ifdef REHAX_WITH_APPKIT
-void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::appkit::impl::View<rehax::ui::RefCountedPointer>> view) {
+void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::appkit::View> view) {
   auto rootView = cppToJs(view.get());
   auto globalContext = JS_GetGlobalObject(context);
   JS_SetPropertyStr(context, globalContext, "rootView", rootView);

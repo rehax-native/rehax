@@ -2,9 +2,8 @@
 #include <iostream>
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
-#include "../../native-abstraction/ui/appkit/components/view/View.mm"
 
-using namespace rehax::ui::appkit::rawptr;
+using namespace rehax::ui::appkit;
 
 @interface AppDelegate : NSObject 
 
@@ -31,7 +30,7 @@ using namespace rehax::ui::appkit::rawptr;
 {
 	[self.window setContentView:self.view];
 
-  auto view = rehax::ui::appkit::impl::View<rehax::ui::RefCountedPointer>::Create();
+  auto view = View::Create();
   view->setNativeViewRaw((__bridge void *) self.view);
   view->setWidthFill();
   view->setHeightFill();
