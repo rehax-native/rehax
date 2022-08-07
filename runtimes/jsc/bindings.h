@@ -4,6 +4,7 @@
 #include "../../native-abstraction/rehax.h"
 #include <unordered_map>
 #include <vector>
+#include "./runtimeUtils.h"
 
 namespace rehax {
 namespace jsc {
@@ -37,10 +38,6 @@ public:
   void bindFluxeRehax();
   #endif
   
-  template <typename Object> JSValueRef cppToJs(rehaxUtils::ObjectPointer<Object> obj);
-
-  RegisteredClass getRegisteredClass(std::string name);
-
   template <
     typename StackLayout,
     typename FlexLayout,
@@ -56,23 +53,56 @@ public:
   >
   void bindRehax();
 
-private:
-  JSContextRef ctx;
-
-  std::unordered_map<std::string, RegisteredClass> classRegistry;
-  
   template <typename View, bool instantiable = true>
   void defineViewClass(JSContextRef ctx, std::string name, JSObjectRef parentPrototype);
 
+  template <typename View, typename Layout, typename Gesture> void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype);
+  template <typename View> void bindButtonClassMethods(JSContextRef ctx, JSObjectRef prototype);
+  template <typename View> void bindTextClassMethods(JSContextRef ctx, JSObjectRef prototype);
+  template <typename View> void bindTextInputClassMethods(JSContextRef ctx, JSObjectRef prototype);
+  template <typename View> void bindVectorElementClassMethods(JSContextRef ctx, JSObjectRef prototype);
+  template <typename View> void bindVectorPathClassMethods(JSContextRef ctx, JSObjectRef prototype);
+  template <typename Layout, typename View> void bindStackLayoutClassMethods(JSContextRef ctx, JSObjectRef prototype);
+  template <typename Layout, typename View> void bindFlexLayoutClassMethods(JSContextRef ctx, JSObjectRef prototype);
+  template <typename Gesture> void bindGestureClassMethods(JSContextRef ctx, JSObjectRef prototype);
+
+  template <typename View, typename RET, RET (View::*Method)(void)> void bindMethod(std::string name, JSContextRef ctx, JSObjectRef prototype);
+  template <typename View, void (View::*Method)(void)> void bindMethod(std::string name, JSContextRef ctx, JSObjectRef prototype);
+  template <typename View, typename T1, void (View::*Method)(T1)>
+  void bindMethod(std::string name, JSContextRef ctx, JSObjectRef prototype);
+  template <typename View, typename T1, typename D1, void (View::*Method)(T1), void (View::*MethodDefault)(D1)>
+  void bindMethod(std::string name, JSContextRef ctx, JSObjectRef prototype);
+  template <typename View, typename T1, typename T2, void (View::*Method)(T1, T2)>
+  void bindMethod(std::string name, JSContextRef ctx, JSObjectRef prototype);
+  template <typename View, typename T1, typename T2, typename T3, void (View::*Method)(T1, T2)>
+  void bindMethod(std::string name, JSContextRef ctx, JSObjectRef prototype);
+  template <typename View, typename T1, typename T2, typename T3, typename T4, void (View::*Method)(T1, T2, T3, T4)>
+  void bindMethod(std::string name, JSContextRef ctx, JSObjectRef prototype);
+  template <typename View, typename T1, typename T2, typename T3, typename T4, typename T5, void (View::*Method)(T1, T2, T3, T4, T5)>
+  void bindMethod(std::string name, JSContextRef ctx, JSObjectRef prototype);
+  template <typename View, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, void (View::*Method)(T1, T2, T3, T4, T5, T6)>
+  void bindMethod(std::string name, JSContextRef ctx, JSObjectRef prototype);
+  template <typename View, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, void (View::*Method)(T1, T2, T3, T4, T5, T6, T7)>
+  void bindMethod(std::string name, JSContextRef ctx, JSObjectRef prototype);
+
+  RegisteredClass getRegisteredClass(std::string name);
+  template <typename T> JSValueRef cppToJs(T obj);
+
+private:
+  JSContextRef ctx;
+  std::unordered_map<std::string, RegisteredClass> classRegistry;
 };
 
-}
-}
 
 #include "./converters.h"
 
-template <typename Object>
-JSValueRef rehax::jsc::Bindings::cppToJs(rehaxUtils::ObjectPointer<Object> obj) {
-  auto js = Converter<Object>::toScript(ctx, obj.get(), this);
+template <typename T>
+JSValueRef Bindings::cppToJs(T obj) {
+  auto js = Converter<T>::toScript(ctx, obj, this);
   return js;
+}
+
+#include "bindings.hpp"
+
+}
 }

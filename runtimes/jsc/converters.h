@@ -1,7 +1,3 @@
-#include "./runtimeUtils.h"
-
-namespace rehax {
-namespace jsc {
 
 //template <typename T>
 //struct Converter {
@@ -269,6 +265,3 @@ struct Converter<std::function<R1(void)>> {
 };
 
 #include "../common/converters.h"
-
-}
-}
