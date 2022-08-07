@@ -145,24 +145,106 @@ struct Converter<std::function<void(void)>> {
   }
 };
 
-template <>
-struct Converter<std::function<void(float, float)>> {
-  static JSValueRef toScript(JSContextRef ctx, std::function<void(float, float)>&& value) {
+template <typename T1>
+struct Converter<std::function<void(T1)>> {
+  static JSValueRef toScript(JSContextRef ctx, std::function<void(T1)>&& value) {
       // TODO
       return JSValueMakeUndefined(ctx);
   }
-  static std::function<void(float, float)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static std::function<void(T1)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
     JSObjectRef callback = (JSObjectRef) value;
     JSValueProtect(ctx, callback);
     retainedValues.push_back(callback);
-    auto fn = [ctx, callback] (float a, float b) {
+    auto fn = [ctx, callback] (T1 a) {
       //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
       JSValueRef exception = nullptr;
       JSValueRef arguments[] = {
-        JSValueMakeNumber(ctx, a),
-        JSValueMakeNumber(ctx, b),
+        Converter<T1>::toScript(ctx, a),
+      };
+      JSObjectCallAsFunction(ctx, callback, NULL, 1, arguments, &exception);
+      // if (exception != nullptr) {
+      //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
+      //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
+      //     std::cout << message << std::endl;
+      // }
+    };
+    return fn;
+  }
+};
+
+template <typename T1, typename T2>
+struct Converter<std::function<void(T1, T2)>> {
+  static JSValueRef toScript(JSContextRef ctx, std::function<void(T1, T2)>&& value) {
+      // TODO
+      return JSValueMakeUndefined(ctx);
+  }
+  static std::function<void(T1, T2)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    JSObjectRef callback = (JSObjectRef) value;
+    JSValueProtect(ctx, callback);
+    retainedValues.push_back(callback);
+    auto fn = [ctx, callback] (T1 a, T2 b) {
+      //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
+      JSValueRef exception = nullptr;
+      JSValueRef arguments[] = {
+        Converter<T1>::toScript(ctx, a),
+        Converter<T2>::toScript(ctx, b),
       };
       JSObjectCallAsFunction(ctx, callback, NULL, 2, arguments, &exception);
+      // if (exception != nullptr) {
+      //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
+      //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
+      //     std::cout << message << std::endl;
+      // }
+    };
+    return fn;
+  }
+};
+
+template <typename T1, typename T2, typename T3>
+struct Converter<std::function<void(T1, T2, T3)>> {
+  static JSValueRef toScript(JSContextRef ctx, std::function<void(T1, T2)>&& value) {
+      // TODO
+      return JSValueMakeUndefined(ctx);
+  }
+  static std::function<void(T1, T2, T3)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    JSObjectRef callback = (JSObjectRef) value;
+    JSValueProtect(ctx, callback);
+    retainedValues.push_back(callback);
+    auto fn = [ctx, callback] (T1 a, T2 b, T3 c) {
+      //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
+      JSValueRef exception = nullptr;
+      JSValueRef arguments[] = {
+        Converter<T1>::toScript(ctx, a),
+        Converter<T2>::toScript(ctx, b),
+        Converter<T3>::toScript(ctx, c),
+      };
+      JSObjectCallAsFunction(ctx, callback, NULL, 3, arguments, &exception);
+      // if (exception != nullptr) {
+      //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
+      //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
+      //     std::cout << message << std::endl;
+      // }
+    };
+    return fn;
+  }
+};
+
+template <typename R1>
+struct Converter<std::function<R1(void)>> {
+  static JSValueRef toScript(JSContextRef ctx, std::function<R1(void)>&& value) {
+      // TODO
+      return JSValueMakeUndefined(ctx);
+  }
+  static std::function<R1(void)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    JSObjectRef callback = (JSObjectRef) value;
+      
+    JSValueProtect(ctx, callback);
+    retainedValues.push_back(callback);
+    auto fn = [ctx, callback, bindings, &retainedValues] () {
+      //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
+      JSValueRef exception = nullptr;
+      auto ret = JSObjectCallAsFunction(ctx, callback, NULL, 0, NULL, &exception);
+      return Converter<R1>::toCpp(ctx, ret, bindings, retainedValues);
       // if (exception != nullptr) {
       //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
       //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
