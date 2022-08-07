@@ -40,7 +40,7 @@ using namespace rehax::ui::appkit;
 
   auto vm = new rehax::jsc::Runtime();
   vm->makeConsole();
-  vm->bindAppkitToJsc();
+  vm->bindAppkitRehax();
   vm->setRootView(view);
 
   NSString * resourcePath = [[NSBundle mainBundle] resourcePath];

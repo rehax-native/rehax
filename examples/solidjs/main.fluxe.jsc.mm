@@ -15,7 +15,7 @@ int main() {
   auto view = static_cast<fluxe::View *>(container->getNativeView());
 
   auto vm = new rehax::jsc::Runtime();
-  vm->bindFluxeToJsc();
+  vm->bindFluxeRehax();
   vm->makeConsole();
   vm->setRootView(container);
 

@@ -30,7 +30,7 @@ void Runtime::makeConsole() {
 
 #ifdef REHAX_WITH_FLUXE
 void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::fluxe::View> view) {
-  auto rootView = cppToJs(view.get());
+  auto rootView = cppToJs(view);
 
   JSObjectRef globalObject = JSContextGetGlobalObject(context.JSGlobalContextRef);
   JSStringRef rootName = JSStringCreateWithUTF8CString("rootView");
@@ -40,7 +40,7 @@ void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::fluxe::View> view
 
 #ifdef REHAX_WITH_APPKIT
 void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::appkit::View> view) {
-  auto rootView = cppToJs(view.get());
+  auto rootView = cppToJs(view);
 
   JSObjectRef globalObject = JSContextGetGlobalObject(context.JSGlobalContextRef);
   JSStringRef rootName = JSStringCreateWithUTF8CString("rootView");

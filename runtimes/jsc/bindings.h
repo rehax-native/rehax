@@ -31,27 +31,13 @@ public:
   Bindings();
   void setContext(JSContextRef ctx);
   #ifdef REHAX_WITH_APPKIT
-  void bindAppkitToJsc();
+  void bindAppkitRehax();
   #endif
   #ifdef REHAX_WITH_FLUXE
-  void bindFluxeToJsc();
+  void bindFluxeRehax();
   #endif
   
-  template <typename View>
-  JSObjectRef cppToJs(View * obj)
-  {
-    auto className = obj->instanceClassName();
-    auto privateData = new ViewPrivateData<View>();
-    privateData->view = obj;
-    privateData->bindings = this;
-    privateData->ctx = ctx;
-    obj->increaseReferenceCount(); // decreased in finalizer
-    JSObjectRef object = JSObjectMake(ctx, classRegistry[className].classDefine, privateData);
-    JSObjectSetPrototype(ctx, object, classRegistry[className].prototype);
-    JSStringRef __className = JSStringCreateWithUTF8CString(className.c_str());
-    JSObjectSetProperty(ctx, object, JSStringCreateWithUTF8CString("__className"), (JSValueRef) JSValueMakeString(ctx, __className), kJSPropertyAttributeReadOnly, NULL);
-    return object;
-  }
+  template <typename Object> JSValueRef cppToJs(rehaxUtils::ObjectPointer<Object> obj);
 
   RegisteredClass getRegisteredClass(std::string name);
 
@@ -68,7 +54,7 @@ public:
     typename ILayout,
     typename Gesture
   >
-  void bindToJsc();
+  void bindRehax();
 
 private:
   JSContextRef ctx;
@@ -81,4 +67,12 @@ private:
 };
 
 }
+}
+
+#include "./converters.h"
+
+template <typename Object>
+JSValueRef rehax::jsc::Bindings::cppToJs(rehaxUtils::ObjectPointer<Object> obj) {
+  auto js = Converter<Object>::toScript(ctx, obj.get(), this);
+  return js;
 }
