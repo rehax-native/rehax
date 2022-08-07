@@ -54,7 +54,7 @@ public:
   void bindRehax();
 
   template <typename View, bool instantiable = true>
-  void defineViewClass(JSContextRef ctx, std::string name, runtime::Value parentPrototype);
+  void defineViewClass(JSContextRef ctx, std::string name, RegisteredClass * parentClass);
 
   template <typename View, typename Layout, typename Gesture> void bindViewClassMethods(runtime::Context ctx, runtime::Value prototype);
   template <typename View> void bindButtonClassMethods(runtime::Context ctx, runtime::Value prototype);

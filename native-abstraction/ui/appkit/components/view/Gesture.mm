@@ -49,6 +49,10 @@ using namespace rehax::ui::appkit::impl;
 
 #include "../../../shared/components/Gesture.cc"
 
+std::string Gesture::description() {
+  return "Gesture/fluxe";
+}
+
 Gesture::~Gesture() {
   if (native != nullptr) {
     CFBridgingRelease(native);

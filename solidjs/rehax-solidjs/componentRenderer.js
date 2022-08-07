@@ -320,14 +320,9 @@ export const {
     return textView;
   },
   replaceText(textView, value) {
-    console.log(`Replace text: ${value}`);
     textView.setText(value);
   },
   setProperty(node, name, value) {
-    // if (node.__internal) {
-    //   node[name] = value;
-    //   return;
-    // }
     const handler = PropHandlers[name];
     if (handler) {
       handler(node, value);

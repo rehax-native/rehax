@@ -1,51 +1,47 @@
 
-template <typename Object, bool instantiable>
-void Bindings::defineViewClass(JSContext * ctx, std::string name, JSValue parentPrototype) {
-  auto prototypeObject = JS_NewObjectClass(ctx, kPrototypeClassId);
-  if (!JS_IsNull(parentPrototype)) {
-    JS_SetPrototype(ctx, prototypeObject, parentPrototype);
-  }
+template <typename Object>
+void finalizeViewInstance(JSRuntime *rt, JSValue val) {
+  auto bindings = static_cast<Bindings*>(JS_GetRuntimeOpaque(rt));
+  auto registeredClass = bindings->getRegisteredClass(Object::ClassName());
+  auto privateData = static_cast<ViewPrivateData<Object> *>(JS_GetOpaque(val, registeredClass.classId));
 
-  classRegistry[name] = RegisteredClass {};
-  classRegistry[name].name = name;
-  classRegistry[name].prototype = prototypeObject;
-  
-  auto funData = JS_NewObjectClass(ctx, kPointerClassId);
-  JS_SetOpaque(funData, this);
-  
-  std::array<JSValue, 1> funDataArray {
-    funData
-  };
-
-  auto classObject = JS_NewCFunctionData(
-    ctx,
-    [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
-      auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-      if constexpr (instantiable) {
-        auto obj = Object::Create();
-        return Converter<Object>::toScript(ctx, obj.get(), bindings);
-      }
-      return JS_NULL;
-    },
-    0, 0, funDataArray.size(), funDataArray.data()
-  );
-
-  for (auto v : funDataArray) {
-    JS_FreeValue(ctx, v);
-  }
-  
-  JS_SetConstructorBit(ctx, classObject, true);
-  auto globalContext = JS_GetGlobalObject(ctx);
-  JS_SetPropertyStr(ctx, globalContext, name.c_str(), classObject);
+  auto ctx = privateData->context;
+//  for (auto value : privateData->retainedValues) {
+//    JS_FreeValue(ctx, value);
+//  }
+  std::cout << "GC " << Object::ClassName() << std::endl;
+  auto view = privateData->view;
+  view->decreaseReferenceCount();
+  delete privateData;
 }
 
+
 template <typename Object, bool instantiable>
-void Bindings::defineViewClass(JSContext * ctx, std::string name, void * null) {
+void Bindings::defineViewClass(JSContext * ctx, std::string name, RegisteredClass * parentClass) {
   auto prototypeObject = JS_NewObjectClass(ctx, kPrototypeClassId);
+  if (parentClass != nullptr) {
+    JS_SetPrototype(ctx, prototypeObject, parentClass->prototype);
+  }
+
+  JSClassID instanceClassId = 0;
+  if (parentClass == nullptr) {
+    JS_NewClassID(&instanceClassId);
+    JSClassDef classDef;
+    classDef.call = nullptr;
+    classDef.gc_mark = nullptr;
+    classDef.class_name = name.c_str();
+    classDef.finalizer = &finalizeViewInstance<Object>;
+    classDef.exotic = nullptr;
+    auto assignedId = JS_NewClass(rt, instanceClassId, &classDef);
+    assert(assignedId != -1);
+  } else {
+    instanceClassId = parentClass->classId;
+  }
 
   classRegistry[name] = RegisteredClass {};
   classRegistry[name].name = name;
   classRegistry[name].prototype = prototypeObject;
+  classRegistry[name].classId = instanceClassId;
   
   auto funData = JS_NewObjectClass(ctx, kPointerClassId);
   JS_SetOpaque(funData, this);
@@ -85,7 +81,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
   };
   auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
     auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     auto ret = (view->*Method)();
     return Converter<RET>::toScript(ctx, ret, bindings);
@@ -107,7 +103,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
   };
   auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
     auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     (view->*Method)();
     return JS_UNDEFINED;
@@ -129,7 +125,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
   };
   auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
     auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     (view->*Method)(
       Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues)
@@ -153,7 +149,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
   };
   auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
     auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
 
     if (JS_IsUndefined(argv[0]) || JS_IsNull(argv[0])) {
@@ -183,11 +179,11 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
   };
   auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
     auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     (view->*Method)(
-      Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues),
-      Converter<T2>::toCpp(ctx, argv[1], bindings, privateData->retainedValues)
+      argc > 0 ? Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues) : T1{},
+      argc > 1 ? Converter<T2>::toCpp(ctx, argv[1], bindings, privateData->retainedValues) : T2{}
     );
     return JS_UNDEFINED;
   };
@@ -208,7 +204,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
   };
   auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
     auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     (view->*Method)(
       Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues),
@@ -234,7 +230,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
   };
   auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
     auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     (view->*Method)(
       Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues),
@@ -261,7 +257,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
   };
   auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
     auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     (view->*Method)(
       Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues),
@@ -289,7 +285,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
   };
   auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
     auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     (view->*Method)(
       Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues),
@@ -318,7 +314,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
   };
   auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
     auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
-    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->instanceClassId));
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     (view->*Method)(
       Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues),

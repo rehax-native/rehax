@@ -12,6 +12,10 @@ Gesture::~Gesture() {
   }
 }
 
+std::string Gesture::description() {
+  return "Gesture/fluxe";
+}
+
 void Gesture::setup(std::function<void(void)> action, std::function<void(float, float)> onMouseDown, std::function<void(float, float)> onMouseUp, std::function<void(float, float)> onMouseMove) {
   auto callbacks = new GestureCallbackContainer();
   native = callbacks;

@@ -1,6 +1,6 @@
 
 template <typename Object, bool instantiable>
-void Bindings::defineViewClass(JSContextRef ctx, std::string name, runtime::Value parentPrototype) {
+void Bindings::defineViewClass(JSContextRef ctx, std::string name, RegisteredClass * parentClass) {
     
   #if RHX_GEN_DOCS
   jscDocs.collectView<View>(rehax::docs::ViewDocs {
@@ -15,7 +15,7 @@ void Bindings::defineViewClass(JSContextRef ctx, std::string name, runtime::Valu
     auto privateData = static_cast<ViewPrivateData<Object> *>(JSObjectGetPrivate(thiz));
     auto ctx = privateData->ctx;
       
-      // std::cout << "GC " << privateData->view->instanceClassName() << " " << privateData->view->getReferenceCount() << std::endl;
+//      std::cout << "GC " << privateData->view->instanceClassName() << " " << privateData->view->getReferenceCount() << std::endl;
 
     // The value cannot be unprotected here, as GCing views doesn't mean the're actually destroyed.
     // Therefore the retainted values can still be used in callbacks etc.
@@ -29,8 +29,8 @@ void Bindings::defineViewClass(JSContextRef ctx, std::string name, runtime::Valu
   
   JSObjectRef prototypeObject = JSObjectMake(ctx, nullptr, nullptr);
   JSValueProtect(ctx, prototypeObject);
-  if (parentPrototype != nullptr) {
-    JSObjectSetPrototype(ctx, prototypeObject, parentPrototype);
+  if (parentClass != nullptr) {
+    JSObjectSetPrototype(ctx, prototypeObject, parentClass->prototype);
   }
   
   if constexpr (instantiable) {

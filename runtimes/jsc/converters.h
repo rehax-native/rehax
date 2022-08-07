@@ -104,8 +104,9 @@ struct Converter<std::function<void(void)>> {
   static std::function<void(void)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
     JSObjectRef callback = (JSObjectRef) value;
       
-    JSValueProtect(ctx, callback);
-    retainedValues.push_back(callback);
+    // JSValueProtect(ctx, callback);
+    // retainedValues.push_back(callback);
+
     auto fn = [ctx, callback] () {
       //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
       JSValueRef exception = nullptr;

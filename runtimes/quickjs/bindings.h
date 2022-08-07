@@ -17,6 +17,7 @@ constexpr JSClassID kPrototypeClassId = 2;
 struct RegisteredClass {
   std::string name;
   JSValue prototype;
+  JSClassID classId;
 };
 
 class Bindings;
@@ -32,7 +33,6 @@ struct ViewPrivateData {
 class Bindings {
 
 public:
-  JSClassID instanceClassId = 0;
     
   Bindings();
   void setContext(JSContext * ctx, JSRuntime * runtime);
@@ -59,9 +59,7 @@ public:
   void bindRehax();
 
   template <typename View, bool instantiable = true>
-  void defineViewClass(JSContext * ctx, std::string name, JSValue parentPrototype);
-  template <typename View, bool instantiable = true>
-  void defineViewClass(JSContext * ctx, std::string name, void * null);
+  void defineViewClass(JSContext * ctx, std::string name, RegisteredClass * parentClass);
 
   template <typename View, typename Layout, typename Gesture> void bindViewClassMethods(JSContext * ctx, JSValue prototype);
   template <typename View> void bindButtonClassMethods(JSContext * ctx, JSValue prototype);

@@ -18,15 +18,17 @@ struct Converter {
     auto className = obj->instanceClassName();
     auto registeredClass = bindings->getRegisteredClass(className);
 
-    auto object = JS_NewObjectClass(ctx, bindings->instanceClassId);
+    auto object = JS_NewObjectClass(ctx, registeredClass.classId);
     JS_SetOpaque(object, privateData);
     JS_SetPrototype(ctx, object, registeredClass.prototype);
-    JS_SetPropertyStr(ctx, object, "__className", JS_NewAtomString(ctx, className.c_str()));
+    JS_SetPropertyStr(ctx, object, "__className", JS_NewString(ctx, className.c_str()));
 
     return object;
   }
   static Object * toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
-    auto privateData = static_cast<ViewPrivateData<Object> *>(JS_GetOpaque(value, bindings->instanceClassId));
+    auto className = Object::ClassName();
+    auto registeredClass = bindings->getRegisteredClass(className);
+    auto privateData = static_cast<ViewPrivateData<Object> *>(JS_GetOpaque(value, registeredClass.classId));
     auto obj = privateData->view;
     return obj;
   }

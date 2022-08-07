@@ -113,16 +113,17 @@ void Bindings::bindRehax() {
   });
 #endif
     
-  defineViewClass<StackLayout>(ctx, "StackLayout", nullptr);
-  defineViewClass<FlexLayout>(ctx, "FlexLayout", nullptr);
+  defineViewClass<ILayout, false>(ctx, "ILayout", nullptr);
+  defineViewClass<StackLayout>(ctx, "StackLayout", &classRegistry["ILayout"]);
+  defineViewClass<FlexLayout>(ctx, "FlexLayout", &classRegistry["ILayout"]);
 
   defineViewClass<View>(ctx, "View", nullptr);
-  defineViewClass<Button>(ctx, "Button", classRegistry["View"].prototype);
-  defineViewClass<Text>(ctx, "Text", classRegistry["View"].prototype);
-  defineViewClass<TextInput>(ctx, "TextInput", classRegistry["View"].prototype);
-  defineViewClass<VectorContainer>(ctx, "VectorContainer", classRegistry["View"].prototype);
-  defineViewClass<VectorElement, false>(ctx, "VectorElement", classRegistry["View"].prototype);
-  defineViewClass<VectorPath>(ctx, "VectorPath", classRegistry["VectorElement"].prototype);
+  defineViewClass<Button>(ctx, "Button", &classRegistry["View"]);
+  defineViewClass<Text>(ctx, "Text", &classRegistry["View"]);
+  defineViewClass<TextInput>(ctx, "TextInput", &classRegistry["View"]);
+  defineViewClass<VectorContainer>(ctx, "VectorContainer", &classRegistry["View"]);
+  defineViewClass<VectorElement, false>(ctx, "VectorElement", &classRegistry["View"]);
+  defineViewClass<VectorPath>(ctx, "VectorPath", &classRegistry["VectorElement"]);
 
   bindViewClassMethods<View, ILayout, Gesture>(ctx, classRegistry["View"].prototype);
   bindButtonClassMethods<Button>(ctx, classRegistry["Button"].prototype);
