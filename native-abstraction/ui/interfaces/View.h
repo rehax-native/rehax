@@ -21,6 +21,8 @@ public:
   RHX_EXPORT void removeView(ObjectPointer<View> view);
   RHX_EXPORT void removeFromParent();
   RHX_EXPORT std::vector<View *> getChildren();
+  RHX_EXPORT rehaxUtils::WeakObjectPointer<View> getFirstChild();
+  RHX_EXPORT rehaxUtils::WeakObjectPointer<View> getNextSibling();
   RHX_EXPORT rehaxUtils::WeakObjectPointer<View> getParent();
 
   RHX_EXPORT void addContainerView(rehaxUtils::ObjectPointer<View> view);

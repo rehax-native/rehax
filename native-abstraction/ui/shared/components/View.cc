@@ -36,6 +36,10 @@ void View::addView(ObjectPointer<View> view) {
 }
 
 void View::addView(ObjectPointer<View> view, ObjectPointer<View> beforeView) {
+  if (!beforeView.hasPointer()) {
+    addView(view);
+    return;
+  }
   this->addContainerView(view, beforeView);
   addNativeView(view->nativeView, beforeView->nativeView);
   view->setWidth(view->width);
@@ -95,6 +99,28 @@ void View::removeContainerView(rehaxUtils::ObjectPointer<View> view) {
 
 rehaxUtils::WeakObjectPointer<View> View::getParent() {
   return parent;
+}
+
+rehaxUtils::WeakObjectPointer<View> View::getFirstChild() {
+  if (children.size() > 0) {
+    return rehaxUtils::WeakObjectPointer<View>(children[0]);
+  }
+  return rehaxUtils::WeakObjectPointer<View>();
+}
+
+rehaxUtils::WeakObjectPointer<View> View::getNextSibling() {
+  auto parent = getParent();
+  if (!parent.isValid()) {
+    return rehaxUtils::WeakObjectPointer<View>();
+  }
+  auto children = parent->getChildren();
+  auto it = std::find(children.begin(), children.end(), this);
+  it++;
+  if (it == children.end()) {
+    return rehaxUtils::WeakObjectPointer<View>();
+  }
+  auto nextSibling = *it;
+  return nextSibling;
 }
 
 void View::setLayout(rehaxUtils::ObjectPointer<ILayout> layout) {

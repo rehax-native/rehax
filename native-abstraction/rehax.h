@@ -37,6 +37,7 @@ namespace rehax::ui {
     using VectorContainer = impl::VectorContainer;
     using VectorElement = impl::VectorElement;
     using VectorPath = impl::VectorPath;
+    using ILayout = impl::ILayout;
     using StackLayout = impl::StackLayout;
     using FlexLayout = impl::FlexLayout;
     using Gesture = impl::Gesture;
@@ -52,6 +53,7 @@ namespace rehax::ui {
     using VectorContainer = impl::VectorContainer;
     using VectorElement = impl::VectorElement;
     using VectorPath = impl::VectorPath;
+    using ILayout = impl::ILayout;
     using StackLayout = impl::StackLayout;
     using FlexLayout = impl::FlexLayout;
     using Gesture = impl::Gesture;

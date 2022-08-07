@@ -28,8 +28,6 @@ class Bindings
 {
 public:
     
-  // static std::string JSStringToStdString(JSContextRef ctx, JSStringRef str);
-
   Bindings();
   void setContext(JSContextRef ctx);
   #ifdef REHAX_WITH_APPKIT
@@ -57,12 +55,27 @@ public:
 
   RegisteredClass getRegisteredClass(std::string name);
 
+  template <
+    typename StackLayout,
+    typename FlexLayout,
+    typename View,
+    typename Button,
+    typename Text,
+    typename TextInput,
+    typename VectorContainer,
+    typename VectorElement,
+    typename VectorPath,
+    typename ILayout,
+    typename Gesture
+  >
+  void bindToJsc();
+
 private:
   JSContextRef ctx;
 
   std::unordered_map<std::string, RegisteredClass> classRegistry;
   
-  template <typename View>
+  template <typename View, bool instantiable = true>
   void defineViewClass(JSContextRef ctx, std::string name, JSObjectRef parentPrototype);
 
 };
