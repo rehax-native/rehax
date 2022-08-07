@@ -1,12 +1,12 @@
-#import <JavaScriptCore/JavaScriptCore.h>
 #include <iostream>
+#include <quickjs-src/quickjs.h>
 
 namespace rehax {
-namespace jsc {
+namespace quickjs {
 namespace runtime {
 
-typedef ::JSContextRef Context;
-typedef ::JSValueRef Value;
+typedef ::JSContext * Context;
+typedef ::JSValue Value;
 
 Value MakeObject(Context ctx);
 Value MakeArray(Context ctx);

@@ -70,7 +70,7 @@ void Runtime::evaluate(std::string script) {
 
 #ifdef REHAX_WITH_FLUXE
 void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::fluxe::View> view) {
-  auto rootView = cppToJs(view.get());
+  auto rootView = cppToJs(view);
   auto globalContext = JS_GetGlobalObject(context);
   JS_SetPropertyStr(context, globalContext, "rootView", rootView);
 }
@@ -78,7 +78,7 @@ void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::fluxe::View> view
 
 #ifdef REHAX_WITH_APPKIT
 void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::appkit::View> view) {
-  auto rootView = cppToJs(view.get());
+  auto rootView = cppToJs(view);
   auto globalContext = JS_GetGlobalObject(context);
   JS_SetPropertyStr(context, globalContext, "rootView", rootView);
 }

@@ -1,4 +1,38 @@
 
+template <typename Object>
+struct Converter<rehaxUtils::ObjectPointer<Object>> {
+  static runtime::Value toScript(runtime::Context ctx, rehaxUtils::ObjectPointer<Object> obj, Bindings * bindings) {
+    if (!obj.hasPointer()) {
+      return runtime::MakeNull(ctx);
+    }
+    return Converter<Object>::toScript(ctx, obj.get(), bindings);
+  }
+  static rehaxUtils::ObjectPointer<Object> toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+    if (runtime::IsValueNull(ctx, value) || runtime::IsValueUndefined(ctx, value)) {
+      return rehaxUtils::ObjectPointer<Object>(nullptr);
+    }
+    auto ptr = Converter<Object>::toCpp(ctx, value, bindings, retainedValues);
+    return ptr->getThisPointer();
+  }
+};
+
+template <typename Object>
+struct Converter<rehaxUtils::WeakObjectPointer<Object>> {
+  static runtime::Value toScript(runtime::Context ctx, rehaxUtils::WeakObjectPointer<Object> obj, Bindings * bindings) {
+    if (!obj.isValid()) {
+      return runtime::MakeNull(ctx);
+    }
+    return Converter<Object>::toScript(ctx, obj.get(), bindings);
+  }
+  static rehaxUtils::WeakObjectPointer<Object> toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+    if (runtime::IsValueNull(ctx, value) || runtime::IsValueUndefined(ctx, value)) {
+      return WeakObjectPointer<Object>(nullptr);
+    }
+    auto ptr = Converter<Object>::toCpp(ctx, value, bindings, retainedValues);
+    return ptr->getThisPointer();
+  }
+};
+
 template <>
 struct Converter<::rehax::ui::Color> {
   static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::Color value) {

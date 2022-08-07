@@ -17,7 +17,7 @@ int main() {
 
   auto vm = new rehax::quickjs::Runtime();
   vm->makeConsole();
-  vm->bindFluxeToQuickJs();
+  vm->bindFluxeRehax();
   vm->setRootView(container);
 
   NSString * resourcePath = [[NSBundle mainBundle] resourcePath];

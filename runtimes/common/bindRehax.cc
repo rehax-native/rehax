@@ -1,6 +1,6 @@
 
 template <typename View, typename Layout, typename Gesture>
-void Bindings::bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype) {
+void Bindings::bindViewClassMethods(runtime::Context ctx, runtime::Value prototype) {
   bindMethod<View, std::string, &View::description>("toString", ctx, prototype);
   bindMethod<View, rehaxUtils::ObjectPointer<View>, rehaxUtils::ObjectPointer<View>, &View::addView>("addView", ctx, prototype);
   bindMethod<View, &View::removeFromParent>("removeFromParent", ctx, prototype);
@@ -17,14 +17,14 @@ void Bindings::bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype) {
 }
 
 template <typename View>
-void Bindings::bindButtonClassMethods(JSContextRef ctx, JSObjectRef prototype) {
+void Bindings::bindButtonClassMethods(runtime::Context ctx, runtime::Value prototype) {
   bindMethod<View, std::string, &View::getTitle>("getTitle", ctx, prototype);
   bindMethod<View, std::string, rehax::ui::DefaultValue, &View::setTitle, &View::setTitle>("setTitle", ctx, prototype);
   bindMethod<View, std::function<void(void)>, rehax::ui::DefaultValue, &View::setOnPress, &View::setOnPress>("setOnPress", ctx, prototype);
 }
 
 template <typename View>
-void Bindings::bindTextClassMethods(JSContextRef ctx, JSObjectRef prototype) {
+void Bindings::bindTextClassMethods(runtime::Context ctx, runtime::Value prototype) {
   bindMethod<View, std::string, &View::getText>("getText", ctx, prototype);
   bindMethod<View, std::string, rehax::ui::DefaultValue, &View::setText, &View::setText>("setText", ctx, prototype);
   bindMethod<View, rehax::ui::Color, rehax::ui::DefaultValue, &View::setTextColor, &View::setTextColor>("setTextColor", ctx, prototype);
@@ -32,13 +32,13 @@ void Bindings::bindTextClassMethods(JSContextRef ctx, JSObjectRef prototype) {
 }
 
 template <typename View>
-void Bindings::bindTextInputClassMethods(JSContextRef ctx, JSObjectRef prototype) {
+void Bindings::bindTextInputClassMethods(runtime::Context ctx, runtime::Value prototype) {
   bindMethod<View, std::string, rehax::ui::DefaultValue, &View::setValue, &View::setValue>("setValue", ctx, prototype);
   bindMethod<View, std::string, &View::getValue>("getValue", ctx, prototype);
 }
 
 template <typename View>
-void Bindings::bindVectorElementClassMethods(JSContextRef ctx, JSObjectRef prototype) {
+void Bindings::bindVectorElementClassMethods(runtime::Context ctx, runtime::Value prototype) {
   bindMethod<View, float, rehax::ui::DefaultValue, &View::setLineWidth, &View::setLineWidth>("setLineWidth", ctx, prototype);
   bindMethod<View, rehax::ui::VectorLineJoin, rehax::ui::DefaultValue, &View::setLineJoin, &View::setLineJoin>("setLineJoin", ctx, prototype);
   bindMethod<View, rehax::ui::VectorLineCap, rehax::ui::DefaultValue, &View::setLineCap, &View::setLineCap>("setLineCap", ctx, prototype);
@@ -50,7 +50,7 @@ void Bindings::bindVectorElementClassMethods(JSContextRef ctx, JSObjectRef proto
 }
 
 template <typename View>
-void Bindings::bindVectorPathClassMethods(JSContextRef ctx, JSObjectRef prototype) {
+void Bindings::bindVectorPathClassMethods(runtime::Context ctx, runtime::Value prototype) {
   bindMethod<View, &View::beginPath>("beginPath", ctx, prototype);
   bindMethod<View, float, &View::pathHorizontalTo>("pathHorizontalTo", ctx, prototype);
   bindMethod<View, float, &View::pathVerticalTo>("pathVerticalTo", ctx, prototype);
@@ -65,17 +65,17 @@ void Bindings::bindVectorPathClassMethods(JSContextRef ctx, JSObjectRef prototyp
 }
 
 template <typename Layout, typename View>
-void Bindings::bindStackLayoutClassMethods(JSContextRef ctx, JSObjectRef prototype) {
+void Bindings::bindStackLayoutClassMethods(runtime::Context ctx, runtime::Value prototype) {
   bindMethod<Layout, rehax::ui::StackLayoutOptions, &Layout::setOptions>("setOptions", ctx, prototype);
 }
 
 template <typename Layout, typename View>
-void Bindings::bindFlexLayoutClassMethods(JSContextRef ctx, JSObjectRef prototype) {
+void Bindings::bindFlexLayoutClassMethods(runtime::Context ctx, runtime::Value prototype) {
   bindMethod<Layout, rehax::ui::FlexLayoutOptions, &Layout::setOptions>("setOptions", ctx, prototype);
 }
 
 template <typename Gesture>
-void Bindings::bindGestureClassMethods(JSContextRef ctx, JSObjectRef prototype) {
+void Bindings::bindGestureClassMethods(runtime::Context ctx, runtime::Value prototype) {
   bindMethod<Gesture, std::function<void(void)>, std::function<void(float, float)>, std::function<void(float, float)>, std::function<void(float, float)>, &Gesture::setup>("setup", ctx, prototype);
   bindMethod<Gesture, rehax::ui::GestureState, &Gesture::setState>("setState", ctx, prototype);
 }

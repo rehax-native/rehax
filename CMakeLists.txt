@@ -75,7 +75,7 @@ function (rehax_add_to_executable app_name)
     file(GLOB REHAX_FLUXE_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/native-abstraction/ui/fluxe/components/**/*.cc)
     file(GLOB REHAX_APPKIT_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/native-abstraction/ui/appkit/components/**/*.mm)
     file(GLOB REHAX_JSC_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/jsc/runtime.mm ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/jsc/bindings.mm ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/jsc/runtimeUtils.mm)
-    file(GLOB REHAX_QUICKJS_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/quickjs/runtime.cc ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/quickjs/bindings.mm)
+    file(GLOB REHAX_QUICKJS_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/quickjs/runtime.cc ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/quickjs/bindings.mm ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/quickjs/runtimeUtils.mm)
     file(REAL_PATH ${CMAKE_CURRENT_FUNCTION_LIST_DIR} REHAX_HEADER_INCLUDE_DIR)
 
     include_directories(${REHAX_HEADER_INCLUDE_DIR})

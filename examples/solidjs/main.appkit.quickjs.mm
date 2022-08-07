@@ -38,7 +38,7 @@ using namespace rehax::ui::appkit;
 
   auto vm = new rehax::quickjs::Runtime();
   vm->makeConsole();
-  vm->bindAppkitToQuickJs();
+  vm->bindAppkitRehax();
   vm->setRootView(view);
 
   NSString * resourcePath = [[NSBundle mainBundle] resourcePath];

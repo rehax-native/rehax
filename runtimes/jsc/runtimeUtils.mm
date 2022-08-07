@@ -33,3 +33,15 @@ void rehax::jsc::runtime::SetArrayValue(Context ctx, Value object, int index, Va
 Value rehax::jsc::runtime::GetArrayValue(Context ctx, Value object, int index) {
   return JSObjectGetPropertyAtIndex(ctx, (JSObjectRef) object, index, nullptr);
 }
+
+Value rehax::jsc::runtime::MakeNull(Context ctx) {
+  return JSValueMakeNull(ctx);
+}
+
+bool rehax::jsc::runtime::IsValueUndefined(Context ctx, Value object) {
+  return JSValueIsUndefined(ctx, object);
+}
+
+bool rehax::jsc::runtime::IsValueNull(Context ctx, Value object) {
+  return JSValueIsNull(ctx, object);
+}

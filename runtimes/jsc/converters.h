@@ -32,40 +32,6 @@ struct Converter {
   }
 };
 
-template <typename Object>
-struct Converter<rehaxUtils::ObjectPointer<Object>> {
-  static JSValueRef toScript(JSContextRef ctx, rehaxUtils::ObjectPointer<Object> obj, Bindings * bindings) {
-    if (!obj.hasPointer()) {
-      return JSValueMakeNull(ctx);
-    }
-    return Converter<Object>::toScript(ctx, obj.get(), bindings);
-  }
-  static rehaxUtils::ObjectPointer<Object> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    if (JSValueIsNull(ctx, value) || JSValueIsUndefined(ctx, value)) {
-      return rehaxUtils::ObjectPointer<Object>(nullptr);
-    }
-    auto ptr = Converter<Object>::toCpp(ctx, value, bindings, retainedValues);
-    return ptr->getThisPointer();
-  }
-};
-
-template <typename Object>
-struct Converter<rehaxUtils::WeakObjectPointer<Object>> {
-  static JSValueRef toScript(JSContextRef ctx, rehaxUtils::WeakObjectPointer<Object> obj, Bindings * bindings) {
-    if (!obj.isValid()) {
-      return JSValueMakeNull(ctx);
-    }
-    return Converter<Object>::toScript(ctx, obj.get(), bindings);
-  }
-  static rehaxUtils::WeakObjectPointer<Object> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
-    if (JSValueIsNull(ctx, value) || JSValueIsUndefined(ctx, value)) {
-      return WeakObjectPointer<Object>(nullptr);
-    }
-    auto ptr = Converter<Object>::toCpp(ctx, value, bindings, retainedValues);
-    return ptr->getThisPointer();
-  }
-};
-
 template <>
 struct Converter<std::string> {
   static JSValueRef toScript(JSContextRef ctx, std::string value, Bindings * bindings = nullptr) {
