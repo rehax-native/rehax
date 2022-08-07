@@ -12,16 +12,23 @@ public:
   RHX_EXPORT virtual void createNativeView() override;
 
   RHX_EXPORT void setValue(std::string value);
+  RHX_EXPORT void setValue(rehax::ui::DefaultValue);
   RHX_EXPORT std::string getValue();
 
   RHX_EXPORT void setOnValueChange(std::function<void(void)> onValueChange);
+  RHX_EXPORT void setOnValueChange(rehax::ui::DefaultValue);
 
   RHX_EXPORT void setPlaceholder(std::string placeholder);
+  RHX_EXPORT void setPlaceholder(rehax::ui::DefaultValue);
 
   RHX_EXPORT void setTextAlignment(TextAlignment alignment);
+  RHX_EXPORT void setTextAlignment(rehax::ui::DefaultValue);
   RHX_EXPORT void setTextColor(rehax::ui::Color color);
+  RHX_EXPORT void setTextColor(rehax::ui::DefaultValue);
   RHX_EXPORT void setFontSize(float size);
+  RHX_EXPORT void setFontSize(rehax::ui::DefaultValue);
   RHX_EXPORT void setFontFamilies(std::vector<std::string> fontFamilies);
+  RHX_EXPORT void setFontFamilies(rehax::ui::DefaultValue);
   RHX_EXPORT virtual void addNativeView(void * child) override;
   RHX_EXPORT virtual void addNativeView(void * child, void * beforeChild) override;
 

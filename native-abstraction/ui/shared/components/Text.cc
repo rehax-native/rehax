@@ -17,3 +17,19 @@ std::string Text::ClassName() {
 std::string Text::instanceClassName() {
   return Text::ClassName();
 }
+
+void Text::setText(rehax::ui::DefaultValue) {
+  setText("");
+}
+
+void Text::setTextColor(::rehax::ui::DefaultValue) {
+  setTextColor(::rehax::ui::Color::RGBA(1, 1, 1, 1));
+}
+
+void Text::setFontSize(rehax::ui::DefaultValue) {
+  setFontSize(12);
+}
+
+void Text::setFontFamilies(rehax::ui::DefaultValue) {
+  setFontFamilies(std::vector<std::string> {});
+}

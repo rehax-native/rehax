@@ -114,6 +114,7 @@ void FluxeVectorPath::build(ObjectPointer<::fluxe::ViewBuilder> builder) {
   }
   if (strokeColor.a > 0 || strokeGradient.stops.size() > 0) {
     SkPaint strokePaint;
+    strokePaint.setAntiAlias(true);
     strokePaint.setStyle(SkPaint::kStroke_Style);
     strokePaint.setStrokeWidth(lineWidth);
     switch (lineCap) {
@@ -152,19 +153,20 @@ void FluxeVectorPath::build(ObjectPointer<::fluxe::ViewBuilder> builder) {
       auto shader = SkGradientShader::MakeLinear(points.data(), colors.data(), positions.data(), fillGradient.stops.size(), SkTileMode::kClamp, 0, nullptr);
       strokePaint.setShader(shader);
     }
-      if (filters.defs.size() > 0) {
-          auto imageFilter = sk_sp<SkImageFilter>();
-          for (auto filter : filters.defs) {
-              if (filter.type == 0) {
-                  imageFilter = SkImageFilters::Blur(filter.blurRadius, filter.blurRadius, imageFilter);
-              }
-          }
-          strokePaint.setImageFilter(imageFilter);
+    if (filters.defs.size() > 0) {
+      auto imageFilter = sk_sp<SkImageFilter>();
+      for (auto filter : filters.defs) {
+        if (filter.type == 0) {
+          imageFilter = SkImageFilters::Blur(filter.blurRadius, filter.blurRadius, imageFilter);
+        }
       }
+      strokePaint.setImageFilter(imageFilter);
+    }
     builder->getCanvas()->drawPath(path, strokePaint);
   }
   if (fillColor.a > 0 || fillGradient.stops.size() > 0) {
     SkPaint fillPaint;
+    fillPaint.setAntiAlias(true);
     fillPaint.setStyle(SkPaint::kFill_Style);
     if (fillColor.a > 0) {
       fillPaint.setColor(::fluxe::Color::RGBA(fillColor.r, fillColor.g, fillColor.b, fillColor.a).color);
@@ -180,15 +182,15 @@ void FluxeVectorPath::build(ObjectPointer<::fluxe::ViewBuilder> builder) {
       auto shader = SkGradientShader::MakeLinear(points.data(), colors.data(), positions.data(), fillGradient.stops.size(), SkTileMode::kClamp, 0, nullptr);
       fillPaint.setShader(shader);
     }
-      if (filters.defs.size() > 0) {
-          auto imageFilter = sk_sp<SkImageFilter>();
-          for (auto filter : filters.defs) {
-              if (filter.type == 0) {
-                  imageFilter = SkImageFilters::Blur(filter.blurRadius, filter.blurRadius, imageFilter);
-              }
-          }
-          fillPaint.setImageFilter(imageFilter);
+    if (filters.defs.size() > 0) {
+      auto imageFilter = sk_sp<SkImageFilter>();
+      for (auto filter : filters.defs) {
+        if (filter.type == 0) {
+          imageFilter = SkImageFilters::Blur(filter.blurRadius, filter.blurRadius, imageFilter);
+        }
       }
+      fillPaint.setImageFilter(imageFilter);
+    }
     builder->getCanvas()->drawPath(path, fillPaint);
   }
     
@@ -212,8 +214,9 @@ void VectorPath::createNativeView() {
 }
 
 void VectorPath::beginPath() {
-//  auto view = static_cast<FluxeVectorPath *>(this->nativeView);
+ auto view = static_cast<FluxeVectorPath *>(this->nativeView);
 //  view->operations.push_back(Object<BeginPath>::Create());
+  view->operations.clear();
 }
 
 void VectorPath::pathHorizontalTo(float x) {

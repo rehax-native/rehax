@@ -1,5 +1,6 @@
 /* @refresh reload */
-import { render, getRootView } from 'rehax-solidjs';
+import { getRootView } from 'rehax-solidjs';
+import { render } from 'rehax-solidjs/componentRenderer';
 
 import App from './App';
 

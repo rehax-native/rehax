@@ -17,3 +17,7 @@ std::string TextInput::ClassName() {
 std::string TextInput::instanceClassName() {
   return TextInput::ClassName();
 }
+
+void TextInput::setValue(rehax::ui::DefaultValue) {
+  setValue("");
+}

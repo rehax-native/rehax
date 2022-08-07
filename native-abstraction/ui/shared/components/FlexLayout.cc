@@ -19,8 +19,11 @@ FlexLayout::~FlexLayout() {
 }
 
 void FlexLayout::setOptions(FlexLayoutOptions flexLayoutOptions) {
-  isHorizontal = flexLayoutOptions.direction == FlexLayoutDirection::Column || flexLayoutOptions.direction == FlexLayoutDirection::ColumnReverse;
+  isHorizontal = flexLayoutOptions.direction == FlexLayoutDirection::Row || flexLayoutOptions.direction == FlexLayoutDirection::RowReverse;
   isReverse = flexLayoutOptions.direction == FlexLayoutDirection::RowReverse || flexLayoutOptions.direction == FlexLayoutDirection::ColumnReverse;
   justifyContent = flexLayoutOptions.justifyContent;
   alignItems = flexLayoutOptions.alignItems;
+  if (containerView.isValid()) {
+    containerView->layout();
+  }
 }

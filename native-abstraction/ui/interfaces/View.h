@@ -40,14 +40,10 @@ public:
   RHX_EXPORT void removeFromNativeParent();
 
   // Layouting
-  RHX_EXPORT void setWidthFill();
-  RHX_EXPORT void setHeightFill();
-  RHX_EXPORT virtual void setWidthNatural();
-  RHX_EXPORT virtual void setHeightNatural();
-  RHX_EXPORT void setWidthFixed(float width);
-  RHX_EXPORT void setHeightFixed(float height);
-  RHX_EXPORT void setWidthPercentage(float percent);
-  RHX_EXPORT void setHeightPercentage(float percent);
+  RHX_EXPORT void setWidth(rehax::ui::Length width);
+  RHX_EXPORT void setHeight(rehax::ui::Length height);
+  RHX_EXPORT void setWidth(rehax::ui::DefaultValue);
+  RHX_EXPORT void setHeight(rehax::ui::DefaultValue);
 
   RHX_EXPORT void setVerticalPositionNatural(ObjectPointer<View> previousView);
   RHX_EXPORT void setHorizontalPositionNatural(ObjectPointer<View> previousView);
@@ -56,10 +52,13 @@ public:
 
   RHX_EXPORT void layout();
   RHX_EXPORT void setLayout(rehaxUtils::ObjectPointer<ILayout> layout);
+  RHX_EXPORT void setLayout(rehax::ui::DefaultValue);
 
   // Styling
-  // RHX_EXPORT void setBackgroundColor(rehax::ui::Color color);
+  RHX_EXPORT void setBackgroundColor(rehax::ui::Color color);
+  RHX_EXPORT void setBackgroundColor(rehax::ui::DefaultValue);
   RHX_EXPORT void setOpacity(float opacity);
+  RHX_EXPORT void setOpacity(rehax::ui::DefaultValue);
 
   // Gesture
   RHX_EXPORT void addGesture(ObjectPointer<Gesture> Gesture);
@@ -71,4 +70,16 @@ protected:
   std::vector<View *> children;
   rehaxUtils::WeakObjectPointer<View> parent = rehaxUtils::WeakObjectPointer<View>();
   std::set<Gesture *> gestures;
+  rehax::ui::Length width;
+  rehax::ui::Length height;
+
+
+  RHX_EXPORT virtual void setWidthNatural();
+  RHX_EXPORT virtual void setHeightNatural();
+  RHX_EXPORT void setWidthFill();
+  RHX_EXPORT void setHeightFill();
+  RHX_EXPORT void setWidthFixed(float width);
+  RHX_EXPORT void setHeightFixed(float height);
+  RHX_EXPORT void setWidthPercentage(float percent);
+  RHX_EXPORT void setHeightPercentage(float percent);
 };

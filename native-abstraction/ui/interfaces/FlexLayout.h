@@ -12,6 +12,7 @@ public:
   RHX_EXPORT ~FlexLayout();
 
   RHX_EXPORT void setOptions(FlexLayoutOptions flexLayoutOptions);
+  RHX_EXPORT void setOptions(rehax::ui::DefaultValue);
 
   RHX_EXPORT void layoutContainer(void * nativeView);
   RHX_EXPORT void removeLayout(void * nativeView);

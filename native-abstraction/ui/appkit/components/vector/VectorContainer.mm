@@ -19,7 +19,7 @@ void VectorContainer::createNativeView() {
 
   NSView * view = (__bridge NSView *) this->nativeView;
   view.layer = [CALayer layer];
-  view.layer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
+  // view.layer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
 }
 
 void VectorContainer::addNativeView(void * child) {

@@ -24,18 +24,56 @@ struct Converter<rehax::ui::Color> {
 };
 
 template <>
+struct Converter<rehax::ui::Length> {
+  static runtime::Value toScript(runtime::Context ctx, rehax::ui::Length value) {
+    runtime::Value object = runtime::MakeObject(ctx);
+
+    if (auto * p = std::get_if<rehax::ui::LengthTypes::Natural>(&value)) {
+      runtime::SetObjectProperty(ctx, object, "type", Converter<std::string>::toScript(ctx, "natural"));
+    } else if (auto * p = std::get_if<rehax::ui::LengthTypes::Fixed>(&value)) {
+      runtime::SetObjectProperty(ctx, object, "type", Converter<std::string>::toScript(ctx, "fixed"));
+      runtime::SetObjectProperty(ctx, object, "value", Converter<float>::toScript(ctx, p->length));
+    } else if (auto * p = std::get_if<rehax::ui::LengthTypes::Fill>(&value)) {
+      runtime::SetObjectProperty(ctx, object, "type", Converter<std::string>::toScript(ctx, "fill"));
+    } else if (auto * p = std::get_if<rehax::ui::LengthTypes::Percentage>(&value)) {
+      runtime::SetObjectProperty(ctx, object, "type", Converter<std::string>::toScript(ctx, "percent"));
+      runtime::SetObjectProperty(ctx, object, "value", Converter<float>::toScript(ctx, p->percent));
+    }
+
+    return object;
+  }
+  static rehax::ui::Length toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+    auto val = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "type"), bindings, retainedValues);
+    if (val == "natural") {
+      return rehax::ui::LengthTypes::Natural{};
+    } else if (val == "fixed") {
+      return rehax::ui::LengthTypes::Fixed {
+        Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "value"), bindings, retainedValues)
+      };
+    } else if (val == "fill") {
+      return rehax::ui::LengthTypes::Fill{};
+    } else if (val == "percent") {
+      return rehax::ui::LengthTypes::Percentage{
+        Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "value"), bindings, retainedValues)
+      };
+    }
+    return rehax::ui::LengthTypes::Natural();
+  }
+};
+
+template <>
 struct Converter<rehax::ui::StackLayoutDirection> {
   static runtime::Value toScript(runtime::Context ctx, rehax::ui::StackLayoutDirection& value) {
     if (value == ui::StackLayoutDirection::Vertical) {
-      return Converter<std::string>::toScript(ctx, "Vertical");
+      return Converter<std::string>::toScript(ctx, "vertical");
     }
     if (value == ui::StackLayoutDirection::Horizontal) {
-      return Converter<std::string>::toScript(ctx, "Horizontal");
+      return Converter<std::string>::toScript(ctx, "horizontal");
     }
   }
   static rehax::ui::StackLayoutDirection toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
     auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "Horizontal") {
+    if (val == "horizontal") {
       return ui::StackLayoutDirection::Horizontal;
     }
     return ui::StackLayoutDirection::Vertical;
@@ -66,27 +104,27 @@ template <>
 struct Converter<rehax::ui::FlexLayoutDirection> {
   static runtime::Value toScript(runtime::Context ctx, rehax::ui::FlexLayoutDirection& value) {
     if (value == ui::FlexLayoutDirection::Column) {
-      return Converter<std::string>::toScript(ctx, "Column");
+      return Converter<std::string>::toScript(ctx, "column");
     }
     if (value == ui::FlexLayoutDirection::ColumnReverse) {
-      return Converter<std::string>::toScript(ctx, "ColumnReverse");
+      return Converter<std::string>::toScript(ctx, "column-reverse");
     }
     if (value == ui::FlexLayoutDirection::Row) {
-      return Converter<std::string>::toScript(ctx, "Row");
+      return Converter<std::string>::toScript(ctx, "row");
     }
     if (value == ui::FlexLayoutDirection::RowReverse) {
-      return Converter<std::string>::toScript(ctx, "RowReverse");
+      return Converter<std::string>::toScript(ctx, "row-reverse");
     }
   }
   static rehax::ui::FlexLayoutDirection toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
     auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "Column") {
+    if (val == "column") {
       return ui::FlexLayoutDirection::Column;
     }
-    if (val == "ColumnReverse") {
+    if (val == "column-reverse") {
       return ui::FlexLayoutDirection::ColumnReverse;
     }
-    if (val == "RowReverse") {
+    if (val == "row-reverse") {
       return ui::FlexLayoutDirection::RowReverse;
     }
     return ui::FlexLayoutDirection::Row;
@@ -97,21 +135,21 @@ template <>
 struct Converter<rehax::ui::FlexJustifyContent> {
   static runtime::Value toScript(runtime::Context ctx, rehax::ui::FlexJustifyContent& value) {
     if (value == ui::FlexJustifyContent::FlexStart) {
-      return Converter<std::string>::toScript(ctx, "FlexStart");
+      return Converter<std::string>::toScript(ctx, "flex-start");
     }
     if (value == ui::FlexJustifyContent::FlexEnd) {
-      return Converter<std::string>::toScript(ctx, "FlexEnd");
+      return Converter<std::string>::toScript(ctx, "flex-end");
     }
     if (value == ui::FlexJustifyContent::Center) {
-      return Converter<std::string>::toScript(ctx, "Center");
+      return Converter<std::string>::toScript(ctx, "center");
     }
   }
   static rehax::ui::FlexJustifyContent toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
     auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "FlexEnd") {
+    if (val == "flex-end") {
       return ui::FlexJustifyContent::FlexEnd;
     }
-    if (val == "Center") {
+    if (val == "center") {
       return ui::FlexJustifyContent::Center;
     }
     return ui::FlexJustifyContent::FlexStart;
@@ -122,21 +160,21 @@ template <>
 struct Converter<rehax::ui::FlexAlignItems> {
   static runtime::Value toScript(runtime::Context ctx, rehax::ui::FlexAlignItems& value) {
     if (value == ui::FlexAlignItems::FlexStart) {
-      return Converter<std::string>::toScript(ctx, "FlexStart");
+      return Converter<std::string>::toScript(ctx, "flex-start");
     }
     if (value == ui::FlexAlignItems::FlexEnd) {
-      return Converter<std::string>::toScript(ctx, "FlexEnd");
+      return Converter<std::string>::toScript(ctx, "flex-end");
     }
     if (value == ui::FlexAlignItems::Center) {
-      return Converter<std::string>::toScript(ctx, "Center");
+      return Converter<std::string>::toScript(ctx, "center");
     }
   }
   static rehax::ui::FlexAlignItems toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
     auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "FlexEnd") {
+    if (val == "flex-end") {
       return ui::FlexAlignItems::FlexEnd;
     }
-    if (val == "Center") {
+    if (val == "center") {
       return ui::FlexAlignItems::Center;
     }
     return ui::FlexAlignItems::FlexStart;
@@ -214,39 +252,39 @@ template <>
 struct Converter<rehax::ui::GestureState> {
   static runtime::Value toScript(runtime::Context ctx, rehax::ui::GestureState& value) {
     if (value == ui::GestureState::Possible) {
-      return Converter<std::string>::toScript(ctx, "Possible");
+      return Converter<std::string>::toScript(ctx, "possible");
     }
     if (value == ui::GestureState::Recognized) {
-      return Converter<std::string>::toScript(ctx, "Recognized");
+      return Converter<std::string>::toScript(ctx, "recognized");
     }
     if (value == ui::GestureState::Began) {
-      return Converter<std::string>::toScript(ctx, "Began");
+      return Converter<std::string>::toScript(ctx, "began");
     }
     if (value == ui::GestureState::Changed) {
-      return Converter<std::string>::toScript(ctx, "Changed");
+      return Converter<std::string>::toScript(ctx, "changed");
     }
     if (value == ui::GestureState::Canceled) {
-      return Converter<std::string>::toScript(ctx, "Canceled");
+      return Converter<std::string>::toScript(ctx, "canceled");
     }
     if (value == ui::GestureState::Ended) {
-      return Converter<std::string>::toScript(ctx, "Ended");
+      return Converter<std::string>::toScript(ctx, "ended");
     }
   }
   static rehax::ui::GestureState toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
     auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "Recognized") {
+    if (val == "recognized") {
       return ui::GestureState::Recognized;
     }
-    if (val == "Began") {
+    if (val == "began") {
       return ui::GestureState::Began;
     }
-    if (val == "Changed") {
+    if (val == "changed") {
       return ui::GestureState::Changed;
     }
-    if (val == "Canceled") {
+    if (val == "canceled") {
       return ui::GestureState::Canceled;
     }
-    if (val == "Ended") {
+    if (val == "ended") {
       return ui::GestureState::Ended;
     }
     return ui::GestureState::Possible;
@@ -257,21 +295,21 @@ template <>
 struct Converter<rehax::ui::VectorLineCap> {
   static runtime::Value toScript(runtime::Context ctx, rehax::ui::VectorLineCap& value) {
     if (value == ui::VectorLineCap::Butt) {
-      return Converter<std::string>::toScript(ctx, "Butt");
+      return Converter<std::string>::toScript(ctx, "butt");
     }
     if (value == ui::VectorLineCap::Square) {
-      return Converter<std::string>::toScript(ctx, "Square");
+      return Converter<std::string>::toScript(ctx, "square");
     }
     if (value == ui::VectorLineCap::Round) {
-      return Converter<std::string>::toScript(ctx, "Round");
+      return Converter<std::string>::toScript(ctx, "round");
     }
   }
   static rehax::ui::VectorLineCap toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
     auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "Square") {
+    if (val == "square") {
       return ui::VectorLineCap::Square;
     }
-    if (val == "Round") {
+    if (val == "round") {
       return ui::VectorLineCap::Round;
     }
     return ui::VectorLineCap::Butt;
@@ -282,21 +320,21 @@ template <>
 struct Converter<rehax::ui::VectorLineJoin> {
   static runtime::Value toScript(runtime::Context ctx, rehax::ui::VectorLineJoin& value) {
     if (value == ui::VectorLineJoin::Miter) {
-      return Converter<std::string>::toScript(ctx, "Miter");
+      return Converter<std::string>::toScript(ctx, "miter");
     }
     if (value == ui::VectorLineJoin::Round) {
-      return Converter<std::string>::toScript(ctx, "Round");
+      return Converter<std::string>::toScript(ctx, "round");
     }
     if (value == ui::VectorLineJoin::Bevel) {
-      return Converter<std::string>::toScript(ctx, "Bevel");
+      return Converter<std::string>::toScript(ctx, "bevel");
     }
   }
   static rehax::ui::VectorLineJoin toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
     auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
-    if (val == "Round") {
+    if (val == "round") {
       return ui::VectorLineJoin::Round;
     }
-    if (val == "Bevel") {
+    if (val == "bevel") {
       return ui::VectorLineJoin::Bevel;
     }
     return ui::VectorLineJoin::Miter;

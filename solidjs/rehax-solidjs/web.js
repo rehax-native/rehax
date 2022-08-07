@@ -39,9 +39,9 @@ function parseLength(value) {
 function flexEnsureOptions(node) {
   if (!node._rhx_styleFlexOptions) {
     node._rhx_styleFlexOptions = {
-      direction: "Row",
-      justifyContent: "FlexStart",
-      alignItems: "FlexStart",
+      direction: "row",
+      justifyContent: "flex-start",
+      alignItems: "flex-start",
     };
   }
   return node._rhx_styleFlexOptions;
@@ -129,12 +129,7 @@ const StylePropHandlers = {
 
   flexDirection: (value, node) => {
     const options = flexEnsureOptions(node);
-    options.direction = {
-      column: "Column",
-      "column-reverse": "ColumnReverse",
-      row: "Row",
-      "row-reverse": "RowReverse",
-    }[value];
+    options.direction = value
     if (node._rhx_flexLayout) {
       node._rhx_flexLayout.setOptions(options);
       node.layout();
@@ -142,11 +137,7 @@ const StylePropHandlers = {
   },
   justifyContent: (value, node) => {
     const options = flexEnsureOptions(node);
-    options.justifyContent = {
-      "flex-start": "FlexStart",
-      "flex-end": "FlexEnd",
-      center: "Center",
-    }[value];
+    options.justifyContent = value
     if (node._rhx_flexLayout) {
       node._rhx_flexLayout.setOptions(options);
       node.layout();
@@ -154,12 +145,7 @@ const StylePropHandlers = {
   },
   alignItems: (value, node) => {
     const options = flexEnsureOptions(node);
-    options.alignItems = {
-      "flex-start": "FlexStart",
-      "flex-end": "FlexEnd",
-      center: "Center",
-      stretch: "Stretch",
-    }[value];
+    options.alignItems = value;
     if (node._rhx_flexLayout) {
       node._rhx_flexLayout.setOptions(options);
       node.layout();
@@ -237,23 +223,11 @@ const AttributeHandlers = {
   },
   strokeLinecap: (node, value) => {
     //> svg prop: strokeLineJoin -> setLineCap
-    node.setLineCap(
-      {
-        round: "Round",
-        square: "Square",
-        butt: "Butt",
-      }[value]
-    );
+    node.setLineCap(value);
   },
   strokeLinejoin: (node, value) => {
     //> svg prop: strokeLinejoin -> setLineJoin
-    node.setLineJoin(
-      {
-        miter: "Miter",
-        round: "Round",
-        bevel: "Bevel",
-      }[value]
-    );
+    node.setLineJoin(value);
   },
   filter: (node, value) => {
     const filter = node._rhx_parent.__rhx_internal.find(
@@ -362,7 +336,7 @@ export const {
     }
     // console.log('Remove node')
     node._rhx_parent = null;
-    parent.removeChild(node);
+    parent.removeView(node);
   },
   getParentNode(node) {
     // console.log('Get parent')
@@ -389,7 +363,3 @@ export {
   Index,
   ErrorBoundary,
 } from "solid-js";
-
-export function getRootView() {
-  return rootView;
-}

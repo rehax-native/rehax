@@ -31,11 +31,15 @@ void * View::getNativeView() {
 void View::addView(ObjectPointer<View> view) {
   this->addContainerView(view);
   addNativeView(view->nativeView);
+  view->setWidth(view->width);
+  view->setHeight(view->height);
 }
 
 void View::addView(ObjectPointer<View> view, ObjectPointer<View> beforeView) {
   this->addContainerView(view, beforeView);
   addNativeView(view->nativeView, beforeView->nativeView);
+  view->setWidth(view->width);
+  view->setHeight(view->height);
 }
 
 void View::removeView(ObjectPointer<View> view) {
@@ -98,9 +102,44 @@ void View::setLayout(rehaxUtils::ObjectPointer<ILayout> layout) {
     _layout->removeLayout(this);
   }
   this->_layout = layout;
+  layout->containerView = getThisPointer();
   _layout->layoutContainer(nativeView);
 }
 
 void View::layout() {
   _layout->layoutContainer(nativeView);
+}
+
+void View::setWidth(Length width) {
+  this->width = width;
+  if (auto * p = std::get_if<LengthTypes::Natural>(&width)) {
+    setWidthNatural();
+  } else if (auto * p = std::get_if<LengthTypes::Fixed>(&width)) {
+    setWidthFixed(p->length);
+  } else if (auto * p = std::get_if<LengthTypes::Fill>(&width)) {
+    setWidthFill();
+  } else if (auto * p = std::get_if<LengthTypes::Percentage>(&width)) {
+    setWidthPercentage(p->percent);
+  }
+}
+
+void View::setHeight(Length height) {
+  this->height = height;
+  if (auto * p = std::get_if<LengthTypes::Natural>(&height)) {
+    setHeightNatural();
+  } else if (auto * p = std::get_if<LengthTypes::Fixed>(&height)) {
+    setHeightFixed(p->length);
+  } else if (auto * p = std::get_if<LengthTypes::Fill>(&height)) {
+    setHeightFill();
+  } else if (auto * p = std::get_if<LengthTypes::Percentage>(&height)) {
+    setHeightPercentage(p->percent);
+  }
+}
+
+void View::setLayout(rehax::ui::DefaultValue) {
+  setLayout(rehaxUtils::Object<StackLayout>::Create());
+}
+
+void View::setBackgroundColor(rehax::ui::DefaultValue) {
+  setBackgroundColor(rehax::ui::Color::RGBA(0, 0, 0, 0));
 }

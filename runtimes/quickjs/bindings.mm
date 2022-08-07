@@ -178,7 +178,6 @@ RegisteredClass Bindings::getRegisteredClass(std::string name) {
   return classRegistry[name];
 }
 
-
 template <typename View>
 JSValue cppToJs(JSContext * ctx, Bindings * bindings, View * obj) {
   auto privateData = new ViewPrivateData<View>();

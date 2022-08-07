@@ -33,8 +33,9 @@ using namespace rehax::ui::appkit;
 
   auto view = View::Create();
   view->setNativeViewRaw((__bridge void *) self.view);
-  view->setWidthFill();
-  view->setHeightFill();
+  // self.view.translatesAutoresizingMaskIntoConstraints = NO;
+  // view->setWidthFill();
+  // view->setHeightFill();
 
 
   auto vm = new rehax::jsc::Runtime();

@@ -10,10 +10,10 @@ namespace rehax::ui::fluxe::impl {
 #include "../../../interfaces/Gesture.h"
 
 struct GestureCallbackContainer {
-  std::function<void(void)> action;
-  std::function<void(float, float)> mouseDown;
-  std::function<void(float, float)> mouseUp;
-  std::function<void(float, float)> mouseMove;
+  std::function<void(void)> action = [] () {};
+  std::function<void(float, float)> mouseDown = [] (float, float) {};
+  std::function<void(float, float)> mouseUp = [] (float, float) {};
+  std::function<void(float, float)> mouseMove = [] (float, float) {};
 };
 
 class RehaxFluxeIEventListener : public ::fluxe::IEventListener {

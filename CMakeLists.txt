@@ -116,6 +116,8 @@ function (rehax_add_to_executable app_name)
             "-framework Foundation"
             "-framework QuartzCore"
             "-framework AppKit"
+            "-framework Metal"
+            "-framework MetalKit"
             icu
             skia
             skparagraph

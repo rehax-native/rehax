@@ -22,7 +22,10 @@ StackLayout::StackLayout(StackLayoutOptions options)
 
 void StackLayout::setOptions(StackLayoutOptions options) {
   isHorizontal = options.direction == StackLayoutDirection::Horizontal;
-    spacing = options.spacing;
+  spacing = options.spacing;
+  if (containerView.isValid()) {
+    containerView->layout();
+  }
 }
 
 StackLayout::~StackLayout() {

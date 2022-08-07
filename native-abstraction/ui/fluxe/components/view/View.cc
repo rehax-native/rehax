@@ -1,6 +1,7 @@
 #include "View.h"
 #include "../../../base.h"
 #include "../../../fluxe/fluxe/views/View.h"
+#include "../../../fluxe/fluxe/layout/LayoutTypes.h"
 #include "../layouts/StackLayout.h"
 #include "Gesture.h"
 
@@ -56,27 +57,67 @@ void View::removeFromNativeParent() {
 }
 
 void View::setWidthFill() {
+  auto view = static_cast<::fluxe::View *>(nativeView);
+  view->setSize(::fluxe::LayoutSizeOverride {
+    .width = ::fluxe::SizeDimensionTypes::Fill{},
+    .height = view->layoutSizeOverride.isSet ? view->layoutSizeOverride.value.height : ::fluxe::SizeDimensionTypes::Natural{},
+  });
 }
 
 void View::setHeightFill() {
+  auto view = static_cast<::fluxe::View *>(nativeView);
+  view->setSize(::fluxe::LayoutSizeOverride {
+    .width = view->layoutSizeOverride.isSet ? view->layoutSizeOverride.value.width : ::fluxe::SizeDimensionTypes::Natural{},
+    .height = ::fluxe::SizeDimensionTypes::Fill{},
+  });
 }
 
 void View::setWidthNatural() {
+  auto view = static_cast<::fluxe::View *>(nativeView);
+  view->setSize(::fluxe::LayoutSizeOverride {
+    .width = ::fluxe::SizeDimensionTypes::Natural{},
+    .height = view->layoutSizeOverride.isSet ? view->layoutSizeOverride.value.height : ::fluxe::SizeDimensionTypes::Natural{},
+  });
 }
 
 void View::setHeightNatural() {
+  auto view = static_cast<::fluxe::View *>(nativeView);
+  view->setSize(::fluxe::LayoutSizeOverride {
+    .width = view->layoutSizeOverride.isSet ? view->layoutSizeOverride.value.width : ::fluxe::SizeDimensionTypes::Natural{},
+    .height = ::fluxe::SizeDimensionTypes::Natural{},
+  });
 }
 
 void View::setWidthFixed(float width) {
+  auto view = static_cast<::fluxe::View *>(nativeView);
+  view->setSize(::fluxe::LayoutSizeOverride {
+    .width = ::fluxe::SizeDimensionTypes::Fixed{ width },
+    .height = view->layoutSizeOverride.isSet ? view->layoutSizeOverride.value.height : ::fluxe::SizeDimensionTypes::Natural{},
+  });
 }
 
 void View::setHeightFixed(float height) {
+  auto view = static_cast<::fluxe::View *>(nativeView);
+  view->setSize(::fluxe::LayoutSizeOverride {
+    .width = view->layoutSizeOverride.isSet ? view->layoutSizeOverride.value.width : ::fluxe::SizeDimensionTypes::Natural{},
+    .height = ::fluxe::SizeDimensionTypes::Fixed{ height },
+  });
 }
 
 void View::setWidthPercentage(float percentage) {
+  auto view = static_cast<::fluxe::View *>(nativeView);
+  view->setSize(::fluxe::LayoutSizeOverride {
+    .width = ::fluxe::SizeDimensionTypes::Percentage{percentage},
+    .height = view->layoutSizeOverride.isSet ? view->layoutSizeOverride.value.height : ::fluxe::SizeDimensionTypes::Natural{},
+  });
 }
 
 void View::setHeightPercentage(float percentage) {
+  auto view = static_cast<::fluxe::View *>(nativeView);
+  view->setSize(::fluxe::LayoutSizeOverride {
+    .width = view->layoutSizeOverride.isSet ? view->layoutSizeOverride.value.width : ::fluxe::SizeDimensionTypes::Natural{},
+    .height = ::fluxe::SizeDimensionTypes::Percentage{percentage},
+  });
 }
 
 void View::setVerticalPositionNatural(ObjectPointer<View> previousView) {
@@ -91,14 +132,10 @@ void View::setVerticalPositionFixed(float y) {
 void View::setHorizontalPositionFixed(float x) {
 }
 
-// void View<Container>::setBackgroundColor(rehax::ui::Color color)
-// {
-//   NSView * view = (__bridge NSView *) nativeView;
-//   // [view setWantsLayer:true];
-//   // [view setLayer:[CALayer layer]];
-//   NSColor *col = [NSColor colorWithDeviceRed:color.r/255.0 green:color.g/255.0 blue:color.b/255.0 alpha:color.a];
-//   [view.layer setBackgroundColor:[col CGColor]];
-// }
+void View::setBackgroundColor(rehax::ui::Color color) {
+  auto view = static_cast<::fluxe::View *>(nativeView);
+  view->setBackgroundColor(::fluxe::Color::RGBA(color.r, color.g, color.b, color.a));
+}
 
 void View::setOpacity(float opacity) {
 }
@@ -108,7 +145,6 @@ void View::addGesture(ObjectPointer<Gesture> gesture) {
 
   auto listener = view->addEventListener<RehaxFluxeIEventListener>();
   listener->callbacks = static_cast<GestureCallbackContainer *>(gesture->native);
-//  gesture->native = listener;
 }
 
 void View::removeGesture(ObjectPointer<Gesture> gesture)

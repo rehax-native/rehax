@@ -15,7 +15,7 @@
     "rollup": "^2.77.0"
   },
   "dependencies": {
-    "rehax-solidjs": "^1.0.0",
+    "rehax-solidjs": "^1.2.0",
     "solid-js": "^1.4.7"
   }
 }

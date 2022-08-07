@@ -12,6 +12,7 @@ public:
   RHX_EXPORT ~StackLayout();
 
   RHX_EXPORT void setOptions(StackLayoutOptions options);
+  RHX_EXPORT void setOptions(rehax::ui::DefaultValue);
 
   RHX_EXPORT void layoutContainer(void * nativeView);
   RHX_EXPORT void removeLayout(void * nativeView);

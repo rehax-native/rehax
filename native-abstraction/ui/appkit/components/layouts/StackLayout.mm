@@ -13,67 +13,84 @@ std::string StackLayout::description() {
 }
 
 void StackLayout::layoutContainer(void * container) {
-  NSView * view = (__bridge NSView *) container;
+  const NSView * view = (__bridge NSView *) container;
   NSView * prevView = NULL;
+
+  // NSLog(@"### Stack layout %@", view);
   
   removeLayout(container);
   
   NSMutableArray * constraintsArray = [NSMutableArray array];
   nativeInfo = (void*) CFBridgingRetain(constraintsArray);
 
-  auto minProp = isHorizontal ? NSLayoutAttributeLeft : NSLayoutAttributeTop;
-  auto maxProp = isHorizontal ? NSLayoutAttributeRight : NSLayoutAttributeBottom;
+  const auto minProp = isHorizontal ? NSLayoutAttributeLeft : NSLayoutAttributeTop;
+  const auto maxProp = isHorizontal ? NSLayoutAttributeRight : NSLayoutAttributeBottom;
 
-  auto crossPropMin = isHorizontal ? NSLayoutAttributeTop : NSLayoutAttributeLeft;
-//  auto crossPropMax = isHorizontal ? NSLayoutAttributeBottom : NSLayoutAttributeRight;
-  auto crossPropSize = isHorizontal ? NSLayoutAttributeHeight : NSLayoutAttributeWidth;
+  const auto crossPropMin = isHorizontal ? NSLayoutAttributeTop : NSLayoutAttributeLeft;
+  const auto crossPropMax = isHorizontal ? NSLayoutAttributeBottom : NSLayoutAttributeRight;
+  const auto crossPropSize = isHorizontal ? NSLayoutAttributeHeight : NSLayoutAttributeWidth;
   
   NSLayoutConstraint * constraint;
 
-  if (view.subviews.count > 0) {
-    constraint = [NSLayoutConstraint constraintWithItem:view attribute:minProp relatedBy:NSLayoutRelationEqual toItem:view.subviews[0] attribute:minProp multiplier:1.0 constant:-spacing];
-    constraint.identifier = @"Stack main pos min";
-    [view addConstraint:constraint];
-    [constraintsArray addObject:constraint];
-    prevView = view.subviews[0];
-    
-    constraint = [NSLayoutConstraint constraintWithItem:view attribute:crossPropMin relatedBy:NSLayoutRelationEqual toItem:view.subviews[0] attribute:crossPropMin multiplier:1.0 constant:-spacing];
-    constraint.identifier = @"Stack cross pos min";
-    [view addConstraint:constraint];
-    [constraintsArray addObject:constraint];
-    
-    constraint = [NSLayoutConstraint constraintWithItem:view.subviews[0] attribute:crossPropSize relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:crossPropSize multiplier:1.0 constant:-2.0 * spacing];
-    constraint.identifier = @"Stack cross max size";
-    [view addConstraint:constraint];
-    [constraintsArray addObject:constraint];
-  }
-
-  for (int i = 1; i < view.subviews.count; i++) {
+  for (int i = 0; i < view.subviews.count; i++) {
     NSView * subView = view.subviews[i];
-
-    constraint = [NSLayoutConstraint constraintWithItem:prevView attribute:maxProp relatedBy:NSLayoutRelationEqual toItem:subView attribute:minProp multiplier:1.0 constant:-spacing];
-    constraint.identifier = @"Stack between children";
-    [view addConstraint:constraint];
-    [constraintsArray addObject:constraint];
-
-    prevView = subView;
 
     constraint = [NSLayoutConstraint constraintWithItem:view attribute:crossPropMin relatedBy:NSLayoutRelationEqual toItem:subView attribute:crossPropMin multiplier:1.0 constant:-spacing];
     constraint.identifier = @"Stack cross pos min";
+    // constraint.priority = 900;
     [view addConstraint:constraint];
     [constraintsArray addObject:constraint];
-    
-    constraint = [NSLayoutConstraint constraintWithItem:subView attribute:crossPropSize relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:crossPropSize multiplier:1.0 constant:-2.0 * spacing];
-    constraint.identifier = @"Stack cross max size";
+    // NSLog(@"%d left to parent left %d", i, crossPropMin == NSLayoutAttributeLeft);
+
+    if (prevView != NULL) {
+      constraint = [NSLayoutConstraint constraintWithItem:prevView attribute:maxProp relatedBy:NSLayoutRelationEqual toItem:subView attribute:minProp multiplier:1.0 constant:-spacing];
+      constraint.identifier = @"Stack between children";
+      // constraint.priority = 900;
+      [view addConstraint:constraint];
+      [constraintsArray addObject:constraint];
+      // NSLog(@"%d bottom to next top %d %d", i, minProp == NSLayoutAttributeTop, maxProp == NSLayoutAttributeBottom);
+    } else {
+      constraint = [NSLayoutConstraint constraintWithItem:view attribute:minProp relatedBy:NSLayoutRelationEqual toItem:subView attribute:minProp multiplier:1.0 constant:-spacing];
+      constraint.identifier = @"Stack main pos min";
+      // constraint.priority = 800;
+      [view addConstraint:constraint];
+      [constraintsArray addObject:constraint];
+      // NSLog(@"%d top to parent top %d", i, minProp == NSLayoutAttributeTop);
+    }
+
+    prevView = subView;
+
+    constraint = [NSLayoutConstraint constraintWithItem:view attribute:crossPropMax relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:subView attribute:crossPropMax multiplier:1.0 constant:-spacing];
+    constraint.identifier = @"Stack cross pos max";
+    constraint.priority = 800;
     [view addConstraint:constraint];
     [constraintsArray addObject:constraint];
+    // NSLog(@"%d size %d", i, crossPropMax == NSLayoutAttributeRight);
+
+    constraint = [NSLayoutConstraint constraintWithItem:view attribute:crossPropMax relatedBy:NSLayoutRelationEqual toItem:subView attribute:crossPropMax multiplier:1.0 constant:-spacing];
+    constraint.identifier = @"Stack cross pos max eq";
+    constraint.priority = 200;
+    [view addConstraint:constraint];
+    [constraintsArray addObject:constraint];
+    // NSLog(@"%d size %d", i, crossPropMax == NSLayoutAttributeRight);
   }
   
   if (prevView) {
-    constraint = [NSLayoutConstraint constraintWithItem:prevView attribute:maxProp relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:maxProp multiplier:1.0 constant:-spacing];
-    constraint.identifier = @"Stack max";
-    [view addConstraint:constraint];
-    [constraintsArray addObject:constraint];
+    if (view.subviews.count > 1) {
+      constraint = [NSLayoutConstraint constraintWithItem:view attribute:maxProp relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:prevView attribute:maxProp multiplier:1.0 constant:-spacing];
+      constraint.identifier = @"Stack max";
+      constraint.priority = 800;
+      [view addConstraint:constraint];
+      [constraintsArray addObject:constraint];
+      // NSLog(@"max %d", maxProp == NSLayoutAttributeBottom);
+    } else {
+      constraint = [NSLayoutConstraint constraintWithItem:view attribute:maxProp relatedBy:NSLayoutRelationEqual toItem:prevView attribute:maxProp multiplier:1.0 constant:-spacing];
+      constraint.identifier = @"Stack max";
+      constraint.priority = 800;
+      [view addConstraint:constraint];
+      [constraintsArray addObject:constraint];
+      // NSLog(@"max %d", maxProp == NSLayoutAttributeBottom);
+    }
   }
 }
 
@@ -82,7 +99,7 @@ void StackLayout::removeLayout(void * container) {
   {
     NSArray<NSLayoutConstraint*> * constraints = (NSArray<NSLayoutConstraint*> *) CFBridgingRelease(nativeInfo);
 
-//    NSLog(@"Removing %lu constraints", constraints.count);
+  //  NSLog(@"Removing %lu constraints", constraints.count);
     for (NSLayoutConstraint* constraint in constraints)
     {
       NSView * first = constraint.firstItem;

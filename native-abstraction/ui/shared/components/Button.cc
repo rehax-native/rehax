@@ -17,3 +17,11 @@ std::string Button::ClassName() {
 std::string Button::instanceClassName() {
   return Button::ClassName();
 }
+
+void Button::setTitle(rehax::ui::DefaultValue) {
+  setTitle("");
+}
+
+void Button::setOnPress(rehax::ui::DefaultValue) {
+  setOnPress([] () {});
+}

@@ -1,6 +1,6 @@
 #include "./bindings.h"
 
-#define RHX_GEN_DOCS 1
+#define RHX_GEN_DOCS 0
 
 #if RHX_GEN_DOCS
 #include "../docs.h"
@@ -317,6 +317,36 @@ void bindMethod(std::string name, JSContextRef ctx, JSObjectRef prototype) {
     (view->*Method)(
       Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues)
     );
+
+    return JSValueMakeUndefined(ctx);
+  });
+  JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+}
+
+template <typename View, typename T1, typename D1, void (View::*Method)(T1), void (View::*MethodDefault)(D1)>
+void bindMethod(std::string name, JSContextRef ctx, JSObjectRef prototype) {
+  #if RHX_GEN_DOCS
+  jscDocs.collectMethod<View>({
+    .name = name,
+    .arguments = std::vector<rehax::docs::ArgumentDocs> {
+      rehax::docs::ArgumentDocs { .type = rehax::docs::get_type_name<T1>(), },
+    }
+  });
+  #endif
+
+  JSStringRef methodName = JSStringCreateWithUTF8CString(name.c_str());
+  auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+    auto privateData = static_cast<ViewPrivateData<View> *>(JSObjectGetPrivate(thisObject));
+    auto view = privateData->view;
+
+    if (JSValueIsUndefined(ctx, arguments[0]) || JSValueIsNull(ctx, arguments[0])) {
+      (view->*MethodDefault)(::rehax::ui::DefaultValue{});
+    } else {
+      (view->*Method)(
+        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues)
+      );
+    }
+
     return JSValueMakeUndefined(ctx);
   });
   JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
@@ -514,10 +544,9 @@ template <typename View, typename Layout, typename Gesture>
 void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype) {
   bindMethod<View, std::string, &View::description>("toString", ctx, prototype);
   bindMethod<View, &View::removeFromParent>("removeFromParent", ctx, prototype);
-  bindMethod<View, float, &View::setWidthFixed>("setWidthFixed", ctx, prototype);
-  bindMethod<View, float, &View::setHeightFixed>("setHeightFixed", ctx, prototype);
-  bindMethod<View, float, &View::setWidthPercentage>("setWidthPercentage", ctx, prototype);
-  bindMethod<View, float, &View::setWidthPercentage>("setWidthPercentage", ctx, prototype);
+  bindMethod<View, rehax::ui::Length, &View::setWidth>("setWidth", ctx, prototype);
+  bindMethod<View, rehax::ui::Length, &View::setHeight>("setHeight", ctx, prototype);
+  bindMethod<View, ::rehax::ui::Color, ::rehax::ui::DefaultValue, &View::setBackgroundColor, &View::setBackgroundColor>("setBackgroundColor", ctx, prototype);
   bindMethod<View, &View::layout>("layout", ctx, prototype);
     
   {
@@ -633,7 +662,7 @@ void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype) {
         return JSValueMakeNull(ctx);
       }
       auto children = parent->getChildren();
-      auto it = std::find(children.end(), children.begin(), view);
+      auto it = std::find(children.begin(), children.end(), view);
       it++;
       if (it == children.end()) {
         return JSValueMakeNull(ctx);
@@ -659,9 +688,13 @@ void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype) {
       auto privateData = static_cast<ViewPrivateData<View> *>(JSObjectGetPrivate(thisObject));
       auto view = privateData->view;
 
-      auto layoutPrivateData = static_cast<ViewPrivateData<Layout> *>(JSObjectGetPrivate((JSObjectRef) arguments[0]));
-      auto layout = layoutPrivateData->view;
-      view->setLayout(layout->getThisPointer());
+      if (JSValueIsUndefined(ctx, arguments[0]) || JSValueIsNull(ctx, arguments[0])) {
+        view->setLayout(::rehax::ui::DefaultValue{});
+      } else {
+        auto layoutPrivateData = static_cast<ViewPrivateData<Layout> *>(JSObjectGetPrivate((JSObjectRef) arguments[0]));
+        auto layout = layoutPrivateData->view;
+        view->setLayout(layout->getThisPointer());
+      }
       return JSValueMakeUndefined(ctx);
     });
     JSObjectSetProperty(ctx, prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
@@ -702,35 +735,35 @@ void bindViewClassMethods(JSContextRef ctx, JSObjectRef prototype) {
 
 template <typename View>
 void bindButtonClassMethods(JSContextRef ctx, JSObjectRef prototype) {
-  bindMethod<View, std::string, &View::setTitle>("setTitle", ctx, prototype);
   bindMethod<View, std::string, &View::getTitle>("getTitle", ctx, prototype);
-  bindMethod<View, std::function<void(void)>, &View::setOnPress>("setOnPress", ctx, prototype);
+  bindMethod<View, std::string, rehax::ui::DefaultValue, &View::setTitle, &View::setTitle>("setTitle", ctx, prototype);
+  bindMethod<View, std::function<void(void)>, rehax::ui::DefaultValue, &View::setOnPress, &View::setOnPress>("setOnPress", ctx, prototype);
 }
 
 template <typename View>
 void bindTextClassMethods(JSContextRef ctx, JSObjectRef prototype) {
-  bindMethod<View, std::string, &View::setText>("setText", ctx, prototype);
   bindMethod<View, std::string, &View::getText>("getText", ctx, prototype);
-  bindMethod<View, rehax::ui::Color, &View::setTextColor>("setTextColor", ctx, prototype);
-  bindMethod<View, float, &View::setFontSize>("setFontSize", ctx, prototype);
+  bindMethod<View, std::string, rehax::ui::DefaultValue, &View::setText, &View::setText>("setText", ctx, prototype);
+  bindMethod<View, rehax::ui::Color, rehax::ui::DefaultValue, &View::setTextColor, &View::setTextColor>("setTextColor", ctx, prototype);
+  bindMethod<View, float, rehax::ui::DefaultValue, &View::setFontSize, &View::setFontSize>("setFontSize", ctx, prototype);
 }
 
 template <typename View>
 void bindTextInputClassMethods(JSContextRef ctx, JSObjectRef prototype) {
-  bindMethod<View, std::string, &View::setValue>("setValue", ctx, prototype);
+  bindMethod<View, std::string, rehax::ui::DefaultValue, &View::setValue, &View::setValue>("setValue", ctx, prototype);
   bindMethod<View, std::string, &View::getValue>("getValue", ctx, prototype);
 }
 
 template <typename View>
 void bindVectorElementClassMethods(JSContextRef ctx, JSObjectRef prototype) {
-  bindMethod<View, float, &View::setLineWidth>("setLineWidth", ctx, prototype);
-  bindMethod<View, rehax::ui::VectorLineJoin, &View::setLineJoin>("setLineJoin", ctx, prototype);
-  bindMethod<View, rehax::ui::VectorLineCap, &View::setLineCap>("setLineCap", ctx, prototype);
-  bindMethod<View, rehax::ui::Color, &View::setFillColor>("setFillColor", ctx, prototype);
-  bindMethod<View, rehax::ui::Color, &View::setStrokeColor>("setStrokeColor", ctx, prototype);
-  bindMethod<View, rehax::ui::Gradient, &View::setFillGradient>("setFillGradient", ctx, prototype);
-  bindMethod<View, rehax::ui::Gradient, &View::setStrokeGradient>("setStrokeGradient", ctx, prototype);
-  bindMethod<View, rehax::ui::Filters, &View::setFilters>("setFilters", ctx, prototype);
+  bindMethod<View, float, rehax::ui::DefaultValue, &View::setLineWidth, &View::setLineWidth>("setLineWidth", ctx, prototype);
+  bindMethod<View, rehax::ui::VectorLineJoin, rehax::ui::DefaultValue, &View::setLineJoin, &View::setLineJoin>("setLineJoin", ctx, prototype);
+  bindMethod<View, rehax::ui::VectorLineCap, rehax::ui::DefaultValue, &View::setLineCap, &View::setLineCap>("setLineCap", ctx, prototype);
+  bindMethod<View, rehax::ui::Color, rehax::ui::DefaultValue, &View::setFillColor, &View::setFillColor>("setFillColor", ctx, prototype);
+  bindMethod<View, rehax::ui::Color, rehax::ui::DefaultValue, &View::setStrokeColor, &View::setStrokeColor>("setStrokeColor", ctx, prototype);
+  bindMethod<View, rehax::ui::Gradient, rehax::ui::DefaultValue, &View::setFillGradient, &View::setFillGradient>("setFillGradient", ctx, prototype);
+  bindMethod<View, rehax::ui::Gradient, rehax::ui::DefaultValue, &View::setStrokeGradient, &View::setStrokeGradient>("setStrokeGradient", ctx, prototype);
+  bindMethod<View, rehax::ui::Filters, rehax::ui::DefaultValue, &View::setFilters, &View::setFilters>("setFilters", ctx, prototype);
 }
 
 template <typename View>
@@ -810,8 +843,10 @@ void Bindings::bindAppkitToJsc() {
   defineViewClass<rehax::ui::appkit::Gesture>(ctx, "Gesture", nullptr);
   bindGestureClassMethods<rehax::ui::appkit::Gesture>(ctx, classRegistry["Gesture"].prototype);
 
+#if RHX_GEN_DOCS
   jscDocs.printJson();
   jscDocs.printMarkdown();
+#endif
 }
 #endif
 
@@ -860,8 +895,11 @@ void Bindings::bindFluxeToJsc() {
   defineViewClass<rehax::ui::fluxe::Gesture>(ctx, "Gesture", nullptr);
   bindGestureClassMethods<rehax::ui::fluxe::Gesture>(ctx, classRegistry["Gesture"].prototype);
 
+#if RHX_GEN_DOCS
   jscDocs.printJson();
   jscDocs.printMarkdown();
+#endif
+    
 }
 #endif
 
