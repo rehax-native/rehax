@@ -71,15 +71,30 @@ void Runtime::evaluate(std::string script) {
 #ifdef REHAX_WITH_FLUXE
 void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::fluxe::View> view) {
   auto rootView = cppToJs(view);
-  auto globalContext = JS_GetGlobalObject(context);
-  JS_SetPropertyStr(context, globalContext, "rootView", rootView);
+  auto globalObject = JS_GetGlobalObject(context);
+
+  JSValue rehax;
+  if (!JS_HasProperty(context, globalObject, JS_NewAtom(context, "rehax"))) {
+    rehax = JS_NewObject(context);
+    JS_SetPropertyStr(context, globalObject, "rehax", rehax);
+  } else {
+      rehax = JS_GetPropertyStr(context, globalObject, "rehax");
+  }
+  JS_SetPropertyStr(context, rehax, "rootView", rootView);
 }
 #endif
 
 #ifdef REHAX_WITH_APPKIT
 void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::appkit::View> view) {
   auto rootView = cppToJs(view);
-  auto globalContext = JS_GetGlobalObject(context);
+  auto globalObject = JS_GetGlobalObject(context);
+  JSValue rehax;
+  if (!JS_HasProperty(ctx, globalObject, JS_NewAtom(ctx, "rehax"))) {
+    rehax = JS_NewObject(ctx);
+    JS_SetPropertyStr(ctx, globalObject, "rehax", rehax);
+  } else {
+      rehax = JS_GetPropertyStr(ctx, globalObject, "rehax");
+  }
   JS_SetPropertyStr(context, globalContext, "rootView", rootView);
 }
 #endif

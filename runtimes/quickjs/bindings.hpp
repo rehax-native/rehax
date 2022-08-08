@@ -68,8 +68,15 @@ void Bindings::defineViewClass(JSContext * ctx, std::string name, RegisteredClas
   }
   
   JS_SetConstructorBit(ctx, classObject, true);
-  auto globalContext = JS_GetGlobalObject(ctx);
-  JS_SetPropertyStr(ctx, globalContext, name.c_str(), classObject);
+  auto globalObject = JS_GetGlobalObject(ctx);
+  JSValue rehax;
+  if (!JS_HasProperty(ctx, globalObject, JS_NewAtom(ctx, "rehax"))) {
+    rehax = JS_NewObject(ctx);
+    JS_SetPropertyStr(ctx, globalObject, "rehax", rehax);
+  } else {
+      rehax = JS_GetPropertyStr(ctx, globalObject, "rehax");
+  }
+  JS_SetPropertyStr(ctx, rehax, name.c_str(), classObject);
 }
 
 template <typename View, typename RET, RET (View::*Method)(void)>

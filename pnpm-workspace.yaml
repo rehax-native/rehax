@@ -1,5 +1,6 @@
 packages:
   - 'solidjs/template'
-  - 'solidjs/rehax-solidjs'
+  - 'solidjs/rehax-solidjs-renderer'
+  - 'solidjs/rehax-solidjs-components'
 
   - 'examples/solidjs'

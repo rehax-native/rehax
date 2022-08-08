@@ -32,9 +32,19 @@ void Runtime::makeConsole() {
 void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::fluxe::View> view) {
   auto rootView = cppToJs(view);
 
+  auto ctx = context.JSGlobalContextRef;
   JSObjectRef globalObject = JSContextGetGlobalObject(context.JSGlobalContextRef);
   JSStringRef rootName = JSStringCreateWithUTF8CString("rootView");
-  JSObjectSetProperty(context.JSGlobalContextRef, globalObject, rootName, rootView, kJSPropertyAttributeReadOnly, nullptr);
+    
+  runtime::Value rehax;
+  if (!runtime::HasObjectProperty(ctx, globalObject, "rehax")) {
+    rehax = runtime::MakeObject(ctx);
+    runtime::SetObjectProperty(ctx, globalObject, "rehax", rehax);
+  } else {
+    rehax = runtime::GetObjectProperty(ctx, globalObject, "rehax");
+  }
+    
+  JSObjectSetProperty(ctx, (JSObjectRef) rehax, rootName, rootView, kJSPropertyAttributeReadOnly, nullptr);
 }
 #endif
 
@@ -42,8 +52,18 @@ void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::fluxe::View> view
 void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::appkit::View> view) {
   auto rootView = cppToJs(view);
 
+  auto ctx = context.JSGlobalContextRef;
   JSObjectRef globalObject = JSContextGetGlobalObject(context.JSGlobalContextRef);
   JSStringRef rootName = JSStringCreateWithUTF8CString("rootView");
-  JSObjectSetProperty(context.JSGlobalContextRef, globalObject, rootName, rootView, kJSPropertyAttributeReadOnly, nullptr);
+    
+  runtime::Value rehax;
+  if (!runtime::HasObjectProperty(ctx, globalObject, "rehax")) {
+    rehax = runtime::MakeObject(ctx);
+    runtime::SetObjectProperty(ctx, globalObject, "rehax", rehax);
+  } else {
+    rehax = runtime::GetObjectProperty(ctx, globalObject, "rehax");
+  }
+    
+  JSObjectSetProperty(ctx, (JSObjectRef) rehax, rootName, rootView, kJSPropertyAttributeReadOnly, nullptr);
 }
 #endif

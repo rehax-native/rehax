@@ -12,11 +12,13 @@ importers:
       '@rollup/plugin-babel': ^5.3.1
       '@rollup/plugin-commonjs': ^22.0.1
       '@rollup/plugin-node-resolve': ^13.3.0
-      rehax-solidjs: ^1.0.0
+      rehax-solidjs-components: ^0.0.1
+      rehax-solidjs-renderer: ^0.0.1
       rollup: ^2.77.0
-      solid-js: ^1.4.7
+      solid-js: ^1.4.8
     dependencies:
-      rehax-solidjs: link:../../solidjs/rehax-solidjs
+      rehax-solidjs-components: link:../../solidjs/rehax-solidjs-components
+      rehax-solidjs-renderer: link:../../solidjs/rehax-solidjs-renderer
       solid-js: 1.4.8
     devDependencies:
       '@babel/cli': 7.18.9_@babel+core@7.18.9
@@ -26,18 +28,55 @@ importers:
       '@rollup/plugin-node-resolve': 13.3.0_rollup@2.77.0
       rollup: 2.77.0
 
-  solidjs/rehax-solidjs:
+  solidjs/rehax-solidjs-components:
     specifiers:
-      extract-comments: ^1.1.0
       parse-svg-path: ^0.1.2
       pure-color: ^1.3.0
+      rehax-solidjs-renderer: ^0.0.1
       solid-js: ^1.4.8
+      tslib: ^2.4.0
+      typescript: ^4.7.4
     dependencies:
       parse-svg-path: 0.1.2
       pure-color: 1.3.0
-    devDependencies:
-      extract-comments: 1.1.0
+      rehax-solidjs-renderer: link:../rehax-solidjs-renderer
       solid-js: 1.4.8
+    devDependencies:
+      tslib: 2.4.0
+      typescript: 4.7.4
+
+  solidjs/rehax-solidjs-renderer:
+    specifiers:
+      '@babel/core': ^7.18.6
+      '@rollup/plugin-babel': ^5.3.1
+      '@rollup/plugin-commonjs': ^22.0.1
+      '@rollup/plugin-node-resolve': ^13.3.0
+      '@rollup/plugin-typescript': ^8.3.4
+      babel-preset-solid: ^1.4.8
+      extract-comments: ^1.1.0
+      parse-svg-path: ^0.1.2
+      pure-color: ^1.3.0
+      rollup: ^2.77.0
+      rollup-plugin-dts: ^4.2.2
+      solid-js: ^1.4.8
+      tslib: ^2.4.0
+      typescript: ^4.7.4
+    dependencies:
+      parse-svg-path: 0.1.2
+      pure-color: 1.3.0
+      solid-js: 1.4.8
+    devDependencies:
+      '@babel/core': 7.18.9
+      '@rollup/plugin-babel': 5.3.1_palyoikx6kq4yrfoc5jsznmrdi
+      '@rollup/plugin-commonjs': 22.0.1_rollup@2.77.0
+      '@rollup/plugin-node-resolve': 13.3.0_rollup@2.77.0
+      '@rollup/plugin-typescript': 8.3.4_sbpikdwgo7pbmeew3vug7t5zyu
+      babel-preset-solid: 1.4.8_@babel+core@7.18.9
+      extract-comments: 1.1.0
+      rollup: 2.77.0
+      rollup-plugin-dts: 4.2.2_55kiftncucr43pz4hskma6yi2q
+      tslib: 2.4.0
+      typescript: 4.7.4
 
   solidjs/template:
     specifiers:
@@ -51,7 +90,7 @@ importers:
       vite: ^3.0.0
       vite-plugin-solid: ^2.3.0
     dependencies:
-      rehax-solidjs: link:../rehax-solidjs
+      rehax-solidjs: 1.2.0_solid-js@1.4.8
       solid-js: 1.4.8
     devDependencies:
       '@babel/cli': 7.18.9_@babel+core@7.18.9
@@ -481,6 +520,24 @@ packages:
       is-module: 1.0.0
       resolve: 1.22.1
       rollup: 2.77.0
+    dev: true
+
+  /@rollup/plugin-typescript/8.3.4_sbpikdwgo7pbmeew3vug7t5zyu:
+    resolution: {integrity: sha512-wt7JnYE9antX6BOXtsxGoeVSu4dZfw0dU3xykfOQ4hC3EddxRbVG/K0xiY1Wup7QOHJcjLYXWAn0Kx9Z1SBHHg==}
+    engines: {node: '>=8.0.0'}
+    peerDependencies:
+      rollup: ^2.14.0
+      tslib: '*'
+      typescript: '>=3.7.0'
+    peerDependenciesMeta:
+      tslib:
+        optional: true
+    dependencies:
+      '@rollup/pluginutils': 3.1.0_rollup@2.77.0
+      resolve: 1.22.1
+      rollup: 2.77.0
+      tslib: 2.4.0
+      typescript: 4.7.4
     dev: true
 
   /@rollup/pluginutils/3.1.0_rollup@2.77.0:
@@ -1076,6 +1133,13 @@ packages:
       sourcemap-codec: 1.4.8
     dev: true
 
+  /magic-string/0.26.2:
+    resolution: {integrity: sha512-NzzlXpclt5zAbmo6h6jNc8zl2gNRGHvmsZW4IvZhTC4W7k4OlLP+S5YLussa/r3ixNT66KOQfNORlXHSOy/X4A==}
+    engines: {node: '>=12'}
+    dependencies:
+      sourcemap-codec: 1.4.8
+    dev: true
+
   /make-dir/2.1.0:
     resolution: {integrity: sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA==}
     engines: {node: '>=6'}
@@ -1177,6 +1241,16 @@ packages:
     dev: true
     optional: true
 
+  /rehax-solidjs/1.2.0_solid-js@1.4.8:
+    resolution: {integrity: sha512-ksnz+vdtRIf/6hWpFx/mDHsRzKTpf2gH9aXq4HPiEACdyWo7K9R97E65QI+NM+c97tVVN9g+GzKRN/83RNJpeg==}
+    peerDependencies:
+      solid-js: ^1.4.8
+    dependencies:
+      parse-svg-path: 0.1.2
+      pure-color: 1.3.0
+      solid-js: 1.4.8
+    dev: false
+
   /resolve/1.22.1:
     resolution: {integrity: sha512-nBpuuYuY5jFsli/JIs1oldw6fOQCBioohqWZg/2hiaOybXOft4lonv85uDOKXdf8rhyK159cxU5cDcK/NKk8zw==}
     hasBin: true
@@ -1184,6 +1258,20 @@ packages:
       is-core-module: 2.9.0
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
+    dev: true
+
+  /rollup-plugin-dts/4.2.2_55kiftncucr43pz4hskma6yi2q:
+    resolution: {integrity: sha512-A3g6Rogyko/PXeKoUlkjxkP++8UDVpgA7C+Tdl77Xj4fgEaIjPSnxRmR53EzvoYy97VMVwLAOcWJudaVAuxneQ==}
+    engines: {node: '>=v12.22.11'}
+    peerDependencies:
+      rollup: ^2.55
+      typescript: ^4.1
+    dependencies:
+      magic-string: 0.26.2
+      rollup: 2.77.0
+      typescript: 4.7.4
+    optionalDependencies:
+      '@babel/code-frame': 7.18.6
     dev: true
 
   /rollup/2.77.0:
@@ -1263,6 +1351,16 @@ packages:
 
   /ts-toolbelt/9.6.0:
     resolution: {integrity: sha512-nsZd8ZeNUzukXPlJmTBwUAuABDe/9qtVDelJeT/qW0ow3ZS3BsQJtNkan1802aM9Uf68/Y8ljw86Hu0h5IUW3w==}
+    dev: true
+
+  /tslib/2.4.0:
+    resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
+    dev: true
+
+  /typescript/4.7.4:
+    resolution: {integrity: sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
     dev: true
 
   /update-browserslist-db/1.0.5_browserslist@4.21.2:

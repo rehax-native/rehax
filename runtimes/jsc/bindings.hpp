@@ -50,8 +50,15 @@ void Bindings::defineViewClass(JSContextRef ctx, std::string name, RegisteredCla
   auto jsClassObject = JSObjectMake(ctx, clazz, this);
   auto className = JSStringCreateWithUTF8CString(name.c_str());
 
-  auto globalContext = JSContextGetGlobalObject(ctx);
-  JSObjectSetProperty(ctx, globalContext, className, jsClassObject, kJSPropertyAttributeReadOnly, NULL);
+  auto globalObject = JSContextGetGlobalObject(ctx);
+  runtime::Value rehax;
+  if (!runtime::HasObjectProperty(ctx, globalObject, "rehax")) {
+    rehax = runtime::MakeObject(ctx);
+    runtime::SetObjectProperty(ctx, globalObject, "rehax", rehax);
+  } else {
+    rehax = runtime::GetObjectProperty(ctx, globalObject, "rehax");
+  }
+  JSObjectSetProperty(ctx, (JSObjectRef) rehax, className, jsClassObject, kJSPropertyAttributeReadOnly, NULL);
   
   return clazz;
 }
