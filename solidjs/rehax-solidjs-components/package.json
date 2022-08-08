@@ -1,5 +1,5 @@
 {
-  "name": "rehax-solidjs-components",
+  "name": "@rehax/solidjs-components",
   "version": "0.0.1",
   "description": "",
   "main": "dist/components.jsx",

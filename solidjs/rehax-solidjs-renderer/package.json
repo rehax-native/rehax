@@ -1,5 +1,5 @@
 {
-  "name": "rehax-solidjs-renderer",
+  "name": "@rehax/solidjs-renderer",
   "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
