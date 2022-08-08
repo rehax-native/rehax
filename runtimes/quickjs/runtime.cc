@@ -89,12 +89,12 @@ void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::appkit::View> vie
   auto rootView = cppToJs(view);
   auto globalObject = JS_GetGlobalObject(context);
   JSValue rehax;
-  if (!JS_HasProperty(ctx, globalObject, JS_NewAtom(ctx, "rehax"))) {
-    rehax = JS_NewObject(ctx);
-    JS_SetPropertyStr(ctx, globalObject, "rehax", rehax);
+  if (!JS_HasProperty(context, globalObject, JS_NewAtom(context, "rehax"))) {
+    rehax = JS_NewObject(context);
+    JS_SetPropertyStr(context, globalObject, "rehax", rehax);
   } else {
-      rehax = JS_GetPropertyStr(ctx, globalObject, "rehax");
+    rehax = JS_GetPropertyStr(context, globalObject, "rehax");
   }
-  JS_SetPropertyStr(context, globalContext, "rootView", rootView);
+  JS_SetPropertyStr(context, rehax, "rootView", rootView);
 }
 #endif

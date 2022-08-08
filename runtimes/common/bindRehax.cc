@@ -1,83 +1,83 @@
 
 template <typename View, typename Layout, typename Gesture>
-void Bindings::bindViewClassMethods(runtime::Context ctx, runtime::Value prototype) {
-  bindMethod<View, std::string, &View::description>("toString", ctx, prototype);
-  bindMethod<View, rehaxUtils::ObjectPointer<View>, rehaxUtils::ObjectPointer<View>, &View::addView>("addView", ctx, prototype);
-  bindMethod<View, &View::removeFromParent>("removeFromParent", ctx, prototype);
-  bindMethod<View, rehaxUtils::ObjectPointer<View>, &View::removeView>("removeView", ctx, prototype);
-  bindMethod<View, rehaxUtils::WeakObjectPointer<View>, &View::getParent>("getParent", ctx, prototype);
-  bindMethod<View, rehaxUtils::WeakObjectPointer<View>, &View::getFirstChild>("getFirstChild", ctx, prototype);
-  bindMethod<View, rehaxUtils::WeakObjectPointer<View>, &View::getNextSibling>("getNextSibling", ctx, prototype);
-  bindMethod<View, rehax::ui::Length, &View::setWidth>("setWidth", ctx, prototype);
-  bindMethod<View, rehax::ui::Length, &View::setHeight>("setHeight", ctx, prototype);
-  bindMethod<View, rehaxUtils::ObjectPointer<Layout>, &View::setLayout>("setLayout", ctx, prototype);
-  bindMethod<View, &View::layout>("layout", ctx, prototype);
-  bindMethod<View, rehaxUtils::ObjectPointer<Gesture>, &View::addGesture>("addGesture", ctx, prototype);
-  bindMethod<View, rehax::ui::Color, ::rehax::ui::DefaultValue, &View::setBackgroundColor, &View::setBackgroundColor>("setBackgroundColor", ctx, prototype);
+void Bindings::bindViewClassMethods(runtime::Value prototype) {
+  bindMethod<View, std::string, &View::description>("toString", prototype);
+  bindMethod<View, rehaxUtils::ObjectPointer<View>, rehaxUtils::ObjectPointer<View>, &View::addView>("addView", prototype);
+  bindMethod<View, &View::removeFromParent>("removeFromParent", prototype);
+  bindMethod<View, rehaxUtils::ObjectPointer<View>, &View::removeView>("removeView", prototype);
+  bindMethod<View, rehaxUtils::WeakObjectPointer<View>, &View::getParent>("getParent", prototype);
+  bindMethod<View, rehaxUtils::WeakObjectPointer<View>, &View::getFirstChild>("getFirstChild", prototype);
+  bindMethod<View, rehaxUtils::WeakObjectPointer<View>, &View::getNextSibling>("getNextSibling", prototype);
+  bindMethod<View, rehax::ui::Length, &View::setWidth>("setWidth", prototype);
+  bindMethod<View, rehax::ui::Length, &View::setHeight>("setHeight", prototype);
+  bindMethod<View, rehaxUtils::ObjectPointer<Layout>, &View::setLayout>("setLayout", prototype);
+  bindMethod<View, &View::layout>("layout", prototype);
+  bindMethod<View, rehaxUtils::ObjectPointer<Gesture>, &View::addGesture>("addGesture", prototype);
+  bindMethod<View, rehax::ui::Color, ::rehax::ui::DefaultValue, &View::setBackgroundColor, &View::setBackgroundColor>("setBackgroundColor", prototype);
 }
 
 template <typename View>
-void Bindings::bindButtonClassMethods(runtime::Context ctx, runtime::Value prototype) {
-  bindMethod<View, std::string, &View::getTitle>("getTitle", ctx, prototype);
-  bindMethod<View, std::string, rehax::ui::DefaultValue, &View::setTitle, &View::setTitle>("setTitle", ctx, prototype);
-  bindMethod<View, std::function<void(void)>, rehax::ui::DefaultValue, &View::setOnPress, &View::setOnPress>("setOnPress", ctx, prototype);
+void Bindings::bindButtonClassMethods(runtime::Value prototype) {
+  bindMethod<View, std::string, &View::getTitle>("getTitle", prototype);
+  bindMethod<View, std::string, rehax::ui::DefaultValue, &View::setTitle, &View::setTitle>("setTitle", prototype);
+  bindMethod<View, std::function<void(void)>, rehax::ui::DefaultValue, &View::setOnPress, &View::setOnPress>("setOnPress", prototype);
 }
 
 template <typename View>
-void Bindings::bindTextClassMethods(runtime::Context ctx, runtime::Value prototype) {
-  bindMethod<View, std::string, &View::getText>("getText", ctx, prototype);
-  bindMethod<View, std::string, rehax::ui::DefaultValue, &View::setText, &View::setText>("setText", ctx, prototype);
-  bindMethod<View, rehax::ui::Color, rehax::ui::DefaultValue, &View::setTextColor, &View::setTextColor>("setTextColor", ctx, prototype);
-  bindMethod<View, float, rehax::ui::DefaultValue, &View::setFontSize, &View::setFontSize>("setFontSize", ctx, prototype);
+void Bindings::bindTextClassMethods(runtime::Value prototype) {
+  bindMethod<View, std::string, &View::getText>("getText", prototype);
+  bindMethod<View, std::string, rehax::ui::DefaultValue, &View::setText, &View::setText>("setText", prototype);
+  bindMethod<View, rehax::ui::Color, rehax::ui::DefaultValue, &View::setTextColor, &View::setTextColor>("setTextColor", prototype);
+  bindMethod<View, float, rehax::ui::DefaultValue, &View::setFontSize, &View::setFontSize>("setFontSize", prototype);
 }
 
 template <typename View>
-void Bindings::bindTextInputClassMethods(runtime::Context ctx, runtime::Value prototype) {
-  bindMethod<View, std::string, rehax::ui::DefaultValue, &View::setValue, &View::setValue>("setValue", ctx, prototype);
-  bindMethod<View, std::string, &View::getValue>("getValue", ctx, prototype);
+void Bindings::bindTextInputClassMethods(runtime::Value prototype) {
+  bindMethod<View, std::string, rehax::ui::DefaultValue, &View::setValue, &View::setValue>("setValue", prototype);
+  bindMethod<View, std::string, &View::getValue>("getValue", prototype);
 }
 
 template <typename View>
-void Bindings::bindVectorElementClassMethods(runtime::Context ctx, runtime::Value prototype) {
-  bindMethod<View, float, rehax::ui::DefaultValue, &View::setLineWidth, &View::setLineWidth>("setLineWidth", ctx, prototype);
-  bindMethod<View, rehax::ui::VectorLineJoin, rehax::ui::DefaultValue, &View::setLineJoin, &View::setLineJoin>("setLineJoin", ctx, prototype);
-  bindMethod<View, rehax::ui::VectorLineCap, rehax::ui::DefaultValue, &View::setLineCap, &View::setLineCap>("setLineCap", ctx, prototype);
-  bindMethod<View, rehax::ui::Color, rehax::ui::DefaultValue, &View::setFillColor, &View::setFillColor>("setFillColor", ctx, prototype);
-  bindMethod<View, rehax::ui::Color, rehax::ui::DefaultValue, &View::setStrokeColor, &View::setStrokeColor>("setStrokeColor", ctx, prototype);
-  bindMethod<View, rehax::ui::Gradient, rehax::ui::DefaultValue, &View::setFillGradient, &View::setFillGradient>("setFillGradient", ctx, prototype);
-  bindMethod<View, rehax::ui::Gradient, rehax::ui::DefaultValue, &View::setStrokeGradient, &View::setStrokeGradient>("setStrokeGradient", ctx, prototype);
-  bindMethod<View, rehax::ui::Filters, rehax::ui::DefaultValue, &View::setFilters, &View::setFilters>("setFilters", ctx, prototype);
+void Bindings::bindVectorElementClassMethods(runtime::Value prototype) {
+  bindMethod<View, float, rehax::ui::DefaultValue, &View::setLineWidth, &View::setLineWidth>("setLineWidth", prototype);
+  bindMethod<View, rehax::ui::VectorLineJoin, rehax::ui::DefaultValue, &View::setLineJoin, &View::setLineJoin>("setLineJoin", prototype);
+  bindMethod<View, rehax::ui::VectorLineCap, rehax::ui::DefaultValue, &View::setLineCap, &View::setLineCap>("setLineCap", prototype);
+  bindMethod<View, rehax::ui::Color, rehax::ui::DefaultValue, &View::setFillColor, &View::setFillColor>("setFillColor", prototype);
+  bindMethod<View, rehax::ui::Color, rehax::ui::DefaultValue, &View::setStrokeColor, &View::setStrokeColor>("setStrokeColor", prototype);
+  bindMethod<View, rehax::ui::Gradient, rehax::ui::DefaultValue, &View::setFillGradient, &View::setFillGradient>("setFillGradient", prototype);
+  bindMethod<View, rehax::ui::Gradient, rehax::ui::DefaultValue, &View::setStrokeGradient, &View::setStrokeGradient>("setStrokeGradient", prototype);
+  bindMethod<View, rehax::ui::Filters, rehax::ui::DefaultValue, &View::setFilters, &View::setFilters>("setFilters", prototype);
 }
 
 template <typename View>
-void Bindings::bindVectorPathClassMethods(runtime::Context ctx, runtime::Value prototype) {
-  bindMethod<View, &View::beginPath>("beginPath", ctx, prototype);
-  bindMethod<View, float, &View::pathHorizontalTo>("pathHorizontalTo", ctx, prototype);
-  bindMethod<View, float, &View::pathVerticalTo>("pathVerticalTo", ctx, prototype);
-  bindMethod<View, float, float, &View::pathMoveTo>("pathMoveTo", ctx, prototype);
-  bindMethod<View, float, float, &View::pathMoveBy>("pathMoveBy", ctx, prototype);
-  bindMethod<View, float, float, &View::pathLineTo>("pathLineTo", ctx, prototype);
-  bindMethod<View, float, float, float, float, &View::pathQuadraticBezier>("pathQuadraticBezier", ctx, prototype);
-  bindMethod<View, float, float, float, int, int, float, float, &View::pathArc>("pathArc", ctx, prototype);
-  bindMethod<View, float, float, float, float, float, float, &View::pathCubicBezier>("pathCubicBezier", ctx, prototype);
-  bindMethod<View, &View::pathClose>("pathClose", ctx, prototype);
-  bindMethod<View, &View::endPath>("endPath", ctx, prototype);
+void Bindings::bindVectorPathClassMethods(runtime::Value prototype) {
+  bindMethod<View, &View::beginPath>("beginPath", prototype);
+  bindMethod<View, float, &View::pathHorizontalTo>("pathHorizontalTo", prototype);
+  bindMethod<View, float, &View::pathVerticalTo>("pathVerticalTo", prototype);
+  bindMethod<View, float, float, &View::pathMoveTo>("pathMoveTo", prototype);
+  bindMethod<View, float, float, &View::pathMoveBy>("pathMoveBy", prototype);
+  bindMethod<View, float, float, &View::pathLineTo>("pathLineTo", prototype);
+  bindMethod<View, float, float, float, float, &View::pathQuadraticBezier>("pathQuadraticBezier", prototype);
+  bindMethod<View, float, float, float, int, int, float, float, &View::pathArc>("pathArc", prototype);
+  bindMethod<View, float, float, float, float, float, float, &View::pathCubicBezier>("pathCubicBezier", prototype);
+  bindMethod<View, &View::pathClose>("pathClose", prototype);
+  bindMethod<View, &View::endPath>("endPath", prototype);
 }
 
 template <typename Layout, typename View>
-void Bindings::bindStackLayoutClassMethods(runtime::Context ctx, runtime::Value prototype) {
-  bindMethod<Layout, rehax::ui::StackLayoutOptions, &Layout::setOptions>("setOptions", ctx, prototype);
+void Bindings::bindStackLayoutClassMethods(runtime::Value prototype) {
+  bindMethod<Layout, rehax::ui::StackLayoutOptions, &Layout::setOptions>("setOptions", prototype);
 }
 
 template <typename Layout, typename View>
-void Bindings::bindFlexLayoutClassMethods(runtime::Context ctx, runtime::Value prototype) {
-  bindMethod<Layout, rehax::ui::FlexLayoutOptions, &Layout::setOptions>("setOptions", ctx, prototype);
+void Bindings::bindFlexLayoutClassMethods(runtime::Value prototype) {
+  bindMethod<Layout, rehax::ui::FlexLayoutOptions, &Layout::setOptions>("setOptions", prototype);
 }
 
 template <typename Gesture>
-void Bindings::bindGestureClassMethods(runtime::Context ctx, runtime::Value prototype) {
-  bindMethod<Gesture, std::function<void(void)>, std::function<void(float, float)>, std::function<void(float, float)>, std::function<void(float, float)>, &Gesture::setup>("setup", ctx, prototype);
-  bindMethod<Gesture, rehax::ui::GestureState, &Gesture::setState>("setState", ctx, prototype);
+void Bindings::bindGestureClassMethods(runtime::Value prototype) {
+  bindMethod<Gesture, std::function<void(void)>, std::function<void(float, float)>, std::function<void(float, float)>, std::function<void(float, float)>, &Gesture::setup>("setup", prototype);
+  bindMethod<Gesture, rehax::ui::GestureState, &Gesture::setState>("setState", prototype);
 }
 
 template <
@@ -113,30 +113,30 @@ void Bindings::bindRehax() {
   });
 #endif
     
-  defineViewClass<ILayout, false>(ctx, "ILayout", nullptr);
-  defineViewClass<StackLayout>(ctx, "StackLayout", &classRegistry["ILayout"]);
-  defineViewClass<FlexLayout>(ctx, "FlexLayout", &classRegistry["ILayout"]);
+  defineClass<ILayout, false>("ILayout", nullptr);
+  defineClass<StackLayout>("StackLayout", &classRegistry["ILayout"]);
+  defineClass<FlexLayout>("FlexLayout", &classRegistry["ILayout"]);
 
-  defineViewClass<View>(ctx, "View", nullptr);
-  defineViewClass<Button>(ctx, "Button", &classRegistry["View"]);
-  defineViewClass<Text>(ctx, "Text", &classRegistry["View"]);
-  defineViewClass<TextInput>(ctx, "TextInput", &classRegistry["View"]);
-  defineViewClass<VectorContainer>(ctx, "VectorContainer", &classRegistry["View"]);
-  defineViewClass<VectorElement, false>(ctx, "VectorElement", &classRegistry["View"]);
-  defineViewClass<VectorPath>(ctx, "VectorPath", &classRegistry["VectorElement"]);
+  defineClass<View>("View", nullptr);
+  defineClass<Button>("Button", &classRegistry["View"]);
+  defineClass<Text>("Text", &classRegistry["View"]);
+  defineClass<TextInput>("TextInput", &classRegistry["View"]);
+  defineClass<VectorContainer>("VectorContainer", &classRegistry["View"]);
+  defineClass<VectorElement, false>("VectorElement", &classRegistry["View"]);
+  defineClass<VectorPath>("VectorPath", &classRegistry["VectorElement"]);
 
-  bindViewClassMethods<View, ILayout, Gesture>(ctx, classRegistry["View"].prototype);
-  bindButtonClassMethods<Button>(ctx, classRegistry["Button"].prototype);
-  bindTextClassMethods<Text>(ctx, classRegistry["Text"].prototype);
-  bindTextInputClassMethods<TextInput>(ctx, classRegistry["TextInput"].prototype);
-  bindVectorElementClassMethods<VectorElement>(ctx, classRegistry["VectorElement"].prototype);
-  bindVectorPathClassMethods<VectorPath>(ctx, classRegistry["VectorPath"].prototype);
+  bindViewClassMethods<View, ILayout, Gesture>(classRegistry["View"].prototype);
+  bindButtonClassMethods<Button>(classRegistry["Button"].prototype);
+  bindTextClassMethods<Text>(classRegistry["Text"].prototype);
+  bindTextInputClassMethods<TextInput>(classRegistry["TextInput"].prototype);
+  bindVectorElementClassMethods<VectorElement>(classRegistry["VectorElement"].prototype);
+  bindVectorPathClassMethods<VectorPath>(classRegistry["VectorPath"].prototype);
 
-  bindStackLayoutClassMethods<StackLayout, View>(ctx, classRegistry["StackLayout"].prototype);
-  bindFlexLayoutClassMethods<FlexLayout, View>(ctx, classRegistry["FlexLayout"].prototype);
+  bindStackLayoutClassMethods<StackLayout, View>(classRegistry["StackLayout"].prototype);
+  bindFlexLayoutClassMethods<FlexLayout, View>(classRegistry["FlexLayout"].prototype);
 
-  defineViewClass<Gesture>(ctx, "Gesture", nullptr);
-  bindGestureClassMethods<Gesture>(ctx, classRegistry["Gesture"].prototype);
+  defineClass<Gesture>("Gesture", nullptr);
+  bindGestureClassMethods<Gesture>(classRegistry["Gesture"].prototype);
 
 #if RHX_GEN_DOCS
   jscDocs.printJson();

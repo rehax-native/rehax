@@ -27,7 +27,7 @@ export default [
             "solid",
             {
               moduleName: "./componentRenderer",
-              moduleName: "rehax-solidjs",
+              moduleName: "@rehax/solidjs-renderer"
               // generate: "universal",
             },
           ],

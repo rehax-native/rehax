@@ -50,19 +50,20 @@ Now that we're able to interactive with native components from JavaScript, we ha
 [SolidJs](https://www.solidjs.com/) makes this simple, we provide a [custom renderer](https://github.com/solidjs/solid/tree/main/packages/solid/universal) to call these methods. With this you can use SolidJS code that looks like this
 
 ```jsx
-import { render, getRootView } from 'rehax-solidjs';
+import { render, getRootView } from '!rehax/solidjs-renderer';
+import { View, Button } from '!rehax/solidjs-components';
 import { createSignal } from 'solid-js';
 
 function App() {
   const [count, setCount] = createSignal(10);
 
   return (
-    <div>
-      <button title="Click me" onPress={() => {
+    <View>
+      <Button title="Click me" onPress={() => {
         setCount(count() + 1)
-      }}></button>
+      }}></Button>
       Count: {count()}
-    </div>
+    </View>
   );
 }
 

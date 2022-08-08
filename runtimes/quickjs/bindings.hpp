@@ -17,7 +17,7 @@ void finalizeViewInstance(JSRuntime *rt, JSValue val) {
 
 
 template <typename Object, bool instantiable>
-void Bindings::defineViewClass(JSContext * ctx, std::string name, RegisteredClass * parentClass) {
+void Bindings::defineClass(std::string name, RegisteredClass * parentClass) {
   auto prototypeObject = JS_NewObjectClass(ctx, kPrototypeClassId);
   if (parentClass != nullptr) {
     JS_SetPrototype(ctx, prototypeObject, parentClass->prototype);
@@ -80,7 +80,7 @@ void Bindings::defineViewClass(JSContext * ctx, std::string name, RegisteredClas
 }
 
 template <typename View, typename RET, RET (View::*Method)(void)>
-void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) {
+void Bindings::bindMethod(std::string name, JSValue prototype) {
   auto funData = JS_NewObjectClass(ctx, kPointerClassId);
   JS_SetOpaque(funData, this);
   std::array<JSValue, 1> funDataArray {
@@ -102,7 +102,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
 }
 
 template <typename View, void (View::*Method)(void)>
-void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) {
+void Bindings::bindMethod(std::string name, JSValue prototype) {
   auto funData = JS_NewObjectClass(ctx, kPointerClassId);
   JS_SetOpaque(funData, this);
   std::array<JSValue, 1> funDataArray {
@@ -124,7 +124,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
 }
 
 template <typename View, typename T1, void (View::*Method)(T1)>
-void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) {
+void Bindings::bindMethod(std::string name, JSValue prototype) {
   auto funData = JS_NewObjectClass(ctx, kPointerClassId);
   JS_SetOpaque(funData, this);
   std::array<JSValue, 1> funDataArray {
@@ -148,7 +148,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
 }
 
 template <typename View, typename T1, typename D1, void (View::*Method)(T1), void (View::*MethodDefault)(D1)>
-void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) {
+void Bindings::bindMethod(std::string name, JSValue prototype) {
   auto funData = JS_NewObjectClass(ctx, kPointerClassId);
   JS_SetOpaque(funData, this);
   std::array<JSValue, 1> funDataArray {
@@ -178,7 +178,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
 }
 
 template <typename View, typename T1, typename T2, void (View::*Method)(T1, T2)>
-void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) {
+void Bindings::bindMethod(std::string name, JSValue prototype) {
   auto funData = JS_NewObjectClass(ctx, kPointerClassId);
   JS_SetOpaque(funData, this);
   std::array<JSValue, 1> funDataArray {
@@ -203,7 +203,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
 }
 
 template <typename View, typename T1, typename T2, typename T3, void (View::*Method)(T1, T2, T3)>
-void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) {
+void Bindings::bindMethod(std::string name, JSValue prototype) {
   auto funData = JS_NewObjectClass(ctx, kPointerClassId);
   JS_SetOpaque(funData, this);
   std::array<JSValue, 1> funDataArray {
@@ -229,7 +229,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
 }
 
 template <typename View, typename T1, typename T2, typename T3, typename T4, void (View::*Method)(T1, T2, T3, T4)>
-void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) {
+void Bindings::bindMethod(std::string name, JSValue prototype) {
   auto funData = JS_NewObjectClass(ctx, kPointerClassId);
   JS_SetOpaque(funData, this);
   std::array<JSValue, 1> funDataArray {
@@ -256,7 +256,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
 }
 
 template <typename View, typename T1, typename T2, typename T3, typename T4, typename T5, void (View::*Method)(T1, T2, T3, T4, T5)>
-void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) {
+void Bindings::bindMethod(std::string name, JSValue prototype) {
   auto funData = JS_NewObjectClass(ctx, kPointerClassId);
   JS_SetOpaque(funData, this);
   std::array<JSValue, 1> funDataArray {
@@ -284,7 +284,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
 }
 
 template <typename View, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, void (View::*Method)(T1, T2, T3, T4, T5, T6)>
-void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) {
+void Bindings::bindMethod(std::string name, JSValue prototype) {
   auto funData = JS_NewObjectClass(ctx, kPointerClassId);
   JS_SetOpaque(funData, this);
   std::array<JSValue, 1> funDataArray {
@@ -313,7 +313,7 @@ void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) 
 }
 
 template <typename View, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, void (View::*Method)(T1, T2, T3, T4, T5, T6, T7)>
-void Bindings::bindMethod(std::string name, JSContext * ctx, JSValue prototype) {
+void Bindings::bindMethod(std::string name, JSValue prototype) {
   auto funData = JS_NewObjectClass(ctx, kPointerClassId);
   JS_SetOpaque(funData, this);
   std::array<JSValue, 1> funDataArray {

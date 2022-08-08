@@ -33,7 +33,7 @@ export default {
         [
           'solid',
           {
-            "moduleName": "rehax-solidjs-renderer",
+            "moduleName": "@rehax/solidjs-renderer",
             "generate": "universal"
           }
         ],

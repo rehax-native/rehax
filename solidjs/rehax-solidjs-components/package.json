@@ -23,8 +23,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "parse-svg-path": "^0.1.2",
-    "solid-js": "^1.4.8",
-    "pure-color": "^1.3.0"
+    "@rehax/solidjs-renderer": "^0.0.1",
+    "solid-js": "^1.4.8"
   }
 }

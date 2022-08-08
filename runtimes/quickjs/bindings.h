@@ -58,39 +58,39 @@ public:
   >
   void bindRehax();
 
-  template <typename View, bool instantiable = true>
-  void defineViewClass(JSContext * ctx, std::string name, RegisteredClass * parentClass);
+  template <typename Object, bool instantiable = true>
+  void defineClass(std::string name, RegisteredClass * parentClass);
 
-  template <typename View, typename Layout, typename Gesture> void bindViewClassMethods(JSContext * ctx, JSValue prototype);
-  template <typename View> void bindButtonClassMethods(JSContext * ctx, JSValue prototype);
-  template <typename View> void bindTextClassMethods(JSContext * ctx, JSValue prototype);
-  template <typename View> void bindTextInputClassMethods(JSContext * ctx, JSValue prototype);
-  template <typename View> void bindVectorElementClassMethods(JSContext * ctx, JSValue prototype);
-  template <typename View> void bindVectorPathClassMethods(JSContext * ctx, JSValue prototype);
-  template <typename Layout, typename View> void bindStackLayoutClassMethods(JSContext * ctx, JSValue prototype);
-  template <typename Layout, typename View> void bindFlexLayoutClassMethods(JSContext * ctx, JSValue prototype);
-  template <typename Gesture> void bindGestureClassMethods(JSContext * ctx, JSValue prototype);
+  template <typename View, typename Layout, typename Gesture> void bindViewClassMethods(JSValue prototype);
+  template <typename View> void bindButtonClassMethods(JSValue prototype);
+  template <typename View> void bindTextClassMethods(JSValue prototype);
+  template <typename View> void bindTextInputClassMethods(JSValue prototype);
+  template <typename View> void bindVectorElementClassMethods(JSValue prototype);
+  template <typename View> void bindVectorPathClassMethods(JSValue prototype);
+  template <typename Layout, typename View> void bindStackLayoutClassMethods(JSValue prototype);
+  template <typename Layout, typename View> void bindFlexLayoutClassMethods(JSValue prototype);
+  template <typename Gesture> void bindGestureClassMethods(JSValue prototype);
 
-  template <typename View, typename RET, RET (View::*Method)(void)> void bindMethod(std::string name, JSContext * ctx, JSValue prototype);
-  template <typename View, void (View::*Method)(void)> void bindMethod(std::string name, JSContext * ctx, JSValue prototype);
-  template <typename View, typename T1, void (View::*Method)(T1)>
-  void bindMethod(std::string name, JSContext * ctx, JSValue prototype);
-  template <typename View, typename T1, typename D1, void (View::*Method)(T1), void (View::*MethodDefault)(D1)>
-  void bindMethod(std::string name, JSContext * ctx, JSValue prototype);
-  template <typename View, typename T1, typename T2, void (View::*Method)(T1, T2)>
-  void bindMethod(std::string name, JSContext * ctx, JSValue prototype);
-  template <typename View, typename T1, typename T2, typename T3, void (View::*Method)(T1, T2)>
-  void bindMethod(std::string name, JSContext * ctx, JSValue prototype);
-  template <typename View, typename T1, typename T2, typename T3, void (View::*Method)(T1, T2, T3)>
-  void bindMethod(std::string name, JSContext * ctx, JSValue prototype);
-  template <typename View, typename T1, typename T2, typename T3, typename T4, void (View::*Method)(T1, T2, T3, T4)>
-  void bindMethod(std::string name, JSContext * ctx, JSValue prototype);
-  template <typename View, typename T1, typename T2, typename T3, typename T4, typename T5, void (View::*Method)(T1, T2, T3, T4, T5)>
-  void bindMethod(std::string name, JSContext * ctx, JSValue prototype);
-  template <typename View, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, void (View::*Method)(T1, T2, T3, T4, T5, T6)>
-  void bindMethod(std::string name, JSContext * ctx, JSValue prototype);
-  template <typename View, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, void (View::*Method)(T1, T2, T3, T4, T5, T6, T7)>
-  void bindMethod(std::string name, JSContext * ctx, JSValue prototype);
+  template <typename Object, typename RET, RET (Object::*Method)(void)> void bindMethod(std::string name, JSValue prototype);
+  template <typename Object, void (Object::*Method)(void)> void bindMethod(std::string name, JSValue prototype);
+  template <typename Object, typename T1, void (Object::*Method)(T1)>
+  void bindMethod(std::string name, JSValue prototype);
+  template <typename Object, typename T1, typename D1, void (Object::*Method)(T1), void (Object::*MethodDefault)(D1)>
+  void bindMethod(std::string name, JSValue prototype);
+  template <typename Object, typename T1, typename T2, void (Object::*Method)(T1, T2)>
+  void bindMethod(std::string name, JSValue prototype);
+  template <typename Object, typename T1, typename T2, typename T3, void (Object::*Method)(T1, T2)>
+  void bindMethod(std::string name, JSValue prototype);
+  template <typename Object, typename T1, typename T2, typename T3, void (Object::*Method)(T1, T2, T3)>
+  void bindMethod(std::string name, JSValue prototype);
+  template <typename Object, typename T1, typename T2, typename T3, typename T4, void (Object::*Method)(T1, T2, T3, T4)>
+  void bindMethod(std::string name, JSValue prototype);
+  template <typename Object, typename T1, typename T2, typename T3, typename T4, typename T5, void (Object::*Method)(T1, T2, T3, T4, T5)>
+  void bindMethod(std::string name, JSValue prototype);
+  template <typename Object, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, void (Object::*Method)(T1, T2, T3, T4, T5, T6)>
+  void bindMethod(std::string name, JSValue prototype);
+  template <typename Object, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, void (Object::*Method)(T1, T2, T3, T4, T5, T6, T7)>
+  void bindMethod(std::string name, JSValue prototype);
 
   RegisteredClass getRegisteredClass(std::string name);
   template <typename T> JSValue cppToJs(T obj);
