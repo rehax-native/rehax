@@ -1,6 +1,6 @@
 {
   "name": "@rehax/solidjs-renderer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "dist/index.js",
   "files": [
@@ -13,7 +13,8 @@
     "build": "tsc",
     "buildRollup": "rollup --config rollup.config.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "generateDocs": "node generateDocs.js"
+    "generateDocs": "node generateDocs.js",
+    "prepublish": "pnpm run build"
   },
   "repository": {
     "type": "git",

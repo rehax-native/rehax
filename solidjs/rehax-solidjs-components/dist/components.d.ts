@@ -1,4 +1,4 @@
-import { RehaxVectorPath } from "../rehax-solidjs-renderer/global";
+import { RehaxVectorPath, RehaxILayout, RehaxView, RehaxButton, RehaxTextInput, RehaxFlexLayout, RehaxStackLayout, RehaxVectorContainer } from "../rehax-solidjs-renderer/global";
 export interface ColorType {
     /** Range 0 - 255 */
     red: number;
@@ -44,32 +44,72 @@ export interface ViewProps {
     width?: LengthType;
     height?: LengthType;
     backgroundColor?: ColorType;
+    layout?: RehaxILayout;
+    onMouseDown?: (e: {
+        x: number;
+        y: number;
+    }) => void;
+    onMouseMove?: (e: {
+        x: number;
+        y: number;
+    }) => void;
+    onMouseUp?: (e: {
+        x: number;
+        y: number;
+    }) => void;
 }
 /** A base view */
-export declare function View(props: ViewProps): any;
+export declare function View(props: ViewProps): RehaxView;
 export interface ButtonProps extends ViewProps {
     title: string;
-    onPress: () => void;
+    onPress?: () => void;
 }
 /** A button */
-export declare function Button(props: ButtonProps): any;
+export declare function Button(props: ButtonProps): RehaxButton;
 export interface TextInputProps extends ViewProps {
     value: string;
     onValueChange: () => void;
 }
 /** A text input to capture all kind of user input */
-export declare function TextInput(props: TextInputProps): any;
+export declare function TextInput(props: TextInputProps): RehaxTextInput;
 export interface FlexLayoutProps extends ViewProps {
+    options?: {
+        direction?: "row" | "column" | "row-reverse" | "column-reverse";
+        justifyContent?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around";
+        alignItems?: "flex-start" | "flex-end" | "center" | "stretch";
+        items?: Array<{
+            flexGrow?: number;
+            order?: number;
+            alignSelf?: "flex-start" | "flex-end" | "center" | "stretch";
+        }>;
+    };
 }
-export declare function FlexLayout(props: FlexLayoutProps): any;
+export declare function FlexLayout(props: FlexLayoutProps): RehaxFlexLayout;
 export interface StackLayoutProps extends ViewProps {
+    options?: {
+        direction?: "horizontal" | "vertical";
+        spacing?: number;
+    };
 }
-export declare function StackLayout(props: StackLayoutProps): any;
+export declare function StackLayout(props: StackLayoutProps): RehaxStackLayout;
 export interface VectorContainerProps extends ViewProps {
 }
-export declare function VectorContainer(props: VectorContainerProps): any;
-export interface VectorPathProps extends ViewProps {
+export declare function VectorContainer(props: VectorContainerProps): RehaxVectorContainer;
+export interface VectorElementProps extends ViewProps {
+    lineWidth?: number;
+    strokeColor?: ColorType;
+    lineCap?: "butt" | "round" | "square";
+    lineJoin?: "miter" | "bevel" | "round";
+    filters?: {
+        defs: Array<{
+            type: "blur";
+            blurRadius: number;
+        }>;
+    };
 }
-export declare function VectorPath(props: VectorPathProps): any;
+export interface VectorPathProps extends VectorElementProps {
+    operations: Array<(path: RehaxVectorPath) => void>;
+}
+export declare function VectorPath(props: VectorPathProps): RehaxVectorPath;
 export declare function MoveTo(x: number, y: number): (path: RehaxVectorPath) => void;
 export declare function Arc(rx: number, ry: number, xAxisRotation: number, largeArc: number, sweepFlag: number, x: number, y: number): (path: RehaxVectorPath) => void;
