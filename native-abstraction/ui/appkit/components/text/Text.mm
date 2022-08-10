@@ -28,7 +28,6 @@ void Text::createNativeView() {
 void Text::setText(std::string text) {
   NSTextField * view = (__bridge NSTextField *) this->nativeView;
   [view setStringValue: [NSString stringWithUTF8String: text.c_str()]];
-  [view sizeToFit];
 }
 
 std::string Text::getText() {

@@ -229,9 +229,7 @@ struct Converter<::rehax::ui::FlexItem> {
     ::rehax::ui::FlexItem flexItem;
     if (runtime::HasObjectProperty(ctx, value, "flexGrow")) {
       flexItem.flexGrow = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "flexGrow"), bindings, retainedValues);
-    }
-    if (runtime::HasObjectProperty(ctx, value, "hasFlexGrow")) {
-      flexItem.hasFlexGrow = Converter<bool>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "hasFlexGrow"), bindings, retainedValues);
+      flexItem.hasFlexGrow = true;
     }
     if (runtime::HasObjectProperty(ctx, value, "order")) {
       flexItem.order = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "order"), bindings, retainedValues);

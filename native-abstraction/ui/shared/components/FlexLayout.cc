@@ -23,6 +23,7 @@ void FlexLayout::setOptions(FlexLayoutOptions flexLayoutOptions) {
   isReverse = flexLayoutOptions.direction == FlexLayoutDirection::RowReverse || flexLayoutOptions.direction == FlexLayoutDirection::ColumnReverse;
   justifyContent = flexLayoutOptions.justifyContent;
   alignItems = flexLayoutOptions.alignItems;
+  items = flexLayoutOptions.items;
   if (containerView.isValid()) {
     containerView->layout();
   }

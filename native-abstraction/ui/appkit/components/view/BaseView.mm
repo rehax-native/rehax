@@ -1,9 +1,29 @@
-#import "FlippedView.h"
+#import "BaseView.h"
 
-@implementation FlippedView
+@implementation BaseView
+
+// - (void)setLayouter:(ViewLayouter *)layouter_
+// {
+//   layouter = layouter_;
+// }
+
 - (BOOL)isFlipped {
-    return YES;
+  return YES;
 }
+
+// - (void)layout
+// {
+//   [super layout];
+//   if (layouter != nil) {
+//     [layouter layout:self];
+//   }
+// }
+
+@end
+
+@implementation ViewLayouter
+- (void)layout:(NSView*)view
+{}
 @end
 
 void AppKitNativeViewRemoveAllConstraintsWidthId(NSView * view, NSString * identifier)

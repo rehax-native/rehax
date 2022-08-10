@@ -19,7 +19,7 @@ using namespace rehax::ui::appkit;
 	if (self = [super init])
   {
 		NSRect contentSize = NSMakeRect(0.0f, 0.0f, 480.0f, 320.0f);
-		self.window = [[NSWindow alloc] initWithContentRect:contentSize styleMask:NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:YES];
+		self.window = [[NSWindow alloc] initWithContentRect:contentSize styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskResizable backing:NSBackingStoreBuffered defer:YES];
 		self.view = [[NSView alloc] initWithFrame:contentSize];
 	}
 	return self;

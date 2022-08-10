@@ -1,4 +1,13 @@
-import { RehaxVectorPath } from "../rehax-solidjs-renderer/global";
+import {
+  RehaxVectorPath,
+  RehaxILayout,
+  RehaxView,
+  RehaxButton,
+  RehaxTextInput,
+  RehaxFlexLayout,
+  RehaxStackLayout,
+  RehaxVectorContainer,
+} from "../rehax-solidjs-renderer/global";
 
 export interface ColorType {
   /** Range 0 - 255 */
@@ -82,20 +91,25 @@ export interface ViewProps {
   width?: LengthType;
   height?: LengthType;
   backgroundColor?: ColorType;
+  layout?: RehaxILayout;
+
+  onMouseDown?: (e: { x: number; y: number }) => void;
+  onMouseMove?: (e: { x: number; y: number }) => void;
+  onMouseUp?: (e: { x: number; y: number }) => void;
 }
 
 /** A base view */
-export function View(props: ViewProps) {
+export function View(props: ViewProps): RehaxView {
   return <rehaxView {...props} />;
 }
 
 export interface ButtonProps extends ViewProps {
   title: string;
-  onPress: () => void;
+  onPress?: () => void;
 }
 
 /** A button */
-export function Button(props: ButtonProps) {
+export function Button(props: ButtonProps): RehaxButton {
   return <rehaxButton {...props} />;
 }
 
@@ -105,31 +119,69 @@ export interface TextInputProps extends ViewProps {
 }
 
 /** A text input to capture all kind of user input */
-export function TextInput(props: TextInputProps) {
+export function TextInput(props: TextInputProps): RehaxTextInput {
   return <rehaxInput {...props} />;
 }
 
-export interface FlexLayoutProps extends ViewProps {}
+export interface FlexLayoutProps extends ViewProps {
+  options?: {
+    direction?: "row" | "column" | "row-reverse" | "column-reverse";
+    justifyContent?:
+      | "flex-start"
+      | "flex-end"
+      | "center"
+      | "space-between"
+      | "space-around";
+    alignItems?: "flex-start" | "flex-end" | "center" | "stretch"; // | "baseline";
+    items?: Array<{
+      flexGrow?: number;
+      order?: number;
+      alignSelf?: "flex-start" | "flex-end" | "center" | "stretch"; // | "baseline";
+    }>;
+  };
+}
 
-export function FlexLayout(props: FlexLayoutProps) {
+export function FlexLayout(props: FlexLayoutProps): RehaxFlexLayout {
   return <rehaxFlexLayout {...props} />;
 }
 
-export interface StackLayoutProps extends ViewProps {}
+export interface StackLayoutProps extends ViewProps {
+  options?: {
+    direction?: "horizontal" | "vertical";
+    spacing?: number;
+  };
+}
 
-export function StackLayout(props: StackLayoutProps) {
+export function StackLayout(props: StackLayoutProps): RehaxStackLayout {
   return <rehaxStackLayout {...props} />;
 }
 
 export interface VectorContainerProps extends ViewProps {}
 
-export function VectorContainer(props: VectorContainerProps) {
+export function VectorContainer(
+  props: VectorContainerProps
+): RehaxVectorContainer {
   return <rehaxVectorContainer {...props} />;
 }
 
-export interface VectorPathProps extends ViewProps {}
+export interface VectorElementProps extends ViewProps {
+  lineWidth?: number;
+  strokeColor?: ColorType;
+  lineCap?: "butt" | "round" | "square";
+  lineJoin?: "miter" | "bevel" | "round";
+  filters?: {
+    defs: Array<{
+      type: "blur";
+      blurRadius: number;
+    }>;
+  };
+}
 
-export function VectorPath(props: VectorPathProps) {
+export interface VectorPathProps extends VectorElementProps {
+  operations: Array<(path: RehaxVectorPath) => void>;
+}
+
+export function VectorPath(props: VectorPathProps): RehaxVectorPath {
   return <rehaxVectorPath {...props} />;
 }
 

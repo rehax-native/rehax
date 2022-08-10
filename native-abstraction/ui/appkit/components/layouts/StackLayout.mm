@@ -1,6 +1,7 @@
 #include "StackLayout.h"
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
+#import "../view/BaseView.h"
 
 using namespace rehax::ui::appkit::impl;
 
@@ -12,11 +13,62 @@ std::string StackLayout::description() {
   return stringStream.str();
 }
 
+// @interface StackViewLayouter : ViewLayouter
+// {
+//     @public
+//     bool isHorizontal;
+//     float spacing;
+// }
+// @end
+
+// @implementation StackViewLayouter
+
+// - (void)layout:(NSView*)view
+// {
+//   NSLog(@"Stack %@", view);
+//   float posMain = spacing;
+//   for (NSView * subview in view.subviews) {
+//         NSLog(@"%@ %f %f", subview, subview.bounds.size.width, subview.bounds.size.height);
+//         NSLog(@"%@ %f %f", subview, [subview intrinsicContentSize].width, [subview intrinsicContentSize].height);
+      
+//     NSSize intrinsicSize = [subview intrinsicContentSize];
+//     CGSize boundsSize = subview.bounds.size;
+// //    if (intrinsicSize.width >= 0) {
+// //      boundsSize.width = intrinsicSize.width;
+// //    }
+// //    if (intrinsicSize.height >= 0) {
+// //      boundsSize.height = intrinsicSize.height;
+// //    }
+        
+//     if (isHorizontal) {
+//       subview.frame = CGRectMake(posMain, spacing, boundsSize.width, boundsSize.height);
+//       posMain += boundsSize.width + spacing;
+//     } else {
+//       subview.frame = CGRectMake(spacing, posMain, boundsSize.width, boundsSize.height);
+//       posMain += boundsSize.height + spacing;
+//     }
+//   }
+//  view.frame = CGRectMake(0, 0, 100, 100);
+// }
+// @end
+
 void StackLayout::layoutContainer(void * container) {
   const NSView * view = (__bridge NSView *) container;
   NSView * prevView = NULL;
 
-  // NSLog(@"### Stack layout %@", view);
+//  if (nativeInfo != nullptr) {
+//    StackViewLayouter * layouter = (StackViewLayouter * ) nativeInfo;
+//    layouter->isHorizontal = isHorizontal;
+//    layouter->spacing = spacing;
+//    [view setNeedsLayout:true];
+//  } else if ([view respondsToSelector:@selector(setLayouter:)]) {
+//    StackViewLayouter * layouter = [StackViewLayouter new];
+//    layouter->isHorizontal = isHorizontal;
+//    layouter->spacing = spacing;
+//    [view performSelector:@selector(setLayouter:) withObject:layouter];
+//    nativeInfo = (void*) CFBridgingRetain(layouter);
+//  }
+//  return;
   
   removeLayout(container);
   

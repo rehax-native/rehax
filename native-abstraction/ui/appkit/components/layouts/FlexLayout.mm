@@ -1,6 +1,8 @@
 #include "FlexLayout.h"
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
+#import <objc/runtime.h>
+#import "../view/BaseView.h"
 
 using namespace rehax::ui::appkit::impl;
 using namespace rehax::ui;
@@ -12,6 +14,108 @@ std::string FlexLayout::description() {
   stringStream << instanceClassName() << "/NSLayoutConstraints (Appkit) " << this;
   return stringStream.str();
 }
+
+
+// @interface FlexViewLayouter : ViewLayouter
+// {
+//     @public
+//     bool isHorizontal;
+//     FlexJustifyContent justifyContent;
+//     FlexAlignItems alignItems;
+// }
+// @end
+
+// @implementation FlexViewLayouter
+
+// - (float)crossPosition:(NSView*)view availableLength:(float)length
+// {
+//     NSSize intrinsicSize = [view intrinsicContentSize];
+//     CGSize boundsSize = view.bounds.size;
+//     if (intrinsicSize.width >= 0) {
+//       boundsSize.width = intrinsicSize.width;
+//     }
+//     if (intrinsicSize.height >= 0) {
+//       boundsSize.height = intrinsicSize.height;
+//     }
+    
+//   if (alignItems == FlexAlignItems::Center) {
+//     float viewLength = isHorizontal ? boundsSize.height : boundsSize.width;
+//     return (length - viewLength) / 2.0f;
+//   }
+//   if (alignItems == FlexAlignItems::FlexEnd) {
+//     float viewLength = isHorizontal ? boundsSize.height : boundsSize.width;
+//     return length - viewLength;
+//   }
+//   return 0;
+// }
+
+// - (float)crossSize:(NSView*)view availableLength:(float)length
+// {
+//   if (alignItems == FlexAlignItems::Stretch) {
+//     return length;
+//   }
+//     NSSize intrinsicSize = [view intrinsicContentSize];
+//     CGSize boundsSize = view.bounds.size;
+//     if (intrinsicSize.width > 0) {
+//       boundsSize.width = intrinsicSize.width;
+//     }
+//     if (intrinsicSize.height > 0) {
+//       boundsSize.height = intrinsicSize.height;
+//     }
+//   float viewLength = isHorizontal ? boundsSize.height : boundsSize.width;
+//   return viewLength;
+// }
+
+// - (void)layout:(NSView*)view
+// {
+//   float availableWidth = view.bounds.size.width;
+//   float availableHeight = view.bounds.size.height;
+    
+//   float availableLengthMain = isHorizontal ? availableWidth : availableHeight;
+//   float availableLengthCross = isHorizontal ? availableHeight : availableWidth;
+//     NSLog(@"Flex %f %f", availableLengthMain, availableLengthCross);
+    
+//   float posMain = 0;
+//   for (NSView * subview in view.subviews) {
+      
+//     NSSize intrinsicSize = [subview intrinsicContentSize];
+//     CGSize boundsSize = subview.bounds.size;
+//     if (intrinsicSize.width >= 0) {
+//       boundsSize.width = intrinsicSize.width;
+//     }
+//     if (intrinsicSize.height >= 0) {
+//       boundsSize.height = intrinsicSize.height;
+//     }
+    
+//     if (isHorizontal) {
+//       subview.frame = CGRectMake(posMain, [self crossPosition:subview availableLength:availableLengthCross], boundsSize.width, [self crossSize:subview availableLength:availableLengthCross]);
+//       posMain += boundsSize.width;
+//     } else {
+//       subview.frame = CGRectMake([self crossPosition:subview availableLength:availableLengthCross], posMain, [self crossSize:subview availableLength:availableLengthCross], boundsSize.height);
+//       posMain += boundsSize.height;
+//     }
+//     NSLog(@"Flex view size %@ %f %f", subview, subview.frame.size.width, subview.frame.size.height);
+//   }
+
+//   float adjustMainPositionBy = 0;
+//   if (justifyContent == FlexJustifyContent::FlexEnd) {
+//     adjustMainPositionBy = availableLengthMain - posMain;
+//   } else if (justifyContent == FlexJustifyContent::Center) {
+//     adjustMainPositionBy = (availableLengthMain - posMain) / 2.0f;
+//   }
+    
+//   if (adjustMainPositionBy != 0) {
+//     for (NSView * subview in view.subviews) {
+//       if (isHorizontal) {
+//         subview.frame = NSMakeRect(subview.frame.origin.x + adjustMainPositionBy, subview.frame.origin.y, subview.frame.size.width, subview.frame.size.height);
+//       } else {
+//         subview.frame = NSMakeRect(subview.frame.origin.x, subview.frame.origin.y + adjustMainPositionBy, subview.frame.size.width, subview.frame.size.height);
+//       }
+//     }
+//   }
+// }
+
+// @end
 
 std::tuple<NSLayoutAttribute, NSLayoutAttribute, bool, NSLayoutAttribute> flexLayoutAttributeForAlign(bool isHorizontal, FlexAlignItems alignment) {
   constexpr int AlignFlexStart = 0;
@@ -56,6 +160,23 @@ std::tuple<NSLayoutAttribute, NSLayoutAttribute, bool, NSLayoutAttribute> flexLa
 
 void FlexLayout::layoutContainer(void * nativeView) {
   NSView * view = (__bridge NSView *) nativeView;
+    
+  // if (nativeInfo != nullptr) {
+  //   FlexViewLayouter * layouter = (FlexViewLayouter * ) nativeInfo;
+  //   layouter->isHorizontal = isHorizontal;
+  //   layouter->alignItems = alignItems;
+  //   layouter->justifyContent = justifyContent;
+  //   [view setNeedsLayout:true];
+  // } else if ([view respondsToSelector:@selector(setLayouter:)]) {
+  //   FlexViewLayouter * layouter = [FlexViewLayouter new];
+  //   layouter->isHorizontal = isHorizontal;
+  //   layouter->alignItems = alignItems;
+  //   layouter->justifyContent = justifyContent;
+  //   [view performSelector:@selector(setLayouter:) withObject:layouter];
+  //   nativeInfo = (void*) CFBridgingRetain(layouter);
+  //   [view setNeedsLayout:true];
+  // }
+  // return;
   
   removeLayout(nativeView);
   
@@ -166,6 +287,24 @@ void FlexLayout::layoutContainer(void * nativeView) {
     }
   }
 
+  // We want to always be as least as big as to contain all children
+  // These are supposed to do this, but they cause some weirdness
+  // if (view.subviews.count > 0) {
+  //   auto subView = view.subviews[0];
+  //   constraint = [NSLayoutConstraint constraintWithItem:subView attribute:minProp relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:view attribute:minProp multiplier:1.0 constant:0];
+  //   constraint.identifier = @"Flex always enclose children";
+  //   constraint.priority = 1000;
+  //   [view addConstraint:constraint];
+  //   [constraintsArray addObject:constraint];
+
+  //   subView = view.subviews[view.subviews.count - 1];
+  //   constraint = [NSLayoutConstraint constraintWithItem:subView attribute:maxProp relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:maxProp multiplier:1.0 constant:0];
+  //   constraint.identifier = @"Flex always enclose children";
+  //   constraint.priority = 1000;
+  //   [view addConstraint:constraint];
+  //   [constraintsArray addObject:constraint];
+  // }
+
   if ((justifyContent == FlexJustifyContent::FlexStart || totalFlex > 0.0) && view.subviews.count > 0) {
     auto subView = view.subviews[0];
     constraint = [NSLayoutConstraint constraintWithItem:view attribute:minProp relatedBy:NSLayoutRelationEqual toItem:subView attribute:minProp multiplier:1.0 constant:-spacing];
@@ -195,16 +334,23 @@ void FlexLayout::layoutContainer(void * nativeView) {
     // Since all these solutions aren't easy to implement, we make a compromise: We simply create a constraint that centers the middle child.
     // This will give wrong results in many cases
 
-    int middleIndex = (int) view.subviews.count / 2.0;
-    auto subView = view.subviews[middleIndex];
+    NSView * firstView = view.subviews[0];
+    NSView * lastView = view.subviews[view.subviews.count - 1];
 
-    auto centerProp = isHorizontal ? NSLayoutAttributeCenterX : NSLayoutAttributeCenterY;
+     int middleIndex = (int) view.subviews.count / 2.0;
+     auto subView = view.subviews[middleIndex];
+     auto centerProp = isHorizontal ? NSLayoutAttributeCenterX : NSLayoutAttributeCenterY;
 
-    constraint = [NSLayoutConstraint constraintWithItem:view attribute:centerProp relatedBy:NSLayoutRelationEqual toItem:subView attribute:centerProp multiplier:1.0 constant:0];
-    constraint.identifier = @"Flex main axis justify center";
-    constraint.priority = 800;
-    [view addConstraint:constraint];
-    [constraintsArray addObject:constraint];
+     if ((view.subviews.count) % 2 == 0) {
+       auto sideProp = isHorizontal ? NSLayoutAttributeLeft : NSLayoutAttributeTop;
+       constraint = [NSLayoutConstraint constraintWithItem:view attribute:centerProp relatedBy:NSLayoutRelationEqual toItem:subView attribute:sideProp multiplier:1.0 constant:0];
+     } else {
+       constraint = [NSLayoutConstraint constraintWithItem:view attribute:centerProp relatedBy:NSLayoutRelationEqual toItem:subView attribute:centerProp multiplier:1.0 constant:0];
+     }
+     constraint.identifier = @"Flex main axis justify center";
+     constraint.priority = 1000;
+     [view addConstraint:constraint];
+     [constraintsArray addObject:constraint];
   }
   
 //  NSLog(@"Added %lu constraints", constraintsArray.count);

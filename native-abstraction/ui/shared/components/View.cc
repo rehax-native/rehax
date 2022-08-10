@@ -69,6 +69,8 @@ void View::addContainerView(rehaxUtils::ObjectPointer<View> view) {
   view->removeContainerFromParent();
   view->parent = getThisPointer();
   children.push_back(view.get());
+  // view->setWidth(view->width);
+  // view->setHeight(view->height);
 }
 
 void View::addContainerView(rehaxUtils::ObjectPointer<View> view, rehaxUtils::ObjectPointer<View> beforeView) {
@@ -77,6 +79,8 @@ void View::addContainerView(rehaxUtils::ObjectPointer<View> view, rehaxUtils::Ob
   view->parent = getThisPointer();
   auto it = std::find(children.begin(), children.end(), beforeView.get());
   children.insert(it, view.get());
+  // view->setWidth(view->width);
+  // view->setHeight(view->height);
 }
 
 void View::removeContainerFromParent() {

@@ -5,14 +5,14 @@
 
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
-#import "FlippedView.h"
+#import "BaseView.h"
 
 namespace rehax::ui::appkit::impl {
 
 #include "../../../shared/components/View.cc"
 
 void View::createNativeView() {
-  NSView * view = [FlippedView new];
+  NSView * view = [BaseView new];
   // static int idCounter = 0;
   // view.accessibilityIdentifier = [NSString stringWithFormat:@"View %d", idCounter++];
   nativeView = (void *) CFBridgingRetain(view);
