@@ -69,13 +69,7 @@ void Bindings::defineClass(std::string name, RegisteredClass * parentClass) {
   
   JS_SetConstructorBit(ctx, classObject, true);
   auto globalObject = JS_GetGlobalObject(ctx);
-  JSValue rehax;
-  if (!JS_HasProperty(ctx, globalObject, JS_NewAtom(ctx, "rehax"))) {
-    rehax = JS_NewObject(ctx);
-    JS_SetPropertyStr(ctx, globalObject, "rehax", rehax);
-  } else {
-      rehax = JS_GetPropertyStr(ctx, globalObject, "rehax");
-  }
+  JSValue rehax = runtime::GetRehaxObject(ctx);
   JS_SetPropertyStr(ctx, rehax, name.c_str(), classObject);
 }
 

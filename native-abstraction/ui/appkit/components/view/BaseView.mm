@@ -21,10 +21,10 @@
 
 @end
 
-@implementation ViewLayouter
-- (void)layout:(NSView*)view
-{}
-@end
+// @implementation ViewLayouter
+// - (void)layout:(NSView*)view
+// {}
+// @end
 
 void AppKitNativeViewRemoveAllConstraintsWidthId(NSView * view, NSString * identifier)
 {

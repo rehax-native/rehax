@@ -7,6 +7,25 @@ Value rehax::jsc::runtime::MakeObject(Context ctx) {
   return object;
 }
 
+Value rehax::jsc::runtime::GetGlobalObject(Context ctx) {
+  auto globalObject = JSContextGetGlobalObject(ctx);
+  return globalObject;
+}
+
+Value rehax::jsc::runtime::GetRehaxObject(Context ctx) {
+  auto globalObject = GetGlobalObject(ctx);
+
+  runtime::Value rehax;
+  if (!runtime::HasObjectProperty(ctx, globalObject, "rehax")) {
+    rehax = runtime::MakeObject(ctx);
+    runtime::SetObjectProperty(ctx, globalObject, "rehax", rehax);
+  } else {
+    rehax = runtime::GetObjectProperty(ctx, globalObject, "rehax");
+  }
+
+  return rehax;
+}
+
 Value rehax::jsc::runtime::MakeArray(Context ctx) {
   auto object = JSObjectMakeArray(ctx, 0, {}, NULL);
   return object;

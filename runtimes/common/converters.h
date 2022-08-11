@@ -1,4 +1,14 @@
 
+template <>
+struct Converter<runtime::Value> {
+  static runtime::Value toScript(runtime::Context ctx, runtime::Value val) {
+    return val;
+  }
+  static runtime::Value toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+    return value;
+  }
+};
+
 template <typename Object>
 struct Converter<rehaxUtils::ObjectPointer<Object>> {
   static runtime::Value toScript(runtime::Context ctx, rehaxUtils::ObjectPointer<Object> obj, Bindings * bindings) {

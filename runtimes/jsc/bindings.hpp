@@ -51,13 +51,7 @@ void Bindings::defineClass(std::string name, RegisteredClass * parentClass) {
   auto className = JSStringCreateWithUTF8CString(name.c_str());
 
   auto globalObject = JSContextGetGlobalObject(ctx);
-  runtime::Value rehax;
-  if (!runtime::HasObjectProperty(ctx, globalObject, "rehax")) {
-    rehax = runtime::MakeObject(ctx);
-    runtime::SetObjectProperty(ctx, globalObject, "rehax", rehax);
-  } else {
-    rehax = runtime::GetObjectProperty(ctx, globalObject, "rehax");
-  }
+  runtime::Value rehax = runtime::GetRehaxObject(ctx);
   JSObjectSetProperty(ctx, (JSObjectRef) rehax, className, jsClassObject, kJSPropertyAttributeReadOnly, NULL);
   
   return clazz;

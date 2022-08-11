@@ -36,6 +36,8 @@ public:
     
   Bindings();
   void setContext(JSContext * ctx, JSRuntime * runtime);
+  JSContext * getContext();
+
   #ifdef REHAX_WITH_APPKIT
   void bindAppkitRehax();
   #endif
@@ -58,18 +60,9 @@ public:
   >
   void bindRehax();
 
+
   template <typename Object, bool instantiable = true>
   void defineClass(std::string name, RegisteredClass * parentClass);
-
-  template <typename View, typename Layout, typename Gesture> void bindViewClassMethods(JSValue prototype);
-  template <typename View> void bindButtonClassMethods(JSValue prototype);
-  template <typename View> void bindTextClassMethods(JSValue prototype);
-  template <typename View> void bindTextInputClassMethods(JSValue prototype);
-  template <typename View> void bindVectorElementClassMethods(JSValue prototype);
-  template <typename View> void bindVectorPathClassMethods(JSValue prototype);
-  template <typename Layout, typename View> void bindStackLayoutClassMethods(JSValue prototype);
-  template <typename Layout, typename View> void bindFlexLayoutClassMethods(JSValue prototype);
-  template <typename Gesture> void bindGestureClassMethods(JSValue prototype);
 
   template <typename Object, typename RET, RET (Object::*Method)(void)> void bindMethod(std::string name, JSValue prototype);
   template <typename Object, void (Object::*Method)(void)> void bindMethod(std::string name, JSValue prototype);
@@ -93,7 +86,20 @@ public:
   void bindMethod(std::string name, JSValue prototype);
 
   RegisteredClass getRegisteredClass(std::string name);
+  bool hasRegisteredClass(std::string name);
   template <typename T> JSValue cppToJs(T obj);
+
+  template <typename View, typename Layout, typename Gesture> void bindViewClassMethods(JSValue prototype);
+  template <typename View> void bindButtonClassMethods(JSValue prototype);
+  template <typename View> void bindTextClassMethods(JSValue prototype);
+  template <typename View> void bindTextInputClassMethods(JSValue prototype);
+  template <typename View> void bindVectorElementClassMethods(JSValue prototype);
+  template <typename View> void bindVectorPathClassMethods(JSValue prototype);
+  template <typename Layout, typename View> void bindStackLayoutClassMethods(JSValue prototype);
+  template <typename Layout, typename View> void bindFlexLayoutClassMethods(JSValue prototype);
+  template <typename Gesture> void bindGestureClassMethods(JSValue prototype);
+
+  void bindFs();
 
 private:
   JSContext * ctx;

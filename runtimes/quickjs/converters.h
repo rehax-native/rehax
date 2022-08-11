@@ -93,11 +93,54 @@ struct Converter<double> {
   }
 };
 
+template <typename FN>
+class FunctionContainer : public rehaxUtils::Object<FunctionContainer<FN>> {
+public:
+  static std::string ClassName() {
+    return typeid(FN).name();
+  }
+  std::string instanceClassName() {
+    return typeid(FN).name();
+  }
+  FN fn;
+};
+
 template <>
 struct Converter<std::function<void(void)>> {
-  static JSValue toScript(JSContext * ctx, std::function<void(void)>&& value, Bindings * bindings = nullptr) {
-      // TODO
-      return JS_UNDEFINED;
+  static JSValue toScript(JSContext * ctx, std::function<void(void)> value, Bindings * bindings = nullptr) {
+    using ContainerFnType = FunctionContainer<std::function<void(void)>>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto funData2 = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+      
+    auto funData1 = JS_NewObjectClass(ctx, kPointerClassId);
+    JS_SetOpaque(funData1, bindings);
+
+    std::array<JSValue, 2> funDataArray {
+      funData1,
+      funData2,
+    };
+
+    auto fn = JS_NewCFunctionData(
+      ctx,
+      [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+        auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+        auto fnPrivateData = static_cast<ViewPrivateData<ContainerFnType> *>(JS_GetOpaque(func_data[1], bindings->getRegisteredClass(ContainerFnType::ClassName()).classId));
+          
+        auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, func_data[1], fnPrivateData->bindings, fnPrivateData->retainedValues);
+        fnPtr->fn();
+        return JS_UNDEFINED;
+      },
+      0, 0, funDataArray.size(), funDataArray.data()
+    );
+
+    for (auto v : funDataArray) {
+      JS_FreeValue(ctx, v);
+    }
+    return fn;
   }
   static std::function<void(void)> toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
     JSValue duped = JS_DupValue(ctx, value);
@@ -111,9 +154,43 @@ struct Converter<std::function<void(void)>> {
 
 template <typename T1>
 struct Converter<std::function<void(T1)>> {
-  static JSValue toScript(JSContext * ctx, std::function<void(float, float)>&& value, Bindings * bindings = nullptr) {
-      // TODO
-      return JS_UNDEFINED;
+  static JSValue toScript(JSContext * ctx, std::function<void(T1)> value, Bindings * bindings = nullptr) {
+    using FnType = std::function<void(T1)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto funData2 = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+      
+    auto funData1 = JS_NewObjectClass(ctx, kPointerClassId);
+    JS_SetOpaque(funData1, bindings);
+
+    std::array<JSValue, 2> funDataArray {
+      funData1,
+      funData2,
+    };
+
+    auto fn = JS_NewCFunctionData(
+      ctx,
+      [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+        auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+        auto fnPrivateData = static_cast<ViewPrivateData<ContainerFnType> *>(JS_GetOpaque(func_data[1], bindings->getRegisteredClass(ContainerFnType::ClassName()).classId));
+          
+        auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, func_data[1], fnPrivateData->bindings, fnPrivateData->retainedValues);
+        fnPtr->fn(
+          Converter<T1>::toCpp(ctx, argv[0], bindings, fnPrivateData->retainedValues)
+        );
+        return JS_UNDEFINED;
+      },
+      0, 0, funDataArray.size(), funDataArray.data()
+    );
+
+    for (auto v : funDataArray) {
+      JS_FreeValue(ctx, v);
+    }
+    return fn;
   }
   static std::function<void(T1)> toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
     JSValue duped = JS_DupValue(ctx, value);
@@ -130,9 +207,44 @@ struct Converter<std::function<void(T1)>> {
 
 template <typename T1, typename T2>
 struct Converter<std::function<void(T1, T2)>> {
-  static JSValue toScript(JSContext * ctx, std::function<void(T1, T2)>&& value, Bindings * bindings = nullptr) {
-      // TODO
-      return JS_UNDEFINED;
+  static JSValue toScript(JSContext * ctx, std::function<void(T1, T2)> value, Bindings * bindings = nullptr) {
+    using FnType = std::function<void(T1, T2)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto funData2 = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+      
+    auto funData1 = JS_NewObjectClass(ctx, kPointerClassId);
+    JS_SetOpaque(funData1, bindings);
+
+    std::array<JSValue, 2> funDataArray {
+      funData1,
+      funData2,
+    };
+
+    auto fn = JS_NewCFunctionData(
+      ctx,
+      [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+        auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+        auto fnPrivateData = static_cast<ViewPrivateData<ContainerFnType> *>(JS_GetOpaque(func_data[1], bindings->getRegisteredClass(ContainerFnType::ClassName()).classId));
+          
+        auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, func_data[1], fnPrivateData->bindings, fnPrivateData->retainedValues);
+        fnPtr->fn(
+          Converter<T1>::toCpp(ctx, argv[0], bindings, fnPrivateData->retainedValues),
+          Converter<T2>::toCpp(ctx, argv[1], bindings, fnPrivateData->retainedValues)
+        );
+        return JS_UNDEFINED;
+      },
+      0, 0, funDataArray.size(), funDataArray.data()
+    );
+
+    for (auto v : funDataArray) {
+      JS_FreeValue(ctx, v);
+    }
+    return fn;
   }
   static std::function<void(T1, T2)> toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
     JSValue duped = JS_DupValue(ctx, value);
@@ -150,9 +262,45 @@ struct Converter<std::function<void(T1, T2)>> {
 
 template <typename T1, typename T2, typename T3>
 struct Converter<std::function<void(T1, T2, T3)>> {
-  static JSValue toScript(JSContext * ctx, std::function<void(T1, T2)>&& value, Bindings * bindings = nullptr) {
-      // TODO
-      return JS_UNDEFINED;
+  static JSValue toScript(JSContext * ctx, std::function<void(T1, T2, T3)> value, Bindings * bindings = nullptr) {
+    using FnType = std::function<void(T1, T2, T3)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto funData2 = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+      
+    auto funData1 = JS_NewObjectClass(ctx, kPointerClassId);
+    JS_SetOpaque(funData1, bindings);
+
+    std::array<JSValue, 2> funDataArray {
+      funData1,
+      funData2,
+    };
+
+    auto fn = JS_NewCFunctionData(
+      ctx,
+      [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+        auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+        auto fnPrivateData = static_cast<ViewPrivateData<ContainerFnType> *>(JS_GetOpaque(func_data[1], bindings->getRegisteredClass(ContainerFnType::ClassName()).classId));
+          
+        auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, func_data[1], fnPrivateData->bindings, fnPrivateData->retainedValues);
+        fnPtr->fn(
+          Converter<T1>::toCpp(ctx, argv[0], bindings, fnPrivateData->retainedValues),
+          Converter<T2>::toCpp(ctx, argv[1], bindings, fnPrivateData->retainedValues),
+          Converter<T3>::toCpp(ctx, argv[2], bindings, fnPrivateData->retainedValues)
+        );
+        return JS_UNDEFINED;
+      },
+      0, 0, funDataArray.size(), funDataArray.data()
+    );
+
+    for (auto v : funDataArray) {
+      JS_FreeValue(ctx, v);
+    }
+    return fn;
   }
   static std::function<void(T1, T2, T3)> toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
     JSValue duped = JS_DupValue(ctx, value);
@@ -171,15 +319,215 @@ struct Converter<std::function<void(T1, T2, T3)>> {
 
 template <typename R1>
 struct Converter<std::function<R1(void)>> {
-  static JSValue toScript(JSContext * ctx, std::function<R1(void)>&& value, Bindings * bindings = nullptr) {
-      // TODO
-      return JS_UNDEFINED;
+  static JSValue toScript(JSContext * ctx, std::function<R1(void)> value, Bindings * bindings = nullptr) {
+    using FnType = std::function<R1(void)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto funData2 = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+      
+    auto funData1 = JS_NewObjectClass(ctx, kPointerClassId);
+    JS_SetOpaque(funData1, bindings);
+
+    std::array<JSValue, 2> funDataArray {
+      funData1,
+      funData2,
+    };
+
+    auto fn = JS_NewCFunctionData(
+      ctx,
+      [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+        auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+        auto fnPrivateData = static_cast<ViewPrivateData<ContainerFnType> *>(JS_GetOpaque(func_data[1], bindings->getRegisteredClass(ContainerFnType::ClassName()).classId));
+          
+        auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, func_data[1], fnPrivateData->bindings, fnPrivateData->retainedValues);
+        auto ret = fnPtr->fn();
+        return Converter<R1>::toScript(ctx, ret, bindings);
+      },
+      0, 0, funDataArray.size(), funDataArray.data()
+    );
+
+    for (auto v : funDataArray) {
+      JS_FreeValue(ctx, v);
+    }
+    return fn;
   }
   static std::function<R1(void)> toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
     JSValue duped = JS_DupValue(ctx, value);
     retainedValues.push_back(duped);
     auto fn = [ctx, duped, &bindings, &retainedValues] () {
       auto ret = JS_Call(ctx, duped, JS_NULL, 0, {});
+      return Converter<R1>::toCpp(ctx, ret, bindings, retainedValues);
+    };
+    return fn;
+  }
+};
+
+template <typename R1, typename T1>
+struct Converter<std::function<R1(T1)>> {
+  static JSValue toScript(JSContext * ctx, std::function<R1(T1)> value, Bindings * bindings = nullptr) {
+    using FnType = std::function<R1(T1)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto funData2 = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+      
+    auto funData1 = JS_NewObjectClass(ctx, kPointerClassId);
+    JS_SetOpaque(funData1, bindings);
+
+    std::array<JSValue, 2> funDataArray {
+      funData1,
+      funData2,
+    };
+
+    auto fn = JS_NewCFunctionData(
+      ctx,
+      [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+        auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+        auto fnPrivateData = static_cast<ViewPrivateData<ContainerFnType> *>(JS_GetOpaque(func_data[1], bindings->getRegisteredClass(ContainerFnType::ClassName()).classId));
+          
+        auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, func_data[1], fnPrivateData->bindings, fnPrivateData->retainedValues);
+        auto ret = fnPtr->fn(
+          Converter<T1>::toCpp(ctx, argv[0], bindings, fnPrivateData->retainedValues)
+        );
+        return Converter<R1>::toScript(ctx, ret, bindings);
+      },
+      0, 0, funDataArray.size(), funDataArray.data()
+    );
+
+    for (auto v : funDataArray) {
+      JS_FreeValue(ctx, v);
+    }
+    return fn;
+  }
+  static std::function<R1(T1)> toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
+    JSValue duped = JS_DupValue(ctx, value);
+    retainedValues.push_back(duped);
+    auto fn = [ctx, duped, &bindings, &retainedValues] (T1 a) {
+      JSValue args[] = {
+        Converter<T1>::toScript(ctx, a),
+      };
+      auto ret = JS_Call(ctx, duped, JS_NULL, 1, args);
+      return Converter<R1>::toCpp(ctx, ret, bindings, retainedValues);
+    };
+    return fn;
+  }
+};
+
+template <typename R1, typename T1, typename T2>
+struct Converter<std::function<R1(T1, T2)>> {
+  static JSValue toScript(JSContext * ctx, std::function<R1(T1, T2)> value, Bindings * bindings = nullptr) {
+    using FnType = std::function<R1(T1, T2)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto funData2 = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+      
+    auto funData1 = JS_NewObjectClass(ctx, kPointerClassId);
+    JS_SetOpaque(funData1, bindings);
+
+    std::array<JSValue, 2> funDataArray {
+      funData1,
+      funData2,
+    };
+
+    auto fn = JS_NewCFunctionData(
+      ctx,
+      [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+        auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+        auto fnPrivateData = static_cast<ViewPrivateData<ContainerFnType> *>(JS_GetOpaque(func_data[1], bindings->getRegisteredClass(ContainerFnType::ClassName()).classId));
+          
+        auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, func_data[1], fnPrivateData->bindings, fnPrivateData->retainedValues);
+        auto ret = fnPtr->fn(
+          Converter<T1>::toCpp(ctx, argv[0], bindings, fnPrivateData->retainedValues),
+          Converter<T2>::toCpp(ctx, argv[1], bindings, fnPrivateData->retainedValues)
+        );
+        return Converter<R1>::toScript(ctx, ret, bindings);
+      },
+      0, 0, funDataArray.size(), funDataArray.data()
+    );
+
+    for (auto v : funDataArray) {
+      JS_FreeValue(ctx, v);
+    }
+    return fn;
+  }
+  static std::function<R1(T1, T2)> toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
+    JSValue duped = JS_DupValue(ctx, value);
+    retainedValues.push_back(duped);
+    auto fn = [ctx, duped, &bindings, &retainedValues] (T1 a, T2 b) {
+      JSValue args[] = {
+        Converter<T1>::toScript(ctx, a),
+        Converter<T2>::toScript(ctx, b),
+      };
+      auto ret = JS_Call(ctx, duped, JS_NULL, 2, args);
+      return Converter<R1>::toCpp(ctx, ret, bindings, retainedValues);
+    };
+    return fn;
+  }
+};
+
+template <typename R1, typename T1, typename T2, typename T3>
+struct Converter<std::function<R1(T1, T2, T3)>> {
+  static JSValue toScript(JSContext * ctx, std::function<R1(T1, T2, T3)> value, Bindings * bindings = nullptr) {
+    using FnType = std::function<R1(T1, T2, T3)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto funData2 = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+      
+    auto funData1 = JS_NewObjectClass(ctx, kPointerClassId);
+    JS_SetOpaque(funData1, bindings);
+
+    std::array<JSValue, 2> funDataArray {
+      funData1,
+      funData2,
+    };
+
+    auto fn = JS_NewCFunctionData(
+      ctx,
+      [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+        auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+        auto fnPrivateData = static_cast<ViewPrivateData<ContainerFnType> *>(JS_GetOpaque(func_data[1], bindings->getRegisteredClass(ContainerFnType::ClassName()).classId));
+          
+        auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, func_data[1], fnPrivateData->bindings, fnPrivateData->retainedValues);
+        auto ret = fnPtr->fn(
+          Converter<T1>::toCpp(ctx, argv[0], bindings, fnPrivateData->retainedValues),
+          Converter<T2>::toCpp(ctx, argv[1], bindings, fnPrivateData->retainedValues),
+          Converter<T3>::toCpp(ctx, argv[2], bindings, fnPrivateData->retainedValues)
+        );
+        return Converter<R1>::toScript(ctx, ret, bindings);
+      },
+      0, 0, funDataArray.size(), funDataArray.data()
+    );
+
+    for (auto v : funDataArray) {
+      JS_FreeValue(ctx, v);
+    }
+    return fn;
+  }
+  static std::function<R1(T1, T2, T3)> toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
+    JSValue duped = JS_DupValue(ctx, value);
+    retainedValues.push_back(duped);
+    auto fn = [ctx, duped, &bindings, &retainedValues] (T1 a, T2 b, T3 c) {
+      JSValue args[] = {
+        Converter<T1>::toScript(ctx, a),
+        Converter<T2>::toScript(ctx, b),
+        Converter<T3>::toScript(ctx, c),
+      };
+      auto ret = JS_Call(ctx, duped, JS_NULL, 3, args);
       return Converter<R1>::toCpp(ctx, ret, bindings, retainedValues);
     };
     return fn;

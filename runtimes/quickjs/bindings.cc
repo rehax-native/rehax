@@ -1,5 +1,6 @@
 #include "./bindings.h"
 #include <array>
+#include <fstream>
 
 namespace rehax {
 namespace quickjs {
@@ -12,13 +13,10 @@ void Bindings::setContext(JSContext * ctx, JSRuntime * runtime) {
   this->ctx = ctx;
   this->rt = runtime;
   JS_SetRuntimeOpaque(rt, this);
-    
-  // JS_NewClassID(&instanceClassId);
-  // JSClassDef classDef;
-  // classDef.class_name = "ViewInstance";
-  // classDef.finalizer = finalizeViewInstance;
-  // auto classId = JS_NewClass(runtime, instanceClassId, &classDef);
-  // instanceClassId = classId;
+}
+
+JSContext * Bindings::getContext() {
+  return ctx;
 }
 
 RegisteredClass Bindings::getRegisteredClass(std::string name) {
@@ -28,7 +26,12 @@ RegisteredClass Bindings::getRegisteredClass(std::string name) {
   return classRegistry[name];
 }
 
+bool Bindings::hasRegisteredClass(std::string name) {
+  return classRegistry.find(name) != classRegistry.end();
+}
+
 #include "../common/bindRehax.cc"
+#include "../common/bindFs.cc"
 
 }
 }

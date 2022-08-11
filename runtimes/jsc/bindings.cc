@@ -1,4 +1,5 @@
 #include "./bindings.h"
+#include <fstream>
 
 #define RHX_GEN_DOCS 0
 
@@ -16,11 +17,20 @@ void Bindings::setContext(JSContextRef ctx) {
   this->ctx = ctx;
 }
 
+JSContextRef Bindings::getContext() {
+  return ctx;
+}
+
 RegisteredClass Bindings::getRegisteredClass(std::string name) {
   return classRegistry[name];
 }
 
+bool Bindings::hasRegisteredClass(std::string name) {
+  return classRegistry.find(name) != classRegistry.end();
+}
+
 #include "../common/bindRehax.cc"
+#include "../common/bindFs.cc"
 
 }
 }

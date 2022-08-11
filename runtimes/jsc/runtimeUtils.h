@@ -9,6 +9,8 @@ typedef ::JSContextRef Context;
 typedef ::JSValueRef Value;
 
 Value MakeObject(Context ctx);
+Value GetGlobalObject(Context ctx);
+Value GetRehaxObject(Context ctx);
 Value MakeArray(Context ctx);
 void SetObjectProperty(Context ctx, Value object, std::string property, Value value);
 Value GetObjectProperty(Context ctx, Value object, std::string property);

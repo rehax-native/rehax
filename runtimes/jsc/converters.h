@@ -95,11 +95,40 @@ struct Converter<double> {
   }
 };
 
+template <typename FN>
+class FunctionContainer : public rehaxUtils::Object<FunctionContainer<FN>> {
+public:
+  static std::string ClassName() {
+    return typeid(FN).name();
+  }
+  std::string instanceClassName() {
+    return typeid(FN).name();
+  }
+  FN fn;
+};
+
 template <>
 struct Converter<std::function<void(void)>> {
   static JSValueRef toScript(JSContextRef ctx, std::function<void(void)>&& value, Bindings * bindings = nullptr) {
-      // TODO
+    using FnType = std::function<void(void)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto jsFnContainer = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+    JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
+
+    auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      fnPtr->fn();
       return JSValueMakeUndefined(ctx);
+    });
+    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    return functionObject;
   }
   static std::function<void(void)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
     JSObjectRef callback = (JSObjectRef) value;
@@ -124,8 +153,27 @@ struct Converter<std::function<void(void)>> {
 template <typename T1>
 struct Converter<std::function<void(T1)>> {
   static JSValueRef toScript(JSContextRef ctx, std::function<void(T1)>&& value, Bindings * bindings = nullptr) {
-      // TODO
+    using FnType = std::function<void(T1)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto jsFnContainer = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+    JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
+
+    auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      fnPtr->fn(
+        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues)
+      );
       return JSValueMakeUndefined(ctx);
+    });
+    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    return functionObject;
   }
   static std::function<void(T1)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
     JSObjectRef callback = (JSObjectRef) value;
@@ -150,9 +198,29 @@ struct Converter<std::function<void(T1)>> {
 
 template <typename T1, typename T2>
 struct Converter<std::function<void(T1, T2)>> {
-  static JSValueRef toScript(JSContextRef ctx, std::function<void(T1, T2)>&& value, Bindings * bindings = nullptr) {
-      // TODO
+  static JSValueRef toScript(JSContextRef ctx, std::function<void(T1, T2)> value, Bindings * bindings = nullptr) {
+    using FnType = std::function<void(T1, T2)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto jsFnContainer = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+    JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
+
+    auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      fnPtr->fn(
+        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues),
+        Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings, privateData->retainedValues)
+      );
       return JSValueMakeUndefined(ctx);
+    });
+    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    return functionObject;
   }
   static std::function<void(T1, T2)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
     JSObjectRef callback = (JSObjectRef) value;
@@ -178,9 +246,30 @@ struct Converter<std::function<void(T1, T2)>> {
 
 template <typename T1, typename T2, typename T3>
 struct Converter<std::function<void(T1, T2, T3)>> {
-  static JSValueRef toScript(JSContextRef ctx, std::function<void(T1, T2)>&& value, Bindings * bindings = nullptr) {
-      // TODO
+  static JSValueRef toScript(JSContextRef ctx, std::function<void(T1, T2, T3)>&& value, Bindings * bindings = nullptr) {
+    using FnType = std::function<void(T1, T2, T3)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto jsFnContainer = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+    JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
+
+    auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      fnPtr->fn(
+        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues),
+        Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings, privateData->retainedValues),
+        Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings, privateData->retainedValues)
+      );
       return JSValueMakeUndefined(ctx);
+    });
+    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    return functionObject;
   }
   static std::function<void(T1, T2, T3)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
     JSObjectRef callback = (JSObjectRef) value;
@@ -208,8 +297,25 @@ struct Converter<std::function<void(T1, T2, T3)>> {
 template <typename R1>
 struct Converter<std::function<R1(void)>> {
   static JSValueRef toScript(JSContextRef ctx, std::function<R1(void)>&& value, Bindings * bindings = nullptr) {
-      // TODO
-      return JSValueMakeUndefined(ctx);
+    using FnType = std::function<R1(void)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto jsFnContainer = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+    JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
+
+    auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      auto ret = fnPtr->fn();
+      return Converter<R1>::toScript(ctx, ret, privateData->bindings);
+    });
+    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    return functionObject;
   }
   static std::function<R1(void)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
     JSObjectRef callback = (JSObjectRef) value;
@@ -220,6 +326,156 @@ struct Converter<std::function<R1(void)>> {
       //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
       JSValueRef exception = nullptr;
       auto ret = JSObjectCallAsFunction(ctx, callback, NULL, 0, NULL, &exception);
+      return Converter<R1>::toCpp(ctx, ret, bindings, retainedValues);
+      // if (exception != nullptr) {
+      //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
+      //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
+      //     std::cout << message << std::endl;
+      // }
+    };
+    return fn;
+  }
+};
+
+template <typename R1, typename T1>
+struct Converter<std::function<R1(T1)>> {
+  static JSValueRef toScript(JSContextRef ctx, std::function<R1(void)>&& value, Bindings * bindings = nullptr) {
+    using FnType = std::function<R1(T1)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto jsFnContainer = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+    JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
+
+    auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      auto ret = fnPtr->fn(
+        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues)
+      );
+      return Converter<R1>::toScript(ctx, ret, privateData->bindings);
+    });
+    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    return functionObject;
+  }
+  static std::function<R1(T1)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    JSObjectRef callback = (JSObjectRef) value;
+      
+    JSValueProtect(ctx, callback);
+    retainedValues.push_back(callback);
+    auto fn = [ctx, callback, bindings, &retainedValues] (T1 a) {
+      //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
+      JSValueRef exception = nullptr;
+      JSValueRef arguments[] = {
+        Converter<T1>::toScript(ctx, a),
+      };
+      auto ret = JSObjectCallAsFunction(ctx, callback, NULL, 1, arguments, &exception);
+      return Converter<R1>::toCpp(ctx, ret, bindings, retainedValues);
+      // if (exception != nullptr) {
+      //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
+      //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
+      //     std::cout << message << std::endl;
+      // }
+    };
+    return fn;
+  }
+};
+
+template <typename R1, typename T1, typename T2>
+struct Converter<std::function<R1(T1, T2)>> {
+  static JSValueRef toScript(JSContextRef ctx, std::function<R1(T1, T2)>&& value, Bindings * bindings = nullptr) {
+    using FnType = std::function<R1(T1, T2)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto jsFnContainer = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+    JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
+
+    auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      auto ret = fnPtr->fn(
+        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues),
+        Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings, privateData->retainedValues)
+      );
+      return Converter<R1>::toScript(ctx, ret, privateData->bindings);
+    });
+    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    return functionObject;
+  }
+  static std::function<R1(T1, T2)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    JSObjectRef callback = (JSObjectRef) value;
+      
+    JSValueProtect(ctx, callback);
+    retainedValues.push_back(callback);
+    auto fn = [ctx, callback, bindings, &retainedValues] (T1 a, T2 b) {
+      //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
+      JSValueRef exception = nullptr;
+      JSValueRef arguments[] = {
+        Converter<T1>::toScript(ctx, a),
+        Converter<T2>::toScript(ctx, b),
+      };
+      auto ret = JSObjectCallAsFunction(ctx, callback, NULL, 2, arguments, &exception);
+      return Converter<R1>::toCpp(ctx, ret, bindings, retainedValues);
+      // if (exception != nullptr) {
+      //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
+      //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
+      //     std::cout << message << std::endl;
+      // }
+    };
+    return fn;
+  }
+};
+
+template <typename R1, typename T1, typename T2, typename T3>
+struct Converter<std::function<R1(T1, T2, T3)>> {
+  static JSValueRef toScript(JSContextRef ctx, std::function<R1(void)>&& value, Bindings * bindings = nullptr) {
+    using FnType = std::function<R1(T1, T2, T3)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto jsFnContainer = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+    JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
+
+    auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      auto ret = fnPtr->fn(
+        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues),
+        Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings, privateData->retainedValues),
+        Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings, privateData->retainedValues)
+      );
+      return Converter<R1>::toScript(ctx, ret, privateData->bindings);
+    });
+    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    return functionObject;
+  }
+  static std::function<R1(T1, T2, T3)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    JSObjectRef callback = (JSObjectRef) value;
+      
+    JSValueProtect(ctx, callback);
+    retainedValues.push_back(callback);
+    auto fn = [ctx, callback, bindings, &retainedValues] (T1 a, T2 b, T3 c) {
+      //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
+      JSValueRef exception = nullptr;
+      JSValueRef arguments[] = {
+        Converter<T1>::toScript(ctx, a),
+        Converter<T2>::toScript(ctx, b),
+        Converter<T3>::toScript(ctx, c),
+      };
+      auto ret = JSObjectCallAsFunction(ctx, callback, NULL, 3, arguments, &exception);
       return Converter<R1>::toCpp(ctx, ret, bindings, retainedValues);
       // if (exception != nullptr) {
       //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
