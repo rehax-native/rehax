@@ -119,6 +119,31 @@ void Bindings::bindMethod(std::string name, JSValueRef prototype) {
   JSObjectSetProperty(ctx, (JSObjectRef) prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
 }
 
+template <typename View, typename R1, typename T1, R1 (View::*Method)(T1)>
+void Bindings::bindMethod(std::string name, JSValueRef prototype) {
+  #if RHX_GEN_DOCS
+  jscDocs.collectMethod<View>({
+    .name = name,
+    .arguments = std::vector<rehax::docs::ArgumentDocs> {
+      rehax::docs::ArgumentDocs { .type = rehax::docs::get_type_name<T1>(), },
+    }
+  });
+  #endif
+
+  JSStringRef methodName = JSStringCreateWithUTF8CString(name.c_str());
+  auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+    auto privateData = static_cast<ViewPrivateData<View> *>(JSObjectGetPrivate(thisObject));
+    auto view = privateData->view;
+
+    auto ret = (view->*Method)(
+      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues)
+    );
+
+    return Converter<R1>::toScript(ctx, ret, privateData->bindings);
+  });
+  JSObjectSetProperty(ctx, (JSObjectRef) prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+}
+
 template <typename View, typename T1, typename D1, void (View::*Method)(T1), void (View::*MethodDefault)(D1)>
 void Bindings::bindMethod(std::string name,JSValueRef prototype) {
   #if RHX_GEN_DOCS

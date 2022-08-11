@@ -141,6 +141,30 @@ void Bindings::bindMethod(std::string name, JSValue prototype) {
   }
 }
 
+template <typename View, typename R1, typename T1, R1 (View::*Method)(T1)>
+void Bindings::bindMethod(std::string name, JSValue prototype) {
+  auto funData = JS_NewObjectClass(ctx, kPointerClassId);
+  JS_SetOpaque(funData, this);
+  std::array<JSValue, 1> funDataArray {
+    funData
+  };
+  auto call = [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+    auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+    auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
+    View * view = privateData->view;
+    auto ret = (view->*Method)(
+      Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues)
+    );
+    return Converter<R1>::toScript(ctx, ret, bindings);
+  };
+
+  auto functionObject = JS_NewCFunctionData(ctx, call, 0, 0, funDataArray.size(), funDataArray.data());
+  JS_SetPropertyStr(ctx, prototype, name.c_str(), functionObject);
+  for (auto v : funDataArray) {
+    JS_FreeValue(ctx, v);
+  }
+}
+
 template <typename View, typename T1, typename D1, void (View::*Method)(T1), void (View::*MethodDefault)(D1)>
 void Bindings::bindMethod(std::string name, JSValue prototype) {
   auto funData = JS_NewObjectClass(ctx, kPointerClassId);

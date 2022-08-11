@@ -62,6 +62,8 @@ public:
   template <typename Object, void (Object::*Method)(void)> void bindMethod(std::string name, runtime::Value prototype);
   template <typename Object, typename T1, void (Object::*Method)(T1)>
   void bindMethod(std::string name, runtime::Value prototype);
+  template <typename Object, typename R1, typename T1, R1 (Object::*Method)(T1)>
+  void bindMethod(std::string name, runtime::Value prototype);
   template <typename Object, typename T1, typename D1, void (Object::*Method)(T1), void (Object::*MethodDefault)(D1)>
   void bindMethod(std::string name, runtime::Value prototype);
   template <typename Object, typename T1, typename T2, void (Object::*Method)(T1, T2)>

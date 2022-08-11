@@ -48,7 +48,7 @@ struct Converter<std::vector<T>> {
   static runtime::Value toScript(runtime::Context ctx, std::vector<T> obj, Bindings * bindings) {
     auto arr = runtime::MakeArray(ctx);
     for (int i = 0; i < obj.size(); i++) {
-      auto js = Converter<T>::toScript(ctx, obj[i]);
+      auto js = Converter<T>::toScript(ctx, obj[i], bindings);
       runtime::SetArrayValue(ctx, arr, i, js);
     }
     return arr;
