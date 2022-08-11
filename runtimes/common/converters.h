@@ -43,6 +43,27 @@ struct Converter<rehaxUtils::WeakObjectPointer<Object>> {
   }
 };
 
+template <typename T>
+struct Converter<std::vector<T>> {
+  static runtime::Value toScript(runtime::Context ctx, std::vector<T> obj, Bindings * bindings) {
+    auto arr = runtime::MakeArray(ctx);
+    for (int i = 0; i < obj.size(); i++) {
+      auto js = Converter<T>::toScript(ctx, obj[i]);
+      runtime::SetArrayValue(ctx, arr, i, js);
+    }
+    return arr;
+  }
+  static std::vector<T> toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+    int length = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "length"), bindings, retainedValues);
+    std::vector<T> result;
+    for (int i = 0; i < length; i++) {
+      auto item = runtime::GetArrayValue(ctx, value, i);
+      result.push_back(Converter<T>::toCpp(ctx, item, bindings, retainedValues));
+    }
+    return result;
+  }
+};
+
 template <>
 struct Converter<::rehax::ui::Color> {
   static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::Color value) {

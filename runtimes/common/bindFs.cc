@@ -15,13 +15,16 @@ void Bindings::bindFs() {
     // return buffer.str();
   }, this));
     
-  runtime::SetObjectProperty(ctx, object, "readdirSync", Converter<std::function<void(std::string)>>::toScript(ctx, [] (std::string pathName) {
-      // should return array of strings
-      
+  runtime::SetObjectProperty(ctx, object, "readdirSync", Converter<std::function<std::vector<std::string>(std::string)>>::toScript(ctx, [] (std::string pathName) {
     // std::ifstream t(pathName);
     // std::stringstream buffer;
     // buffer << t.rdbuf();
     // return buffer.str();
+    std::vector<std::string> files = {
+      "Dir1",
+      "Dir2",
+    };
+    return files;
   }, this));
 
   runtime::Value rehax = runtime::GetRehaxObject(ctx);

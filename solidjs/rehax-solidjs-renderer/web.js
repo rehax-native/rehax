@@ -305,13 +305,7 @@ export const {
     } else {
       const setterName = `set${capitalize(name)}`;
       if (setterName in node) {
-        if (typeof value === "string") {
-          // There seems to be a bug where when we don't use the string before sending it to JavascriptCore, it will crash
-          value.trim();
-          node[setterName](String(value));
-        } else {
-          node[setterName](value);
-        }
+        node[setterName](value);
       } else {
         console.error(`Unknown property: ${name}`);
       }

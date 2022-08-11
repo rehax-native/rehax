@@ -36,14 +36,15 @@ template <>
 struct Converter<std::string> {
   static JSValueRef toScript(JSContextRef ctx, std::string value, Bindings * bindings = nullptr) {
     JSStringRef jsText = JSStringCreateWithUTF8CString(value.c_str());
-    return (JSValueRef) jsText;
+    return (JSValueRef) JSValueMakeString(ctx, jsText);
   }
   static std::string toCpp(JSContextRef ctx, const JSValueRef str, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
     if (JSValueIsString(ctx, str)) {
       if (JSStringGetLength((JSStringRef) str) == 0) {
         return "";
       }
-      size_t maxBufferSize = JSStringGetMaximumUTF8CStringSize((JSStringRef) str);
+      JSStringRef strRef = JSValueToStringCopy(ctx, str, nullptr);
+      size_t maxBufferSize = JSStringGetMaximumUTF8CStringSize(strRef);
       char* utf8Buffer = new char[maxBufferSize];
       size_t bytesWritten = JSStringGetUTF8CString((JSStringRef) str, utf8Buffer, maxBufferSize);
       utf8Buffer[bytesWritten] = '\0';
@@ -339,7 +340,7 @@ struct Converter<std::function<R1(void)>> {
 
 template <typename R1, typename T1>
 struct Converter<std::function<R1(T1)>> {
-  static JSValueRef toScript(JSContextRef ctx, std::function<R1(void)>&& value, Bindings * bindings = nullptr) {
+  static JSValueRef toScript(JSContextRef ctx, std::function<R1(T1)> value, Bindings * bindings = nullptr) {
     using FnType = std::function<R1(T1)>;
     using ContainerFnType = FunctionContainer<FnType>;
     auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();

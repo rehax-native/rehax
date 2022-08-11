@@ -27,7 +27,7 @@ Value rehax::jsc::runtime::GetRehaxObject(Context ctx) {
 }
 
 Value rehax::jsc::runtime::MakeArray(Context ctx) {
-  auto object = JSObjectMakeArray(ctx, 0, {}, NULL);
+  auto object = JSObjectMakeArray(ctx, 0, nullptr, nullptr);
   return object;
 }
 
