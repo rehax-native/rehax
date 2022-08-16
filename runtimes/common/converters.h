@@ -1,7 +1,7 @@
 
 template <>
 struct Converter<runtime::Value> {
-  static runtime::Value toScript(runtime::Context ctx, runtime::Value val) {
+  static runtime::Value toScript(runtime::Context ctx, runtime::Value val, Bindings * bindings) {
     return val;
   }
   static runtime::Value toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
@@ -59,6 +59,25 @@ struct Converter<std::vector<T>> {
     for (int i = 0; i < length; i++) {
       auto item = runtime::GetArrayValue(ctx, value, i);
       result.push_back(Converter<T>::toCpp(ctx, item, bindings, retainedValues));
+    }
+    return result;
+  }
+};
+
+template <typename T>
+struct Converter<std::unordered_map<std::string, T>> {
+  static runtime::Value toScript(runtime::Context ctx, std::unordered_map<std::string, T> map, Bindings * bindings) {
+    auto obj = runtime::MakeObject(ctx);
+    for (auto & it : map) {
+      runtime::SetObjectProperty(ctx, obj, it.first, Converter<T>::toScript(ctx, it.second, bindings));
+    }
+    return obj;
+  }
+  static std::unordered_map<std::string, T> toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+    auto props = runtime::GetObjectProperties(ctx, value);
+    std::unordered_map<std::string, T> result;
+    for (auto & prop : props) {
+      result[prop] = Converter<T>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, prop), bindings, retainedValues);
     }
     return result;
   }

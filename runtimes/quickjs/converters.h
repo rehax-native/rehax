@@ -195,9 +195,9 @@ struct Converter<std::function<void(T1)>> {
   static std::function<void(T1)> toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
     JSValue duped = JS_DupValue(ctx, value);
     retainedValues.push_back(duped);
-    auto fn = [ctx, duped] (T1 x) {
+    auto fn = [ctx, duped, bindings] (T1 x) {
       JSValue args[] = {
-        Converter<T1>::toScript(ctx, x),
+        Converter<T1>::toScript(ctx, x, bindings),
       };
       JS_Call(ctx, duped, JS_NULL, 1, args);
     };

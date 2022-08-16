@@ -1,5 +1,7 @@
 #include "./bindings.h"
 #include <fstream>
+#include <filesystem>
+#include "rehaxUtils/httpFetch/HttpFetch.h"
 
 #define RHX_GEN_DOCS 0
 
@@ -31,6 +33,7 @@ bool Bindings::hasRegisteredClass(std::string name) {
 
 #include "../common/bindRehax.cc"
 #include "../common/bindFs.cc"
+#include "../common/bindFetch.cc"
 
 }
 }

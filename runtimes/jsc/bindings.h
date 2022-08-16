@@ -94,6 +94,7 @@ public:
   template <typename Gesture> void bindGestureClassMethods(runtime::Value prototype);
 
   void bindFs();
+  void bindFetch();
 
 private:
   JSContextRef ctx;

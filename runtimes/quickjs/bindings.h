@@ -102,6 +102,7 @@ public:
   template <typename Gesture> void bindGestureClassMethods(JSValue prototype);
 
   void bindFs();
+  void bindFetch();
 
 private:
   JSContext * ctx;

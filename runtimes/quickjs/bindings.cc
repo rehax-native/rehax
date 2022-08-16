@@ -1,11 +1,11 @@
 #include "./bindings.h"
-#include <array>
+#include <vector>
 #include <fstream>
+#include <filesystem>
+#include "rehaxUtils/httpFetch/HttpFetch.h"
 
 namespace rehax {
 namespace quickjs {
-
-
 
 Bindings::Bindings() {}
 
@@ -32,6 +32,7 @@ bool Bindings::hasRegisteredClass(std::string name) {
 
 #include "../common/bindRehax.cc"
 #include "../common/bindFs.cc"
+#include "../common/bindFetch.cc"
 
 }
 }

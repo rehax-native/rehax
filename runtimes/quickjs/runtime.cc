@@ -1,14 +1,36 @@
 #include "runtime.h"
+#include <quickjs-src/quickjs-libc.h>
+#include <thread>
 
 using namespace rehax::quickjs;
+
+void jobLoop(JSRuntime * runtime)
+{
+  for (;;) {
+    while (JS_IsJobPending(runtime)) {
+      JSContext * ctx1;
+      JS_ExecutePendingJob(runtime, &ctx1); // this must be called in main thread again
+    }
+  }
+}
 
 Runtime::Runtime() {
   runtime = JS_NewRuntime();
   context = JS_NewContext(runtime);
 
   JS_SetMaxStackSize(runtime, 10 * 1024 * 1024);
-  
+  JS_SetHostPromiseRejectionTracker(runtime, js_std_promise_rejection_tracker, NULL);
+
+  runtimeThread = new std::thread(jobLoop, runtime);
+
   Bindings::setContext(context, runtime);
+}
+
+Runtime::~Runtime() {
+  JS_FreeContext(context);
+  JS_FreeRuntime(runtime);
+  runtimeThread->join();
+  delete runtimeThread;
 }
 
 void Runtime::makeConsole() {
@@ -39,7 +61,7 @@ void Runtime::makeConsole() {
 }
 
 void Runtime::evaluate(std::string script) {
-  auto value = JS_Eval(context, script.c_str(), script.size(), "<unknown>", JS_EVAL_TYPE_GLOBAL);
+  auto value = JS_Eval(context, script.c_str(), script.size(), "<unknown>", JS_EVAL_TYPE_MODULE);
   if (JS_IsException(value)) {
     std::cerr << "QuickJs Exception: ";
     auto exc = JS_GetException(context);

@@ -182,8 +182,8 @@ void Bindings::bindMethod(std::string name, JSValue prototype) {
     } else {
       (view->*Method)(
         Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues)
-    );
-    }
+      );
+    } 
 
     return JS_UNDEFINED;
   };

@@ -46,10 +46,12 @@ struct Converter<std::string> {
       JSStringRef strRef = JSValueToStringCopy(ctx, str, nullptr);
       size_t maxBufferSize = JSStringGetMaximumUTF8CStringSize(strRef);
       char* utf8Buffer = new char[maxBufferSize];
-      size_t bytesWritten = JSStringGetUTF8CString((JSStringRef) str, utf8Buffer, maxBufferSize);
+      // size_t bytesWritten = JSStringGetUTF8CString((JSStringRef) str, utf8Buffer, maxBufferSize);
+      size_t bytesWritten = JSStringGetUTF8CString(strRef, utf8Buffer, maxBufferSize);
       utf8Buffer[bytesWritten] = '\0';
       std::string ret = std::string(utf8Buffer);
       delete [] utf8Buffer;
+      JSStringRelease(strRef);
       return ret;
     }
     return "";
@@ -180,11 +182,11 @@ struct Converter<std::function<void(T1)>> {
     JSObjectRef callback = (JSObjectRef) value;
     JSValueProtect(ctx, callback);
     retainedValues.push_back(callback);
-    auto fn = [ctx, callback] (T1 a) {
+    auto fn = [ctx, callback, bindings] (T1 a) {
       //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
       JSValueRef exception = nullptr;
       JSValueRef arguments[] = {
-        Converter<T1>::toScript(ctx, a),
+        Converter<T1>::toScript(ctx, a, bindings),
       };
       JSObjectCallAsFunction(ctx, callback, NULL, 1, arguments, &exception);
       // if (exception != nullptr) {
@@ -297,7 +299,7 @@ struct Converter<std::function<void(T1, T2, T3)>> {
 
 template <typename R1>
 struct Converter<std::function<R1(void)>> {
-  static JSValueRef toScript(JSContextRef ctx, std::function<R1(void)>&& value, Bindings * bindings = nullptr) {
+  static JSValueRef toScript(JSContextRef ctx, std::function<R1(void)> value, Bindings * bindings = nullptr) {
     using FnType = std::function<R1(void)>;
     using ContainerFnType = FunctionContainer<FnType>;
     auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();

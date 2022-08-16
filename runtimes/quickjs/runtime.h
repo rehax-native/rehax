@@ -9,6 +9,7 @@ class Runtime : public Bindings
 {
 public:
   Runtime();
+  ~Runtime();
   void evaluate(std::string script);
   void makeConsole();
   #ifdef REHAX_WITH_FLUXE
@@ -21,6 +22,7 @@ public:
 private:
   JSRuntime * runtime;
   JSContext * context;
+  std::thread * runtimeThread;
 };
 
 }

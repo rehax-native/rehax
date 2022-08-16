@@ -43,6 +43,20 @@ bool rehax::quickjs::runtime::HasObjectProperty(Context ctx, Value object, std::
   return JS_HasProperty(ctx, object, JS_NewAtom(ctx, property.c_str()));
 }
 
+std::vector<std::string> rehax::quickjs::runtime::GetObjectProperties(Context ctx, Value object) {
+  std::vector<std::string> properties;
+  auto jsProps = JS_Invoke(ctx, object, JS_NewAtom(ctx, "Object.keys(this)"), 0, nullptr);
+  auto jsLength = JS_GetPropertyStr(ctx, jsProps, "length");
+  int length;
+  JS_ToInt32(ctx, &length, jsLength);
+  for (int i = 0; i < length; i++) {
+    auto jsKey = GetArrayValue(ctx, jsProps, i);
+    auto key = JS_ToCString(ctx, jsKey);
+    properties.push_back(std::string(key));
+  }
+  return properties;
+}
+
 void rehax::quickjs::runtime::SetArrayValue(Context ctx, Value object, int index, Value value) {
   JS_SetPropertyInt64(ctx, object, index, value);
 }
@@ -61,4 +75,8 @@ bool rehax::quickjs::runtime::IsValueUndefined(Context ctx, Value object) {
 
 bool rehax::quickjs::runtime::IsValueNull(Context ctx, Value object) {
   return JS_IsNull(object);
+}
+
+bool rehax::quickjs::runtime::IsValueString(Context ctx, Value object) {
+  return JS_IsString(object);
 }
