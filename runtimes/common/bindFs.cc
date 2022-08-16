@@ -49,7 +49,7 @@ void Bindings::bindFs() {
       std::vector<FileEntry> files = {};
       for (const auto & entry : std::filesystem::directory_iterator(pathName)) {
         files.push_back({
-          .name = entry.path(),
+          .name = entry.path().filename(),
           .isFile = entry.is_regular_file(),
           .isDirectory = entry.is_directory(),
         });
