@@ -41,6 +41,7 @@ using namespace rehax::ui::appkit;
   auto vm = new rehax::jsc::Runtime();
   vm->makeConsole();
   vm->bindFs();
+  vm->bindFetch();
   vm->bindAppkitRehax();
   vm->setRootView(view);
 

@@ -42,6 +42,7 @@ function (rehax_add_to_executable app_name)
         FetchContent_MakeAvailable(quickjs)
         file(GLOB QUICK_JS_SRCS
             ${quickjs_SOURCE_DIR}/quickjs.c
+            ${quickjs_SOURCE_DIR}/quickjs-libc.c
             ${quickjs_SOURCE_DIR}/libregexp.c
             ${quickjs_SOURCE_DIR}/libunicode.c
             ${quickjs_SOURCE_DIR}/libbf.c
@@ -86,12 +87,14 @@ function (rehax_add_to_executable app_name)
         target_sources(${app_name} PUBLIC ${REHAX_JSC_SRC_FILES})
         target_link_libraries(
             ${app_name}
+            rehax-utils-mac
             "-framework JavascriptCore"
         )
     elseif (${REHAX_RUNTIME} STREQUAL quickjs)
         target_sources(${app_name} PUBLIC ${REHAX_QUICKJS_SRC_FILES})
         target_link_libraries(
             ${app_name}
+            rehax-utils-mac
             quickjs-lib
         )
     else ()
@@ -106,6 +109,7 @@ function (rehax_add_to_executable app_name)
             ${app_name}
             "-framework AppKit"
             "-framework QuartzCore" # For vector graphics
+            rehax-utils-mac
         )
         target_compile_definitions(${app_name} PUBLIC -DREHAX_WITH_APPKIT)
     elseif (${REHAX_BACKEND} STREQUAL fluxe)
@@ -118,6 +122,7 @@ function (rehax_add_to_executable app_name)
             "-framework AppKit"
             "-framework Metal"
             "-framework MetalKit"
+            rehax-utils-mac
             icu
             skia
             skparagraph
