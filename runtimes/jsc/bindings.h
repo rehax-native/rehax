@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 #include "./runtimeUtils.h"
+#include "rehaxUtils/timer/timer.h"
 
 namespace rehax {
 namespace jsc {
@@ -95,10 +96,12 @@ public:
 
   void bindFs();
   void bindFetch();
+  void bindTimer();
 
 private:
   JSContextRef ctx;
   std::unordered_map<std::string, RegisteredClass> classRegistry;
+  std::unordered_map<int, rehaxUtils::Timer *> timerRegistry;
 };
 
 

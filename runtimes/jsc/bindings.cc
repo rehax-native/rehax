@@ -34,6 +34,7 @@ bool Bindings::hasRegisteredClass(std::string name) {
 #include "../common/bindRehax.cc"
 #include "../common/bindFs.cc"
 #include "../common/bindFetch.cc"
+#include "../common/bindTimer.cc"
 
 }
 }

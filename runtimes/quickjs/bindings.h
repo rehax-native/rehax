@@ -5,6 +5,7 @@
 #include <quickjs-src/quickjs.h>
 #include "./runtimeUtils.h"
 #include <array>
+#include "rehaxUtils/timer/timer.h"
 
 namespace rehax {
 namespace quickjs {
@@ -103,12 +104,14 @@ public:
 
   void bindFs();
   void bindFetch();
+  void bindTimer();
 
 private:
   JSContext * ctx;
   JSRuntime * rt;
 
   std::unordered_map<std::string, RegisteredClass> classRegistry;
+  std::unordered_map<int, rehaxUtils::Timer *> timerRegistry;
 };
 
 #include "./converters.h"

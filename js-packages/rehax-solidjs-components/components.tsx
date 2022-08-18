@@ -87,7 +87,7 @@ export const Length = {
   },
 };
 
-export interface ViewProps {
+export interface ViewBaseProps {
   width?: LengthType;
   height?: LengthType;
   backgroundColor?: ColorType;
@@ -98,12 +98,16 @@ export interface ViewProps {
   onMouseUp?: (e: { x: number; y: number }) => void;
 }
 
+export interface ViewProps extends ViewBaseProps {
+  children: Element[]
+}
+
 /** A base view */
 export function View(props: ViewProps): RehaxView {
   return <rehaxView {...props} />;
 }
 
-export interface ButtonProps extends ViewProps {
+export interface ButtonProps extends ViewBaseProps {
   title: string;
   onPress?: () => void;
 }
@@ -113,7 +117,7 @@ export function Button(props: ButtonProps): RehaxButton {
   return <rehaxButton {...props} />;
 }
 
-export interface TextInputProps extends ViewProps {
+export interface TextInputProps extends ViewBaseProps {
   value: string;
   onValueChange: () => void;
 }
@@ -123,7 +127,7 @@ export function TextInput(props: TextInputProps): RehaxTextInput {
   return <rehaxInput {...props} />;
 }
 
-export interface FlexLayoutProps extends ViewProps {
+export interface FlexLayoutProps extends ViewBaseProps {
   options?: {
     direction?: "row" | "column" | "row-reverse" | "column-reverse";
     justifyContent?:
@@ -145,7 +149,7 @@ export function FlexLayout(props: FlexLayoutProps): RehaxFlexLayout {
   return <rehaxFlexLayout {...props} />;
 }
 
-export interface StackLayoutProps extends ViewProps {
+export interface StackLayoutProps extends ViewBaseProps {
   options?: {
     direction?: "horizontal" | "vertical";
     spacing?: number;
@@ -156,7 +160,9 @@ export function StackLayout(props: StackLayoutProps): RehaxStackLayout {
   return <rehaxStackLayout {...props} />;
 }
 
-export interface VectorContainerProps extends ViewProps {}
+export interface VectorContainerProps extends ViewBaseProps {
+  children: Element[]
+}
 
 export function VectorContainer(
   props: VectorContainerProps
@@ -164,7 +170,7 @@ export function VectorContainer(
   return <rehaxVectorContainer {...props} />;
 }
 
-export interface VectorElementProps extends ViewProps {
+export interface VectorElementProps extends ViewBaseProps {
   lineWidth?: number;
   strokeColor?: ColorType;
   lineCap?: "butt" | "round" | "square";

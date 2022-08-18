@@ -41,6 +41,7 @@ using namespace rehax::ui::appkit;
   vm->bindAppkitRehax();
   vm->bindFs();
   vm->bindFetch();
+  vm->bindTimer();
   vm->setRootView(view);
 
   NSString * resourcePath = [[NSBundle mainBundle] resourcePath];

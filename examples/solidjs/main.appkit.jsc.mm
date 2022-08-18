@@ -42,6 +42,7 @@ using namespace rehax::ui::appkit;
   vm->makeConsole();
   vm->bindFs();
   vm->bindFetch();
+  vm->bindTimer();
   vm->bindAppkitRehax();
   vm->setRootView(view);
 
