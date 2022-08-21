@@ -70,6 +70,31 @@ struct Converter<int> {
 };
 
 template <>
+struct Converter<uint32_t> {
+  static JSValue toScript(JSContext * ctx, uint32_t& value, Bindings * bindings = nullptr) {
+    return JS_NewUint32(ctx, value);
+  }
+  static uint32_t toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
+    uint32_t v;
+    JS_ToUint32(ctx, &v, value);
+    return v;
+  }
+};
+
+template <>
+struct Converter<size_t> {
+  static JSValue toScript(JSContext * ctx, size_t& value, Bindings * bindings = nullptr) {
+    return JS_NewInt64(ctx, value);
+  }
+  static size_t toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings, std::vector<JSValue>& retainedValues) {
+//    size_t v;
+    uint64_t v;
+    JS_ToIndex(ctx, &v, value);
+    return v;
+  }
+};
+
+template <>
 struct Converter<float> {
   static JSValue toScript(JSContext * ctx, float value, Bindings * bindings = nullptr) {
     return JS_NewFloat64(ctx, value);

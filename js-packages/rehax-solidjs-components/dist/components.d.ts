@@ -40,7 +40,7 @@ export declare const Length: {
     Fixed(value: number): FixedLengthType;
     Percent(value: number): PercentLengthType;
 };
-export interface ViewProps {
+export interface ViewBaseProps {
     width?: LengthType;
     height?: LengthType;
     backgroundColor?: ColorType;
@@ -58,21 +58,24 @@ export interface ViewProps {
         y: number;
     }) => void;
 }
+export interface ViewProps extends ViewBaseProps {
+    children: Element[];
+}
 /** A base view */
 export declare function View(props: ViewProps): RehaxView;
-export interface ButtonProps extends ViewProps {
+export interface ButtonProps extends ViewBaseProps {
     title: string;
     onPress?: () => void;
 }
 /** A button */
 export declare function Button(props: ButtonProps): RehaxButton;
-export interface TextInputProps extends ViewProps {
+export interface TextInputProps extends ViewBaseProps {
     value: string;
     onValueChange: () => void;
 }
 /** A text input to capture all kind of user input */
 export declare function TextInput(props: TextInputProps): RehaxTextInput;
-export interface FlexLayoutProps extends ViewProps {
+export interface FlexLayoutProps extends ViewBaseProps {
     options?: {
         direction?: "row" | "column" | "row-reverse" | "column-reverse";
         justifyContent?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around";
@@ -85,17 +88,18 @@ export interface FlexLayoutProps extends ViewProps {
     };
 }
 export declare function FlexLayout(props: FlexLayoutProps): RehaxFlexLayout;
-export interface StackLayoutProps extends ViewProps {
+export interface StackLayoutProps extends ViewBaseProps {
     options?: {
         direction?: "horizontal" | "vertical";
         spacing?: number;
     };
 }
 export declare function StackLayout(props: StackLayoutProps): RehaxStackLayout;
-export interface VectorContainerProps extends ViewProps {
+export interface VectorContainerProps extends ViewBaseProps {
+    children: Element[];
 }
 export declare function VectorContainer(props: VectorContainerProps): RehaxVectorContainer;
-export interface VectorElementProps extends ViewProps {
+export interface VectorElementProps extends ViewBaseProps {
     lineWidth?: number;
     strokeColor?: ColorType;
     lineCap?: "butt" | "round" | "square";

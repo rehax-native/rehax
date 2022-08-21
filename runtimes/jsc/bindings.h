@@ -94,6 +94,9 @@ public:
   template <typename Layout, typename View> void bindFlexLayoutClassMethods(runtime::Value prototype);
   template <typename Gesture> void bindGestureClassMethods(runtime::Value prototype);
 
+  void bindRequire();
+  void bindBuffer();
+  void bindCrypto();
   void bindFs();
   void bindFetch();
   void bindTimer();

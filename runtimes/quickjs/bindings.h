@@ -102,6 +102,9 @@ public:
   template <typename Layout, typename View> void bindFlexLayoutClassMethods(JSValue prototype);
   template <typename Gesture> void bindGestureClassMethods(JSValue prototype);
 
+  void bindRequire();
+  void bindBuffer();
+  void bindCrypto();
   void bindFs();
   void bindFetch();
   void bindTimer();

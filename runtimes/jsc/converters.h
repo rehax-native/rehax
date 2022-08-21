@@ -79,6 +79,26 @@ struct Converter<int> {
 };
 
 template <>
+struct Converter<uint32_t> {
+  static JSValueRef toScript(JSContextRef ctx, uint32_t value, Bindings * bindings = nullptr) {
+      return JSValueMakeNumber(ctx, (double) value);
+  }
+  static uint32_t toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    return (uint32_t) JSValueToNumber(ctx, value, nullptr);
+  }
+};
+
+template <>
+struct Converter<size_t> {
+  static JSValueRef toScript(JSContextRef ctx, size_t value, Bindings * bindings = nullptr) {
+      return JSValueMakeNumber(ctx, (double) value);
+  }
+  static size_t toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+    return (size_t) JSValueToNumber(ctx, value, nullptr);
+  }
+};
+
+template <>
 struct Converter<float> {
   static JSValueRef toScript(JSContextRef ctx, float value, Bindings * bindings = nullptr) {
       return JSValueMakeNumber(ctx, (double) value);

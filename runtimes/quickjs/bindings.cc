@@ -30,6 +30,9 @@ bool Bindings::hasRegisteredClass(std::string name) {
   return classRegistry.find(name) != classRegistry.end();
 }
 
+#include "../common/bindRequire.cc"
+#include "../common/bindBuffer.cc"
+#include "../common/bindCrypto.cc"
 #include "../common/bindRehax.cc"
 #include "../common/bindFs.cc"
 #include "../common/bindFetch.cc"
