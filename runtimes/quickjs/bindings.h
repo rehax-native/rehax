@@ -6,6 +6,7 @@
 #include "./runtimeUtils.h"
 #include <array>
 #include "rehaxUtils/timer/timer.h"
+#include "rehaxUtils/links/links.h"
 
 namespace rehax {
 namespace quickjs {
@@ -108,6 +109,7 @@ public:
   void bindFs();
   void bindFetch();
   void bindTimer();
+  void bindLinks();
 
 private:
   JSContext * ctx;
