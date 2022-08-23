@@ -1,6 +1,6 @@
 #include "Button.h"
 #include "../../../base.h"
-#include "../../../fluxe/fluxe/views/Button.h"
+#include <fluxe/views/Button.h>
 
 namespace rehax::ui::fluxe::impl {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../fluxe/fluxe/views/View.h"
+#include <fluxe/views/View.h>
 
 namespace rehax::ui::fluxe::impl {
 

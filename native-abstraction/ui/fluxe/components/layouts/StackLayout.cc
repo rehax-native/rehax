@@ -1,6 +1,6 @@
 #include "StackLayout.h"
-#include "../../../fluxe/fluxe/views/View.h"
-#include "../../../fluxe/fluxe/layout/StackLayout.h"
+#include <fluxe/views/View.h>
+#include <fluxe/layout/StackLayout.h>
 
 using namespace rehax::ui::fluxe::impl;
 

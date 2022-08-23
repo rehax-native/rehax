@@ -3,7 +3,7 @@
 #include <functional>
 #include "./View.h"
 #include "../../../shared/GestureDefinitions.h"
-#include "../../../fluxe/fluxe/events/IEventListener.h"
+#include <fluxe/events/IEventListener.h>
 
 namespace rehax::ui::fluxe::impl {
 

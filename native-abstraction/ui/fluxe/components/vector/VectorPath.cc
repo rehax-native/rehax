@@ -2,7 +2,7 @@
 #include <iostream>
 #include "../../../style.h"
 #include "./VectorPath.h"
-#include "../../../fluxe/fluxe/views/View.h"
+#include <fluxe/views/View.h>
 #include "./FluxeVectorElement.h"
 
 using namespace rehax::ui::fluxe::impl;

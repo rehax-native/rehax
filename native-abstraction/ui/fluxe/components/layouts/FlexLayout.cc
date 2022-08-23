@@ -1,6 +1,6 @@
 #include "FlexLayout.h"
-#include "../../../fluxe/fluxe/views/View.h"
-#include "../../../fluxe/fluxe/layout/FlexLayout.h"
+#include <fluxe/views/View.h>
+#include <fluxe/layout/FlexLayout.h>
 
 using namespace rehax::ui::fluxe::impl;
 using namespace rehax::ui;

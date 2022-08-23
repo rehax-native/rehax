@@ -1,7 +1,7 @@
 #include "View.h"
 #include "../../../base.h"
-#include "../../../fluxe/fluxe/views/View.h"
-#include "../../../fluxe/fluxe/layout/LayoutTypes.h"
+#include <fluxe/views/View.h>
+#include <fluxe/layout/LayoutTypes.h>
 #include "../layouts/StackLayout.h"
 #include "Gesture.h"
 

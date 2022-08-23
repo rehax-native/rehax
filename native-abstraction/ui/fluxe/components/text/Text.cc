@@ -1,6 +1,6 @@
 #include "Text.h"
 #include "../../../base.h"
-#include "../../../fluxe/fluxe/views/Text.h"
+#include <fluxe/views/Text.h>
 #include <iostream>
 
 namespace rehax::ui::fluxe::impl {

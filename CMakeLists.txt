@@ -131,6 +131,8 @@ function (rehax_add_to_executable app_name)
             skunicode
         )
         target_compile_definitions(${app_name} PUBLIC -DREHAX_WITH_FLUXE)
+        # target_include_directories(${app_name} ${fluxe_SOURCE_DIR}/..)
+        include_directories(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe)
     else ()
         message(FATAL_ERROR "Backend not supported: ${REHAX_BACKEND}. please set BACKEND. Candidates: appkit, fluxe")
     endif ()

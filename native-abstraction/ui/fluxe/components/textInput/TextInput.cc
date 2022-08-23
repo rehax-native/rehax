@@ -1,6 +1,6 @@
 #include "TextInput.h"
 #include "../../../base.h"
-#include "../../../fluxe/fluxe/views/TextInput.h"
+#include <fluxe/views/TextInput.h>
 #include <iostream>
 #include <vector>
 
