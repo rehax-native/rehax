@@ -1,5 +1,5 @@
 #include "../../runtimes/quickjs/runtime.h"
-#include "../../../fluxe/fluxe/views/EngineUtility.h"
+#include <fluxe/views/EngineUtility.h>
 #include <iostream>
 #include <AppKit/AppKit.h>
 
@@ -17,6 +17,15 @@ int main() {
 
   auto vm = new rehax::quickjs::Runtime();
   vm->makeConsole();
+  vm->bindRequire();
+  vm->bindFs();
+  vm->bindFetch();
+  vm->bindTimer();
+  vm->bindBuffer();
+  vm->bindCrypto();
+  vm->bindOS();
+  vm->bindApp();
+  vm->bindLocalStorage();
   vm->bindFluxeRehax();
   vm->setRootView(container);
 

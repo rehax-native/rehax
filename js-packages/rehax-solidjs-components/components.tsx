@@ -8,6 +8,7 @@ import {
   RehaxStackLayout,
   RehaxVectorContainer,
 } from "../rehax-solidjs-renderer/global";
+import { JSX } from 'solid-js'
 
 export interface ColorType {
   /** Range 0 - 255 */
@@ -99,7 +100,7 @@ export interface ViewBaseProps {
 }
 
 export interface ViewProps extends ViewBaseProps {
-  children: Element[]
+  children?: JSX.Element
 }
 
 /** A base view */
@@ -161,7 +162,7 @@ export function StackLayout(props: StackLayoutProps): RehaxStackLayout {
 }
 
 export interface VectorContainerProps extends ViewBaseProps {
-  children: Element[]
+  children?: JSX.Element
 }
 
 export function VectorContainer(

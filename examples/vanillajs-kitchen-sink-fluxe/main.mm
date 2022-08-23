@@ -1,5 +1,5 @@
 #include "../../runtimes/jsc.h"
-#include "../../../fluxe/fluxe/views/EngineUtility.h"
+#include <fluxe/views/EngineUtility.h>
 #include <iostream>
 
 using namespace rehax::ui::fluxe::rawptr;
