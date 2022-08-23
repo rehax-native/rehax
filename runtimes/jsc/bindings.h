@@ -6,7 +6,10 @@
 #include <vector>
 #include "./runtimeUtils.h"
 #include "rehaxUtils/timer/timer.h"
-#include "rehaxUtils/links/links.h"
+#include "rehaxUtils/linking/linking.h"
+#include "rehaxUtils/app/app.h"
+#include "rehaxUtils/paths/paths.h"
+#include "rehaxUtils/os/os.h"
 
 namespace rehax {
 namespace jsc {
@@ -101,7 +104,10 @@ public:
   void bindFs();
   void bindFetch();
   void bindTimer();
-  void bindLinks();
+  void bindLinking();
+  void bindOS();
+  void bindApp();
+  void bindLocalStorage();
 
 private:
   JSContextRef ctx;

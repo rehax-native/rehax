@@ -1,0 +1,47 @@
+module: localStorage
+
+  availability:
+    macos: true
+
+  notes: The localStorage lets you store data locally on the device. It is exposed on the global object in order to conform to the web API.
+
+  methods:
+    setItem:
+      notes: Set an item in the local storage with the given key
+      returns:
+        type: void
+      arguments:
+        - name: key
+          type: string
+        - name: value
+          type: string
+
+    getItem:
+      notes: Returns the item in the local storage with the given key. If the given key does not exist, it returns an empty string.
+      returns:
+        type: string
+      arguments:
+        - name: key
+          type: string
+
+    removeItem:
+      notes: Removes and item from the storage with the given key
+      returns:
+        type: void
+      arguments:
+        - name: key
+          type: string
+
+    clear:
+      notes: Removes all items in the local storage
+      returns:
+        type: void
+
+    configure:
+      notes: Configure the path of the local storage. The default behavior saves the data in a folder called `localStorage` in the app support directory.
+      returns:
+        type: void
+      arguments:
+        - name: location
+          type: string
+          notes: The complete path to the directory where the data will be saved.

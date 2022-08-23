@@ -109,7 +109,10 @@ public:
   void bindFs();
   void bindFetch();
   void bindTimer();
-  void bindLinks();
+  void bindLinking();
+  void bindOS();
+  void bindApp();
+  void bindLocalStorage();
 
 private:
   JSContext * ctx;

@@ -46,6 +46,9 @@ using namespace rehax::ui::appkit;
   vm->bindTimer();
   vm->bindBuffer();
   vm->bindCrypto();
+  vm->bindOS();
+  vm->bindApp();
+  vm->bindLocalStorage();
   vm->bindAppkitRehax();
   vm->setRootView(view);
 

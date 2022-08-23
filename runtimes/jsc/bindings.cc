@@ -38,7 +38,8 @@ bool Bindings::hasRegisteredClass(std::string name) {
 #include "../common/bindFs.cc"
 #include "../common/bindFetch.cc"
 #include "../common/bindTimer.cc"
-#include "../common/bindLinks.cc"
+#include "../common/bindUtils.cc"
+#include "../common/bindLocalStorage.cc"
 
 }
 }
