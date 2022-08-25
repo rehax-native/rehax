@@ -50,9 +50,11 @@ void View::removeNativeView(void * child) {
 
 void View::removeFromNativeParent() {
   auto view = static_cast<::fluxe::View *>(nativeView);
-  auto parent = view->getParent();
-  if (parent.isValid()) {
-    parent->removeSubView(view);
+  if (view != nullptr) {
+    auto parent = view->getParent();
+    if (parent.isValid()) {
+      parent->removeSubView(view);
+    }
   }
 }
 

@@ -39,6 +39,10 @@ export const Length = {
 export function View(props) {
     return <rehaxView {...props}/>;
 }
+/** A text view that can be styled and nested */
+export function Text(props) {
+    return <rehaxText {...props}/>;
+}
 /** A button */
 export function Button(props) {
     return <rehaxButton {...props}/>;

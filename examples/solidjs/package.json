@@ -12,12 +12,13 @@
     "@rollup/plugin-babel": "^5.3.1",
     "@rollup/plugin-commonjs": "^22.0.1",
     "@rollup/plugin-node-resolve": "^13.3.0",
+    "babel-preset-solid": "^1.4.8",
     "rollup": "^2.77.0"
   },
   "dependencies": {
-    "@rehax/solidjs-renderer": "^0.0.6",
-    "@rehax/solidjs-components": "^0.0.6",
     "@rehax/fetch": "^0.0.1",
+    "@rehax/solidjs-components": "^0.0.6",
+    "@rehax/solidjs-renderer": "^0.0.6",
     "solid-js": "^1.4.8"
   }
 }

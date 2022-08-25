@@ -2,6 +2,7 @@ import {
   RehaxVectorPath,
   RehaxILayout,
   RehaxView,
+  RehaxText,
   RehaxButton,
   RehaxTextInput,
   RehaxFlexLayout,
@@ -106,6 +107,21 @@ export interface ViewProps extends ViewBaseProps {
 /** A base view */
 export function View(props: ViewProps): RehaxView {
   return <rehaxView {...props} />;
+}
+
+export interface TextProps extends ViewBaseProps {
+  children?: string | RehaxText | Array<string | RehaxText>;
+  textColor?: ColorType;
+  fontSize?: number;
+  italic?: boolean;
+  strikeThrough?: boolean;
+  underlined?: boolean;
+  setFontFamilies?: string[]
+}
+
+/** A text view that can be styled and nested */
+export function Text(props: TextProps): RehaxText {
+  return <rehaxText {...props} />;
 }
 
 export interface ButtonProps extends ViewBaseProps {

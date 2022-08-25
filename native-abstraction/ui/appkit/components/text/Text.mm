@@ -10,65 +10,179 @@ namespace rehax::ui::appkit::impl {
 
 std::string Text::description() {
   std::ostringstream stringStream;
-  stringStream << instanceClassName() << "/NSTextField (Appkit) " << this << ": " << getText();
+  stringStream << instanceClassName() << "/NSTextView (Appkit) " << this << ": " << getText();
   return stringStream.str();
 }
 
 void Text::createNativeView() {
-  NSTextField * view = [NSTextField new];
+  NSTextView * view = [NSTextView new];
   [view setFrame:NSMakeRect(0, 0, 200, 200)];
-  [view setStringValue:@""];
+  [view setString:@""];
   view.editable = NO;
-  view.bezeled = NO;
+  view.richText = YES;
+  view.selectable = NO;
+//  view.linkTextAttributes = @{NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
   [view setBackgroundColor:[NSColor clearColor]];
   [view sizeToFit];
   this->nativeView = (void *) CFBridgingRetain(view);
 }
 
 void Text::setText(std::string text) {
-  NSTextField * view = (__bridge NSTextField *) this->nativeView;
-  [view setStringValue: [NSString stringWithUTF8String: text.c_str()]];
+  this->text = text;
+  rebuildAttributedString();
 }
 
 std::string Text::getText() {
-  NSTextField * view = (__bridge NSTextField *) this->nativeView;
-  return std::string([view stringValue].UTF8String);
+  return text;
 }
 
 void Text::setTextColor(rehax::ui::Color color) {
-  NSTextField * view = (__bridge NSTextField *) this->nativeView;
-  NSColor * c = [NSColor colorWithRed:color.r/255.0 green:color.g/255.0 blue:color.b/255.0 alpha:color.a];
-  [view setTextColor:c];
+  this->color = color;
+  hasColor = true;
+  rebuildAttributedString();
 }
 
 void Text::setFontSize(float size) {
-  NSTextField * view = (__bridge NSTextField *) this->nativeView;
-  view.font = [NSFont fontWithName:view.font.fontName size:size];
+  fontSize = size;
+  hasFontSize = true;
+  rebuildAttributedString();
+}
+
+void Text::setItalic(bool italic) {
+  this->isItalic = italic;
+  rebuildAttributedString();
+}
+
+void Text::setUnderlined(bool underlined) {
+  this->isUnderlined = underlined;
+  rebuildAttributedString();
+}
+
+void Text::setStrikeThrough(bool strikeThrough) {
+  this->isStrikeThrough = strikeThrough;
+  rebuildAttributedString();
 }
 
 void Text::setFontFamilies(std::vector<std::string> fontFamilies) {
-  NSTextField * view = (__bridge NSTextField *) this->nativeView;
-  for (int i = 0; i < fontFamilies.size(); i++)
-  {
-    NSString * str = [NSString stringWithCString:fontFamilies[0].c_str() encoding:NSUTF8StringEncoding];
-    NSFont * font = [NSFont fontWithName:str size:view.font.pointSize];
-    if (font != nullptr) {
-      view.font = font;
-      break;
-    }
-  }
+  this->fontFamilies = fontFamilies;
+  rebuildAttributedString();
 }
 
 void Text::addNativeView(void * child) {
-  View::addNativeView(child);
-  NSTextField * view = (__bridge NSTextField *) this->nativeView;
-  [view sizeToFit];
+//  View::addNativeView(child);
+//  NSTextView * view = (__bridge NSTextView *) this->nativeView;
+//  [view sizeToFit];
 }
 
 void Text::addNativeView(void * child, void * beforeView) {
-  View::addNativeView(child, beforeView);
-  NSTextField * view = (__bridge NSTextField *) this->nativeView;
+//  View::addNativeView(child, beforeView);
+//  NSTextView * view = (__bridge NSTextView *) this->nativeView;
+//  [view sizeToFit];
+}
+
+void Text::addView(ObjectPointer<View> view) {
+  if (view->instanceClassName() != "Text") {
+    std::cerr << "Can only add Text children to Text" << std::endl;
+    return;
+  }
+  View::addView(view);
+  auto childText = rehaxUtils::dynamic_pointer_cast<Text>(view);
+  childText->isRootTextView = false;
+  childText->removeFromNativeParent();
+  childText->destroyNativeView();
+  rebuildAttributedString();
+}
+
+void Text::addView(ObjectPointer<View> view, ObjectPointer<View> beforeView) {
+  if (view->instanceClassName() != "Text") {
+    std::cerr << "Can only add Text children to Text" << std::endl;
+    return;
+  }
+  View::addView(view, beforeView);
+  auto childText = rehaxUtils::dynamic_pointer_cast<Text>(view);
+  childText->isRootTextView = false;
+  childText->removeFromNativeParent();
+  childText->destroyNativeView();
+  rebuildAttributedString();
+}
+
+void Text::rebuildAttributedString() {
+  if (!isRootTextView) {
+    if (parent.isValid()) {
+      ((Text*) parent.get())->rebuildAttributedString();
+    }
+    return;
+  }
+    
+  NSString * textString = [NSString stringWithUTF8String:(text + collectChildrenText()).c_str()];
+    
+  NSMutableAttributedString * str = [[NSMutableAttributedString new] initWithString:textString];
+  [str beginEditing];
+  applyAttributes(0, (__bridge void *) str);
+  [str endEditing];
+    
+  NSTextView * view = (__bridge NSTextView *) this->nativeView;
+  [view.textStorage setAttributedString:str];
   [view sizeToFit];
 }
+
+std::string Text::collectChildrenText() {
+  std::string childrenText = "";
+  for (auto & child : children) {
+    Text * childText = (Text*) child;
+    childrenText += childText->text + childText->collectChildrenText();
+  }
+  childrenTextLength = childrenText.size();
+  return childrenText;
+}
+
+unsigned int Text::applyAttributes(unsigned int pos, void * attributedString) {
+  NSMutableAttributedString * str = (__bridge NSMutableAttributedString *) attributedString;
+  auto rangeLength = text.size() + childrenTextLength;
+    
+  if (hasFontSize || hasFontWeight || fontFamilies.size() > 0) {
+    NSFont * font = nil;
+    for (int i = 0; i < fontFamilies.size(); i++)
+    {
+      NSString * str = [NSString stringWithCString:fontFamilies[i].c_str() encoding:NSUTF8StringEncoding];
+      font = [NSFont fontWithName:str size:fontSize];
+      if (font != nullptr) {
+        break;
+      }
+    }
+    if (font == nil) {
+      font = [NSFont systemFontOfSize:fontSize weight:NSFontWeightRegular];
+    }
+    [str addAttribute:NSFontAttributeName value:font range:NSMakeRange(pos, rangeLength)];
+  }
+  if (isRootTextView || hasColor) {
+    NSColor * c = [NSColor colorWithRed:color.r green:color.g blue:color.b alpha:color.a];
+    [str addAttribute:NSForegroundColorAttributeName value:c range:NSMakeRange(pos, rangeLength)];
+    //   if (text == "red") {
+    // [str addAttribute:NSLinkAttributeName value:@"https://google.com" range:NSMakeRange(pos, rangeLength)];
+    //   }
+  }
+  if (isUnderlined) {
+    [str addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInt:NSUnderlineStyleSingle] range:NSMakeRange(pos, rangeLength)];
+  }
+  if (isStrikeThrough) {
+    [str addAttribute:NSStrikethroughStyleAttributeName value:[NSNumber numberWithInt:1] range:NSMakeRange(pos, rangeLength)];
+  }
+  if (isItalic) {
+    [str addAttribute:NSObliquenessAttributeName value:[NSNumber numberWithFloat:0.2] range:NSMakeRange(pos, rangeLength)];
+  }
+  int childrenSize = 0;
+  for (auto & child : children) {
+    Text * childText = (Text*) child;
+    childrenSize += childText->applyAttributes(pos + text.size() + childrenSize, attributedString);
+  }
+  return text.size() + childrenTextLength;
+}
+
+void Text::layout() {
+  rebuildAttributedString();
+}
+
+void Text::setLayout(rehaxUtils::ObjectPointer<ILayout> layout) {}
 
 }

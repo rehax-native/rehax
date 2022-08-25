@@ -1,4 +1,4 @@
-import { RehaxVectorPath, RehaxILayout, RehaxView, RehaxButton, RehaxTextInput, RehaxFlexLayout, RehaxStackLayout, RehaxVectorContainer } from "../rehax-solidjs-renderer/global";
+import { RehaxVectorPath, RehaxILayout, RehaxView, RehaxText, RehaxButton, RehaxTextInput, RehaxFlexLayout, RehaxStackLayout, RehaxVectorContainer } from "../rehax-solidjs-renderer/global";
 import { JSX } from 'solid-js';
 export interface ColorType {
     /** Range 0 - 255 */
@@ -64,6 +64,12 @@ export interface ViewProps extends ViewBaseProps {
 }
 /** A base view */
 export declare function View(props: ViewProps): RehaxView;
+export interface TextProps extends ViewBaseProps {
+    children?: string | RehaxText | Array<string | RehaxText>;
+    color: ColorType;
+}
+/** A text view that can be styled and nested */
+export declare function Text(props: TextProps): RehaxText;
 export interface ButtonProps extends ViewBaseProps {
     title: string;
     onPress?: () => void;

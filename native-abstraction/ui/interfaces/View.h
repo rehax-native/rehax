@@ -16,9 +16,9 @@ public:
   RHX_EXPORT virtual std::string instanceClassName();
   RHX_EXPORT virtual std::string description();
 
-  RHX_EXPORT void addView(ObjectPointer<View> view);
-  RHX_EXPORT void addView(ObjectPointer<View> view, ObjectPointer<View> beforeView);
-  RHX_EXPORT void removeView(ObjectPointer<View> view);
+  RHX_EXPORT virtual void addView(ObjectPointer<View> view);
+  RHX_EXPORT virtual void addView(ObjectPointer<View> view, ObjectPointer<View> beforeView);
+  RHX_EXPORT virtual void removeView(ObjectPointer<View> view);
   RHX_EXPORT void removeFromParent();
   RHX_EXPORT std::vector<View *> getChildren();
   RHX_EXPORT rehaxUtils::WeakObjectPointer<View> getFirstChild();
@@ -52,8 +52,8 @@ public:
   RHX_EXPORT void setVerticalPositionFixed(float x);
   RHX_EXPORT void setHorizontalPositionFixed(float y);
 
-  RHX_EXPORT void layout();
-  RHX_EXPORT void setLayout(rehaxUtils::ObjectPointer<ILayout> layout);
+  RHX_EXPORT virtual void layout();
+  RHX_EXPORT virtual void setLayout(rehaxUtils::ObjectPointer<ILayout> layout);
   RHX_EXPORT void setLayout(rehax::ui::DefaultValue);
 
   // Styling

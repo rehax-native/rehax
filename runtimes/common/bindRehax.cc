@@ -29,6 +29,10 @@ void Bindings::bindTextClassMethods(runtime::Value prototype) {
   bindMethod<View, std::string, rehax::ui::DefaultValue, &View::setText, &View::setText>("setText", prototype);
   bindMethod<View, rehax::ui::Color, rehax::ui::DefaultValue, &View::setTextColor, &View::setTextColor>("setTextColor", prototype);
   bindMethod<View, float, rehax::ui::DefaultValue, &View::setFontSize, &View::setFontSize>("setFontSize", prototype);
+  bindMethod<View, bool, &View::setItalic>("setItalic", prototype);
+  bindMethod<View, bool, &View::setUnderlined>("setUnderlined", prototype);
+  bindMethod<View, bool, &View::setStrikeThrough>("setStrikeThrough", prototype);
+  bindMethod<View, std::vector<std::string>, &View::setFontFamilies>("setFontFamilies", prototype);
 }
 
 template <typename View>
