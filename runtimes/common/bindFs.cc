@@ -14,10 +14,10 @@ struct Converter<FileEntry> {
     runtime::SetObjectProperty(ctx, object, "isDirectory", Converter<bool>::toScript(ctx, value.isDirectory));
     return object;
   }
-  static FileEntry toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
-    auto name = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "name"), bindings, retainedValues);
-    auto isFile = Converter<bool>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "isFile"), bindings, retainedValues);
-    auto isDirectory = Converter<bool>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "isDirectory"), bindings, retainedValues);
+  static FileEntry toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    auto name = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "name"), bindings);
+    auto isFile = Converter<bool>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "isFile"), bindings);
+    auto isDirectory = Converter<bool>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "isDirectory"), bindings);
     return {
       .name = name,
       .isFile = isFile,
@@ -38,8 +38,7 @@ void Bindings::bindFs() {
   runtime::SetObjectProperty(ctx, object, "writeFileSync", Converter<std::function<void(std::string, runtime::Value, runtime::Value)>>::toScript(ctx, [this] (std::string pathName, runtime::Value data, runtime::Value options) {
     std::ofstream myfile;
     myfile.open (pathName);
-    std::vector<runtime::Value> retainedValues;
-    auto contents = Converter<std::string>::toCpp(ctx, data, this, retainedValues);
+    auto contents = Converter<std::string>::toCpp(ctx, data, this);
     myfile << contents;
     myfile.close();
   }, this));

@@ -14,15 +14,7 @@ void Bindings::defineClass(std::string name, RegisteredClass * parentClass) {
   instanceDefine.finalize = [] (JSObjectRef thiz) {
     auto privateData = static_cast<ViewPrivateData<Object> *>(JSObjectGetPrivate(thiz));
     auto ctx = privateData->ctx;
-      
 //      std::cout << "GC " << privateData->view->instanceClassName() << " " << privateData->view->getReferenceCount() << std::endl;
-
-    // The value cannot be unprotected here, as GCing views doesn't mean the're actually destroyed.
-    // Therefore the retainted values can still be used in callbacks etc.
-    for (auto value : privateData->retainedValues) {
-//      JSValueUnprotect(ctx, value);
-    }
-
     privateData->view->decreaseReferenceCount();
     delete privateData;
   };
@@ -114,7 +106,7 @@ void Bindings::bindMethod(std::string name, JSValueRef prototype) {
     auto view = privateData->view;
 
     (view->*Method)(
-      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues)
+      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings)
     );
 
     return JSValueMakeUndefined(ctx);
@@ -140,7 +132,7 @@ void Bindings::bindMethod(std::string name, JSValueRef prototype) {
     auto view = privateData->view;
 
     auto ret = (view->*Method)(
-      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues)
+      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings)
     );
 
     return Converter<R1>::toScript(ctx, ret, privateData->bindings);
@@ -169,7 +161,7 @@ void Bindings::bindMethod(std::string name,JSValueRef prototype) {
       (view->*MethodDefault)(::rehax::ui::DefaultValue{});
     } else {
       (view->*Method)(
-        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues)
+        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings)
       );
     }
 
@@ -197,8 +189,8 @@ void Bindings::bindMethod(std::string name,JSValueRef prototype) {
     auto view = privateData->view;
 
     (view->*Method)(
-      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues),
-      Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings, privateData->retainedValues)
+      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings),
+      Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings)
     );
     return JSValueMakeUndefined(ctx);
   });
@@ -225,9 +217,9 @@ void Bindings::bindMethod(std::string name,JSValueRef prototype) {
     auto view = privateData->view;
 
     (view->*Method)(
-      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues),
-      Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings, privateData->retainedValues),
-      Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings, privateData->retainedValues)
+      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings),
+      Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings),
+      Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings)
     );
     return JSValueMakeUndefined(ctx);
   });
@@ -255,10 +247,10 @@ void Bindings::bindMethod(std::string name,JSValueRef prototype) {
     auto view = privateData->view;
 
     (view->*Method)(
-      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues),
-      Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings, privateData->retainedValues),
-      Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings, privateData->retainedValues),
-      Converter<T4>::toCpp(ctx, arguments[3], privateData->bindings, privateData->retainedValues)
+      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings),
+      Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings),
+      Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings),
+      Converter<T4>::toCpp(ctx, arguments[3], privateData->bindings)
     );
     return JSValueMakeUndefined(ctx);
   });
@@ -287,11 +279,11 @@ void Bindings::bindMethod(std::string name,JSValueRef prototype) {
     auto view = privateData->view;
 
     (view->*Method)(
-      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues),
-      Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings, privateData->retainedValues),
-      Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings, privateData->retainedValues),
-      Converter<T4>::toCpp(ctx, arguments[3], privateData->bindings, privateData->retainedValues),
-      Converter<T5>::toCpp(ctx, arguments[4], privateData->bindings, privateData->retainedValues)
+      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings),
+      Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings),
+      Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings),
+      Converter<T4>::toCpp(ctx, arguments[3], privateData->bindings),
+      Converter<T5>::toCpp(ctx, arguments[4], privateData->bindings)
     );
     return JSValueMakeUndefined(ctx);
   });
@@ -321,12 +313,12 @@ void Bindings::bindMethod(std::string name,JSValueRef prototype) {
     auto view = privateData->view;
 
     (view->*Method)(
-      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues),
-      Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings, privateData->retainedValues),
-      Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings, privateData->retainedValues),
-      Converter<T4>::toCpp(ctx, arguments[3], privateData->bindings, privateData->retainedValues),
-      Converter<T5>::toCpp(ctx, arguments[4], privateData->bindings, privateData->retainedValues),
-      Converter<T6>::toCpp(ctx, arguments[5], privateData->bindings, privateData->retainedValues)
+      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings),
+      Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings),
+      Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings),
+      Converter<T4>::toCpp(ctx, arguments[3], privateData->bindings),
+      Converter<T5>::toCpp(ctx, arguments[4], privateData->bindings),
+      Converter<T6>::toCpp(ctx, arguments[5], privateData->bindings)
     );
     return JSValueMakeUndefined(ctx);
   });
@@ -358,13 +350,13 @@ void Bindings::bindMethod(std::string name,JSValueRef prototype) {
     auto view = privateData->view;
 
     (view->*Method)(
-      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues),
-      Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings, privateData->retainedValues),
-      Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings, privateData->retainedValues),
-      Converter<T4>::toCpp(ctx, arguments[3], privateData->bindings, privateData->retainedValues),
-      Converter<T5>::toCpp(ctx, arguments[4], privateData->bindings, privateData->retainedValues),
-      Converter<T6>::toCpp(ctx, arguments[5], privateData->bindings, privateData->retainedValues),
-      Converter<T7>::toCpp(ctx, arguments[6], privateData->bindings, privateData->retainedValues)
+      Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings),
+      Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings),
+      Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings),
+      Converter<T4>::toCpp(ctx, arguments[3], privateData->bindings),
+      Converter<T5>::toCpp(ctx, arguments[4], privateData->bindings),
+      Converter<T6>::toCpp(ctx, arguments[5], privateData->bindings),
+      Converter<T7>::toCpp(ctx, arguments[6], privateData->bindings)
     );
     return JSValueMakeUndefined(ctx);
   });

@@ -45,8 +45,8 @@ struct Converter<rehaxUtils::HttpMethod> {
       case rehaxUtils::HttpMethod::OPTIONS: return Converter<std::string>::toScript(ctx, "OPTIONS");
     }
   }
-  static rehaxUtils::HttpMethod toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+  static rehaxUtils::HttpMethod toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings);
     if (val == "POST") return rehaxUtils::HttpMethod::POST;
     if (val == "PUT") return rehaxUtils::HttpMethod::PUT;
     if (val == "PATCH") return rehaxUtils::HttpMethod::PATCH;
@@ -69,9 +69,9 @@ struct Converter<rehaxUtils::ObjectPointer<HttpBodyWrapper>> {
     }, bindings));
     return object;
   }
-  static rehaxUtils::ObjectPointer<HttpBodyWrapper> toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+  static rehaxUtils::ObjectPointer<HttpBodyWrapper> toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
     if (runtime::IsValueString(ctx, value)) {
-      auto str = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+      auto str = Converter<std::string>::toCpp(ctx, value, bindings);
       const char * strData = new char[str.size()];
       memcpy((void*) strData, (void*) str.data(), str.size());
       auto body = rehaxUtils::Object<HttpBodyWrapper>::Create((void*) strData, str.size());
@@ -93,9 +93,9 @@ struct Converter<rehaxUtils::HttpResponse> {
     runtime::SetObjectProperty(ctx, object, "body", Converter<rehaxUtils::ObjectPointer<HttpBodyWrapper>>::toScript(ctx, obj, bindings));
     return object;
   }
-  static rehaxUtils::HttpResponse toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
-    auto errorMessage = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "errorMessage"), bindings, retainedValues);
-    auto status = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "status"), bindings, retainedValues);
+  static rehaxUtils::HttpResponse toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    auto errorMessage = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "errorMessage"), bindings);
+    auto status = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "status"), bindings);
     return {
       .errorMessage = errorMessage,
       .status = status,
@@ -113,15 +113,15 @@ struct Converter<rehaxUtils::HttpRequest> {
     runtime::SetObjectProperty(ctx, object, "requestHeaders", Converter<std::unordered_map<std::string, std::string>>::toScript(ctx, value.requestHeaders, bindings));
     return object;
   }
-  static rehaxUtils::HttpRequest toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
-    auto url = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "url"), bindings, retainedValues);
-    auto method = Converter<rehaxUtils::HttpMethod>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "method"), bindings, retainedValues);
-    auto callback = Converter<std::function<void(rehaxUtils::HttpResponse)>>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "callback"), bindings, retainedValues);
-    auto requestHeaders = Converter<std::unordered_map<std::string, std::string>>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "requestHeaders"), bindings, retainedValues);
+  static rehaxUtils::HttpRequest toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    auto url = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "url"), bindings);
+    auto method = Converter<rehaxUtils::HttpMethod>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "method"), bindings);
+    auto callback = Converter<std::function<void(rehaxUtils::HttpResponse)>>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "callback"), bindings);
+    auto requestHeaders = Converter<std::unordered_map<std::string, std::string>>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "requestHeaders"), bindings);
       
     rehaxUtils::ObjectPointer<HttpBodyWrapper> body;
     if (runtime::HasObjectProperty(ctx, value, "body")) {
-      body = Converter<rehaxUtils::ObjectPointer<HttpBodyWrapper>>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "body"), bindings, retainedValues);
+      body = Converter<rehaxUtils::ObjectPointer<HttpBodyWrapper>>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "body"), bindings);
     }
     return {
       .url = url,

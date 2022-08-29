@@ -6,10 +6,7 @@ void finalizeViewInstance(JSRuntime *rt, JSValue val) {
   auto privateData = static_cast<ViewPrivateData<Object> *>(JS_GetOpaque(val, registeredClass.classId));
 
   auto ctx = privateData->context;
-//  for (auto value : privateData->retainedValues) {
-//    JS_FreeValue(ctx, value);
-//  }
-  std::cout << "GC " << Object::ClassName() << std::endl;
+  // std::cout << "GC " << Object::ClassName() << std::endl;
   auto view = privateData->view;
   view->decreaseReferenceCount();
   delete privateData;
@@ -129,7 +126,7 @@ void Bindings::bindMethod(std::string name, JSValue prototype) {
     auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     (view->*Method)(
-      Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues)
+      Converter<T1>::toCpp(ctx, argv[0], bindings)
     );
     return JS_UNDEFINED;
   };
@@ -153,7 +150,7 @@ void Bindings::bindMethod(std::string name, JSValue prototype) {
     auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     auto ret = (view->*Method)(
-      Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues)
+      Converter<T1>::toCpp(ctx, argv[0], bindings)
     );
     return Converter<R1>::toScript(ctx, ret, bindings);
   };
@@ -181,7 +178,7 @@ void Bindings::bindMethod(std::string name, JSValue prototype) {
       (view->*MethodDefault)(::rehax::ui::DefaultValue{});
     } else {
       (view->*Method)(
-        Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues)
+        Converter<T1>::toCpp(ctx, argv[0], bindings)
       );
     } 
 
@@ -207,8 +204,8 @@ void Bindings::bindMethod(std::string name, JSValue prototype) {
     auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     (view->*Method)(
-      argc > 0 ? Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues) : T1{},
-      argc > 1 ? Converter<T2>::toCpp(ctx, argv[1], bindings, privateData->retainedValues) : T2{}
+      argc > 0 ? Converter<T1>::toCpp(ctx, argv[0], bindings) : T1{},
+      argc > 1 ? Converter<T2>::toCpp(ctx, argv[1], bindings) : T2{}
     );
     return JS_UNDEFINED;
   };
@@ -232,9 +229,9 @@ void Bindings::bindMethod(std::string name, JSValue prototype) {
     auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     (view->*Method)(
-      Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues),
-      Converter<T2>::toCpp(ctx, argv[1], bindings, privateData->retainedValues),
-      Converter<T3>::toCpp(ctx, argv[2], bindings, privateData->retainedValues)
+      Converter<T1>::toCpp(ctx, argv[0], bindings),
+      Converter<T2>::toCpp(ctx, argv[1], bindings),
+      Converter<T3>::toCpp(ctx, argv[2], bindings)
     );
     return JS_UNDEFINED;
   };
@@ -258,10 +255,10 @@ void Bindings::bindMethod(std::string name, JSValue prototype) {
     auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     (view->*Method)(
-      Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues),
-      Converter<T2>::toCpp(ctx, argv[1], bindings, privateData->retainedValues),
-      Converter<T3>::toCpp(ctx, argv[2], bindings, privateData->retainedValues),
-      Converter<T4>::toCpp(ctx, argv[3], bindings, privateData->retainedValues)
+      Converter<T1>::toCpp(ctx, argv[0], bindings),
+      Converter<T2>::toCpp(ctx, argv[1], bindings),
+      Converter<T3>::toCpp(ctx, argv[2], bindings),
+      Converter<T4>::toCpp(ctx, argv[3], bindings)
     );
     return JS_UNDEFINED;
   };
@@ -285,11 +282,11 @@ void Bindings::bindMethod(std::string name, JSValue prototype) {
     auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     (view->*Method)(
-      Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues),
-      Converter<T2>::toCpp(ctx, argv[1], bindings, privateData->retainedValues),
-      Converter<T3>::toCpp(ctx, argv[2], bindings, privateData->retainedValues),
-      Converter<T4>::toCpp(ctx, argv[3], bindings, privateData->retainedValues),
-      Converter<T5>::toCpp(ctx, argv[4], bindings, privateData->retainedValues)
+      Converter<T1>::toCpp(ctx, argv[0], bindings),
+      Converter<T2>::toCpp(ctx, argv[1], bindings),
+      Converter<T3>::toCpp(ctx, argv[2], bindings),
+      Converter<T4>::toCpp(ctx, argv[3], bindings),
+      Converter<T5>::toCpp(ctx, argv[4], bindings)
     );
     return JS_UNDEFINED;
   };
@@ -313,12 +310,12 @@ void Bindings::bindMethod(std::string name, JSValue prototype) {
     auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     (view->*Method)(
-      Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues),
-      Converter<T2>::toCpp(ctx, argv[1], bindings, privateData->retainedValues),
-      Converter<T3>::toCpp(ctx, argv[2], bindings, privateData->retainedValues),
-      Converter<T4>::toCpp(ctx, argv[3], bindings, privateData->retainedValues),
-      Converter<T5>::toCpp(ctx, argv[4], bindings, privateData->retainedValues),
-      Converter<T6>::toCpp(ctx, argv[5], bindings, privateData->retainedValues)
+      Converter<T1>::toCpp(ctx, argv[0], bindings),
+      Converter<T2>::toCpp(ctx, argv[1], bindings),
+      Converter<T3>::toCpp(ctx, argv[2], bindings),
+      Converter<T4>::toCpp(ctx, argv[3], bindings),
+      Converter<T5>::toCpp(ctx, argv[4], bindings),
+      Converter<T6>::toCpp(ctx, argv[5], bindings)
     );
     return JS_UNDEFINED;
   };
@@ -342,13 +339,13 @@ void Bindings::bindMethod(std::string name, JSValue prototype) {
     auto privateData = static_cast<ViewPrivateData<View> *>(JS_GetOpaque(this_val, bindings->getRegisteredClass(View::ClassName()).classId));
     View * view = privateData->view;
     (view->*Method)(
-      Converter<T1>::toCpp(ctx, argv[0], bindings, privateData->retainedValues),
-      Converter<T2>::toCpp(ctx, argv[1], bindings, privateData->retainedValues),
-      Converter<T3>::toCpp(ctx, argv[2], bindings, privateData->retainedValues),
-      Converter<T4>::toCpp(ctx, argv[3], bindings, privateData->retainedValues),
-      Converter<T5>::toCpp(ctx, argv[4], bindings, privateData->retainedValues),
-      Converter<T6>::toCpp(ctx, argv[5], bindings, privateData->retainedValues),
-      Converter<T7>::toCpp(ctx, argv[6], bindings, privateData->retainedValues)
+      Converter<T1>::toCpp(ctx, argv[0], bindings),
+      Converter<T2>::toCpp(ctx, argv[1], bindings),
+      Converter<T3>::toCpp(ctx, argv[2], bindings),
+      Converter<T4>::toCpp(ctx, argv[3], bindings),
+      Converter<T5>::toCpp(ctx, argv[4], bindings),
+      Converter<T6>::toCpp(ctx, argv[5], bindings),
+      Converter<T7>::toCpp(ctx, argv[6], bindings)
     );
     return JS_UNDEFINED;
   };

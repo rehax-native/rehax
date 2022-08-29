@@ -25,7 +25,6 @@ class Bindings;
 template<typename View>
 struct ViewPrivateData {
   Bindings * bindings;
-  std::vector<JSValueRef> retainedValues;
   JSContextRef ctx;
   View * view;
 };

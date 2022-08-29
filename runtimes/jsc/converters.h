@@ -2,7 +2,7 @@
 //template <typename T>
 //struct Converter {
 //  static JSValueRef toScript(JSContextRef ctx, T& value);
-//  static T toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues);
+//  static T toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings);
 //};
 
 template <typename Object>
@@ -26,7 +26,7 @@ struct Converter {
 
     return object;
   }
-  static Object * toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static Object * toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     auto privateData = static_cast<ViewPrivateData<Object> *>(JSObjectGetPrivate((JSObjectRef) value));
     auto obj = privateData->view;
     return obj;
@@ -41,7 +41,7 @@ struct Converter<std::string> {
     JSStringRelease(jsText);
     return val;
   }
-  static std::string toCpp(JSContextRef ctx, const JSValueRef str, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static std::string toCpp(JSContextRef ctx, const JSValueRef str, Bindings * bindings) {
     if (JSValueIsString(ctx, str)) {
       if (JSStringGetLength((JSStringRef) str) == 0) {
         return "";
@@ -66,7 +66,7 @@ struct Converter<bool> {
   static JSValueRef toScript(JSContextRef ctx, bool value, Bindings * bindings = nullptr) {
     return JSValueMakeBoolean(ctx, value);
   }
-  static bool toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static bool toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     return (bool) JSValueToBoolean(ctx, value);
   }
 };
@@ -76,7 +76,7 @@ struct Converter<int> {
   static JSValueRef toScript(JSContextRef ctx, int value, Bindings * bindings = nullptr) {
       return JSValueMakeNumber(ctx, (double) value);
   }
-  static int toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static int toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     return (int) JSValueToNumber(ctx, value, nullptr);
   }
 };
@@ -86,7 +86,7 @@ struct Converter<uint32_t> {
   static JSValueRef toScript(JSContextRef ctx, uint32_t value, Bindings * bindings = nullptr) {
       return JSValueMakeNumber(ctx, (double) value);
   }
-  static uint32_t toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static uint32_t toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     return (uint32_t) JSValueToNumber(ctx, value, nullptr);
   }
 };
@@ -96,7 +96,7 @@ struct Converter<size_t> {
   static JSValueRef toScript(JSContextRef ctx, size_t value, Bindings * bindings = nullptr) {
       return JSValueMakeNumber(ctx, (double) value);
   }
-  static size_t toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static size_t toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     return (size_t) JSValueToNumber(ctx, value, nullptr);
   }
 };
@@ -106,7 +106,7 @@ struct Converter<float> {
   static JSValueRef toScript(JSContextRef ctx, float value, Bindings * bindings = nullptr) {
       return JSValueMakeNumber(ctx, (double) value);
   }
-  static float toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static float toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     return (float) JSValueToNumber(ctx, value, nullptr);
   }
 };
@@ -116,7 +116,7 @@ struct Converter<double> {
   static JSValueRef toScript(JSContextRef ctx, double value, Bindings * bindings = nullptr) {
       return JSValueMakeNumber(ctx, (double) value);
   }
-  static double toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static double toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     return (double) JSValueToNumber(ctx, value, nullptr);
   }
 };
@@ -131,6 +131,33 @@ public:
     return typeid(FN).name();
   }
   FN fn;
+};
+
+class ScriptFunctionContainer : public rehaxUtils::Object<ScriptFunctionContainer> {
+public:
+  ScriptFunctionContainer(JSContextRef ctx, JSObjectRef fn)
+  :ctx(ctx), fn(fn)
+  {
+    JSValueProtect(ctx, fn);
+  }
+
+  ~ScriptFunctionContainer() {
+    JSValueUnprotect(ctx, fn);
+  }
+  JSValueRef call(JSContextRef ctx, size_t numArgs, JSValueRef * args) {
+//                auto exception = JSObjectMake(ctx, nullptr, nullptr);
+    JSValueRef exception = nullptr;
+    auto ret = JSObjectCallAsFunction(ctx, fn, NULL, numArgs, args, &exception);
+      // if (exception != nullptr) {
+      //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
+      //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
+      //     std::cout << message << std::endl;
+      // }
+    return ret;
+  }
+private:
+  JSContextRef ctx;
+  JSObjectRef fn;
 };
 
 template <>
@@ -151,7 +178,7 @@ struct Converter<std::function<void(void)>> {
       auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
       JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
-      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings);
       fnPtr->fn();
       return JSValueMakeUndefined(ctx);
     });
@@ -161,21 +188,11 @@ struct Converter<std::function<void(void)>> {
     JSStringRelease(fnContainer);
     return functionObject;
   }
-  static std::function<void(void)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static std::function<void(void)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     JSObjectRef callback = (JSObjectRef) value;
-      
-     JSValueProtect(ctx, callback);
-     retainedValues.push_back(callback);
-
-    auto fn = [ctx, callback] () {
-      //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
-      JSValueRef exception = nullptr;
-      JSObjectCallAsFunction(ctx, callback, NULL, 0, NULL, &exception);
-      // if (exception != nullptr) {
-      //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
-      //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
-      //     std::cout << message << std::endl;
-      // }
+    rehaxUtils::ObjectPointer<ScriptFunctionContainer> fnPtr = rehaxUtils::Object<ScriptFunctionContainer>::Create(ctx, callback);
+    auto fn = [ctx, fnPtr] () {
+      fnPtr->call(ctx, 0, nullptr);
     };
     return fn;
   }
@@ -199,9 +216,9 @@ struct Converter<std::function<void(T1)>> {
       auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
       JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
-      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings);
       fnPtr->fn(
-        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues)
+        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings)
       );
       return JSValueMakeUndefined(ctx);
     });
@@ -211,22 +228,14 @@ struct Converter<std::function<void(T1)>> {
     JSStringRelease(fnContainer);
     return functionObject;
   }
-  static std::function<void(T1)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static std::function<void(T1)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     JSObjectRef callback = (JSObjectRef) value;
-    JSValueProtect(ctx, callback);
-    retainedValues.push_back(callback);
-    auto fn = [ctx, callback, bindings] (T1 a) {
-      //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
-      JSValueRef exception = nullptr;
+    rehaxUtils::ObjectPointer<ScriptFunctionContainer> fnPtr = rehaxUtils::Object<ScriptFunctionContainer>::Create(ctx, callback);
+    auto fn = [ctx, fnPtr, bindings] (T1 a) {
       JSValueRef arguments[] = {
         Converter<T1>::toScript(ctx, a, bindings),
       };
-      JSObjectCallAsFunction(ctx, callback, NULL, 1, arguments, &exception);
-      // if (exception != nullptr) {
-      //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
-      //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
-      //     std::cout << message << std::endl;
-      // }
+      fnPtr->call(ctx, 1, arguments);
     };
     return fn;
   }
@@ -250,10 +259,10 @@ struct Converter<std::function<void(T1, T2)>> {
       auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
       JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
-      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings);
       fnPtr->fn(
-        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues),
-        Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings, privateData->retainedValues)
+        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings),
+        Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings)
       );
       return JSValueMakeUndefined(ctx);
     });
@@ -263,23 +272,15 @@ struct Converter<std::function<void(T1, T2)>> {
     JSStringRelease(fnContainer);
     return functionObject;
   }
-  static std::function<void(T1, T2)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static std::function<void(T1, T2)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     JSObjectRef callback = (JSObjectRef) value;
-    JSValueProtect(ctx, callback);
-    retainedValues.push_back(callback);
-    auto fn = [ctx, callback] (T1 a, T2 b) {
-      //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
-      JSValueRef exception = nullptr;
+    rehaxUtils::ObjectPointer<ScriptFunctionContainer> fnPtr = rehaxUtils::Object<ScriptFunctionContainer>::Create(ctx, callback);
+    auto fn = [ctx, fnPtr] (T1 a, T2 b) {
       JSValueRef arguments[] = {
         Converter<T1>::toScript(ctx, a),
         Converter<T2>::toScript(ctx, b),
       };
-      JSObjectCallAsFunction(ctx, callback, NULL, 2, arguments, &exception);
-      // if (exception != nullptr) {
-      //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
-      //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
-      //     std::cout << message << std::endl;
-      // }
+      fnPtr->call(ctx, 2, arguments);
     };
     return fn;
   }
@@ -303,11 +304,11 @@ struct Converter<std::function<void(T1, T2, T3)>> {
       auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
       JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
-      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings);
       fnPtr->fn(
-        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues),
-        Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings, privateData->retainedValues),
-        Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings, privateData->retainedValues)
+        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings),
+        Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings),
+        Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings)
       );
       return JSValueMakeUndefined(ctx);
     });
@@ -317,24 +318,16 @@ struct Converter<std::function<void(T1, T2, T3)>> {
     JSStringRelease(fnContainer);
     return functionObject;
   }
-  static std::function<void(T1, T2, T3)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static std::function<void(T1, T2, T3)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     JSObjectRef callback = (JSObjectRef) value;
-    JSValueProtect(ctx, callback);
-    retainedValues.push_back(callback);
-    auto fn = [ctx, callback] (T1 a, T2 b, T3 c) {
-      //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
-      JSValueRef exception = nullptr;
+    rehaxUtils::ObjectPointer<ScriptFunctionContainer> fnPtr = rehaxUtils::Object<ScriptFunctionContainer>::Create(ctx, callback);
+    auto fn = [ctx, fnPtr] (T1 a, T2 b, T3 c) {
       JSValueRef arguments[] = {
         Converter<T1>::toScript(ctx, a),
         Converter<T2>::toScript(ctx, b),
         Converter<T3>::toScript(ctx, c),
       };
-      JSObjectCallAsFunction(ctx, callback, NULL, 3, arguments, &exception);
-      // if (exception != nullptr) {
-      //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
-      //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
-      //     std::cout << message << std::endl;
-      // }
+      fnPtr->call(ctx, 3, arguments);
     };
     return fn;
   }
@@ -358,7 +351,7 @@ struct Converter<std::function<R1(void)>> {
       auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
       JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
-      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings);
       auto ret = fnPtr->fn();
       return Converter<R1>::toScript(ctx, ret, privateData->bindings);
     });
@@ -368,21 +361,12 @@ struct Converter<std::function<R1(void)>> {
     JSStringRelease(fnContainer);
     return functionObject;
   }
-  static std::function<R1(void)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static std::function<R1(void)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     JSObjectRef callback = (JSObjectRef) value;
-      
-    JSValueProtect(ctx, callback);
-    retainedValues.push_back(callback);
-    auto fn = [ctx, callback, bindings, &retainedValues] () {
-      //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
-      JSValueRef exception = nullptr;
-      auto ret = JSObjectCallAsFunction(ctx, callback, NULL, 0, NULL, &exception);
-      return Converter<R1>::toCpp(ctx, ret, bindings, retainedValues);
-      // if (exception != nullptr) {
-      //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
-      //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
-      //     std::cout << message << std::endl;
-      // }
+    rehaxUtils::ObjectPointer<ScriptFunctionContainer> fnPtr = rehaxUtils::Object<ScriptFunctionContainer>::Create(ctx, callback);
+    auto fn = [ctx, fnPtr, bindings] () {
+      auto ret = fnPtr->call(ctx, 0, nullptr);
+      return Converter<R1>::toCpp(ctx, ret, bindings);
     };
     return fn;
   }
@@ -406,9 +390,9 @@ struct Converter<std::function<R1(T1)>> {
       auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
       JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
-      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings);
       auto ret = fnPtr->fn(
-        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues)
+        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings)
       );
       return Converter<R1>::toScript(ctx, ret, privateData->bindings);
     });
@@ -418,24 +402,15 @@ struct Converter<std::function<R1(T1)>> {
     JSStringRelease(fnContainer);
     return functionObject;
   }
-  static std::function<R1(T1)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static std::function<R1(T1)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     JSObjectRef callback = (JSObjectRef) value;
-      
-    JSValueProtect(ctx, callback);
-    retainedValues.push_back(callback);
-    auto fn = [ctx, callback, bindings, &retainedValues] (T1 a) {
-      //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
-      JSValueRef exception = nullptr;
+    rehaxUtils::ObjectPointer<ScriptFunctionContainer> fnPtr = rehaxUtils::Object<ScriptFunctionContainer>::Create(ctx, callback);
+    auto fn = [ctx, fnPtr, bindings] (T1 a) {
       JSValueRef arguments[] = {
         Converter<T1>::toScript(ctx, a),
       };
-      auto ret = JSObjectCallAsFunction(ctx, callback, NULL, 1, arguments, &exception);
-      return Converter<R1>::toCpp(ctx, ret, bindings, retainedValues);
-      // if (exception != nullptr) {
-      //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
-      //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
-      //     std::cout << message << std::endl;
-      // }
+      auto ret = fnPtr->call(ctx, 1, arguments);
+      return Converter<R1>::toCpp(ctx, ret, bindings);
     };
     return fn;
   }
@@ -459,10 +434,10 @@ struct Converter<std::function<R1(T1, T2)>> {
       auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
       JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
-      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings);
       auto ret = fnPtr->fn(
-        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues),
-        Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings, privateData->retainedValues)
+        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings),
+        Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings)
       );
       return Converter<R1>::toScript(ctx, ret, privateData->bindings);
     });
@@ -472,25 +447,16 @@ struct Converter<std::function<R1(T1, T2)>> {
     JSStringRelease(fnContainer);
     return functionObject;
   }
-  static std::function<R1(T1, T2)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static std::function<R1(T1, T2)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     JSObjectRef callback = (JSObjectRef) value;
-      
-    JSValueProtect(ctx, callback);
-    retainedValues.push_back(callback);
-    auto fn = [ctx, callback, bindings, &retainedValues] (T1 a, T2 b) {
-      //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
-      JSValueRef exception = nullptr;
+    rehaxUtils::ObjectPointer<ScriptFunctionContainer> fnPtr = rehaxUtils::Object<ScriptFunctionContainer>::Create(ctx, callback);
+    auto fn = [ctx, fnPtr, bindings] (T1 a, T2 b) {
       JSValueRef arguments[] = {
         Converter<T1>::toScript(ctx, a),
         Converter<T2>::toScript(ctx, b),
       };
-      auto ret = JSObjectCallAsFunction(ctx, callback, NULL, 2, arguments, &exception);
-      return Converter<R1>::toCpp(ctx, ret, bindings, retainedValues);
-      // if (exception != nullptr) {
-      //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
-      //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
-      //     std::cout << message << std::endl;
-      // }
+      auto ret = fnPtr->call(ctx, 2, arguments);
+      return Converter<R1>::toCpp(ctx, ret, bindings);
     };
     return fn;
   }
@@ -514,11 +480,11 @@ struct Converter<std::function<R1(T1, T2, T3)>> {
       auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
       JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
-      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings);
       auto ret = fnPtr->fn(
-        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings, privateData->retainedValues),
-        Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings, privateData->retainedValues),
-        Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings, privateData->retainedValues)
+        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings),
+        Converter<T2>::toCpp(ctx, arguments[1], privateData->bindings),
+        Converter<T3>::toCpp(ctx, arguments[2], privateData->bindings)
       );
       return Converter<R1>::toScript(ctx, ret, privateData->bindings);
     });
@@ -528,26 +494,17 @@ struct Converter<std::function<R1(T1, T2, T3)>> {
     JSStringRelease(fnContainer);
     return functionObject;
   }
-  static std::function<R1(T1, T2, T3)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
+  static std::function<R1(T1, T2, T3)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     JSObjectRef callback = (JSObjectRef) value;
-      
-    JSValueProtect(ctx, callback);
-    retainedValues.push_back(callback);
-    auto fn = [ctx, callback, bindings, &retainedValues] (T1 a, T2 b, T3 c) {
-      //                auto exception = JSObjectMake(ctx, nullptr, nullptr);
-      JSValueRef exception = nullptr;
+    rehaxUtils::ObjectPointer<ScriptFunctionContainer> fnPtr = rehaxUtils::Object<ScriptFunctionContainer>::Create(ctx, callback);
+    auto fn = [ctx, fnPtr, bindings] (T1 a, T2 b, T3 c) {
       JSValueRef arguments[] = {
         Converter<T1>::toScript(ctx, a),
         Converter<T2>::toScript(ctx, b),
         Converter<T3>::toScript(ctx, c),
       };
-      auto ret = JSObjectCallAsFunction(ctx, callback, NULL, 3, arguments, &exception);
-      return Converter<R1>::toCpp(ctx, ret, bindings, retainedValues);
-      // if (exception != nullptr) {
-      //     auto exMessage = JSObjectGetProperty(ctx, (JSObjectRef) exception, JSStringCreateWithUTF8CString("message"), nullptr);
-      //     auto message = Bindings::JSStringToStdString(ctx, (JSStringRef) exMessage);
-      //     std::cout << message << std::endl;
-      // }
+      auto ret = fnPtr->call(ctx, 3, arguments);
+      return Converter<R1>::toCpp(ctx, ret, bindings);
     };
     return fn;
   }

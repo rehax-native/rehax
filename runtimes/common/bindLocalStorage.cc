@@ -12,8 +12,7 @@ void Bindings::bindLocalStorage() {
   auto setItem = Converter<std::function<void(std::string, std::string)>>::toScript(ctx, [this] (std::string key, std::string value) {
     runtime::Value globalObject = runtime::GetGlobalObject(ctx);
     auto localStorage = runtime::GetObjectProperty(ctx, globalObject, "localStorage");
-    std::vector<runtime::Value> retainedValues;
-    auto savePath = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, localStorage, "__savePath"), nullptr, retainedValues);
+    auto savePath = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, localStorage, "__savePath"), nullptr);
     std::string filePath = savePath + "/" + key;
 
     if (!std::filesystem::exists(savePath)) {
@@ -27,8 +26,7 @@ void Bindings::bindLocalStorage() {
   auto getItem = Converter<std::function<std::string(std::string)>>::toScript(ctx, [this] (std::string key) {
     runtime::Value globalObject = runtime::GetGlobalObject(ctx);
     auto localStorage = runtime::GetObjectProperty(ctx, globalObject, "localStorage");
-    std::vector<runtime::Value> retainedValues;
-    auto savePath = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, localStorage, "__savePath"), nullptr, retainedValues);
+    auto savePath = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, localStorage, "__savePath"), nullptr);
     auto filePath = savePath + "/" + key;
     if (!std::filesystem::exists(filePath)) {
       return std::string("");
@@ -43,8 +41,7 @@ void Bindings::bindLocalStorage() {
   auto removeItem = Converter<std::function<void(std::string)>>::toScript(ctx, [this] (std::string key) {
     runtime::Value globalObject = runtime::GetGlobalObject(ctx);
     auto localStorage = runtime::GetObjectProperty(ctx, globalObject, "localStorage");
-    std::vector<runtime::Value> retainedValues;
-    auto savePath = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, localStorage, "__savePath"), nullptr, retainedValues);
+    auto savePath = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, localStorage, "__savePath"), nullptr);
     auto filePath = savePath + "/" + key;
     if (!std::filesystem::exists(filePath)) {
       return;
@@ -55,8 +52,7 @@ void Bindings::bindLocalStorage() {
   auto clear = Converter<std::function<void(void)>>::toScript(ctx, [this] () {
     runtime::Value globalObject = runtime::GetGlobalObject(ctx);
     auto localStorage = runtime::GetObjectProperty(ctx, globalObject, "localStorage");
-    std::vector<runtime::Value> retainedValues;
-    auto savePath = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, localStorage, "__savePath"), nullptr, retainedValues);
+    auto savePath = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, localStorage, "__savePath"), nullptr);
     std::filesystem::remove_all(savePath);
   }, this);
 

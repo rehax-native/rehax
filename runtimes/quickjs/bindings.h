@@ -31,7 +31,6 @@ template<typename View>
 struct ViewPrivateData {
   Bindings * bindings;
   View * view;
-  std::vector<JSValue> retainedValues;
   JSContext * context;
 };
 

@@ -4,7 +4,7 @@ struct Converter<runtime::Value> {
   static runtime::Value toScript(runtime::Context ctx, runtime::Value val, Bindings * bindings) {
     return val;
   }
-  static runtime::Value toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+  static runtime::Value toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
     return value;
   }
 };
@@ -17,11 +17,11 @@ struct Converter<rehaxUtils::ObjectPointer<Object>> {
     }
     return Converter<Object>::toScript(ctx, obj.get(), bindings);
   }
-  static rehaxUtils::ObjectPointer<Object> toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+  static rehaxUtils::ObjectPointer<Object> toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
     if (runtime::IsValueNull(ctx, value) || runtime::IsValueUndefined(ctx, value)) {
       return rehaxUtils::ObjectPointer<Object>(nullptr);
     }
-    auto ptr = Converter<Object>::toCpp(ctx, value, bindings, retainedValues);
+    auto ptr = Converter<Object>::toCpp(ctx, value, bindings);
     return ptr->getThisPointer();
   }
 };
@@ -34,11 +34,11 @@ struct Converter<rehaxUtils::WeakObjectPointer<Object>> {
     }
     return Converter<Object>::toScript(ctx, obj.get(), bindings);
   }
-  static rehaxUtils::WeakObjectPointer<Object> toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+  static rehaxUtils::WeakObjectPointer<Object> toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
     if (runtime::IsValueNull(ctx, value) || runtime::IsValueUndefined(ctx, value)) {
       return WeakObjectPointer<Object>(nullptr);
     }
-    auto ptr = Converter<Object>::toCpp(ctx, value, bindings, retainedValues);
+    auto ptr = Converter<Object>::toCpp(ctx, value, bindings);
     return ptr->getThisPointer();
   }
 };
@@ -53,12 +53,12 @@ struct Converter<std::vector<T>> {
     }
     return arr;
   }
-  static std::vector<T> toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
-    int length = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "length"), bindings, retainedValues);
+  static std::vector<T> toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    int length = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "length"), bindings);
     std::vector<T> result;
     for (int i = 0; i < length; i++) {
       auto item = runtime::GetArrayValue(ctx, value, i);
-      result.push_back(Converter<T>::toCpp(ctx, item, bindings, retainedValues));
+      result.push_back(Converter<T>::toCpp(ctx, item, bindings));
     }
     return result;
   }
@@ -73,11 +73,11 @@ struct Converter<std::unordered_map<std::string, T>> {
     }
     return obj;
   }
-  static std::unordered_map<std::string, T> toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+  static std::unordered_map<std::string, T> toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
     auto props = runtime::GetObjectProperties(ctx, value);
     std::unordered_map<std::string, T> result;
     for (auto & prop : props) {
-      result[prop] = Converter<T>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, prop), bindings, retainedValues);
+      result[prop] = Converter<T>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, prop), bindings);
     }
     return result;
   }
@@ -93,11 +93,11 @@ struct Converter<::rehax::ui::Color> {
     runtime::SetObjectProperty(ctx, object, "alpha", Converter<float>::toScript(ctx, value.a));
     return object;
   }
-  static ::rehax::ui::Color toCpp(runtime::Context ctx, const runtime::Value& colorValue, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
-    auto r = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, colorValue, "red"), bindings, retainedValues);
-    auto g = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, colorValue, "green"), bindings, retainedValues);
-    auto b = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, colorValue, "blue"), bindings, retainedValues);
-    auto a = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, colorValue, "alpha"), bindings, retainedValues);
+  static ::rehax::ui::Color toCpp(runtime::Context ctx, const runtime::Value& colorValue, Bindings * bindings) {
+    auto r = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, colorValue, "red"), bindings);
+    auto g = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, colorValue, "green"), bindings);
+    auto b = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, colorValue, "blue"), bindings);
+    auto a = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, colorValue, "alpha"), bindings);
     return ui::Color::RGBA(
       r / 255.0,
       g / 255.0,
@@ -126,19 +126,19 @@ struct Converter<::rehax::ui::Length> {
 
     return object;
   }
-  static ::rehax::ui::Length toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "type"), bindings, retainedValues);
+  static ::rehax::ui::Length toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    auto val = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "type"), bindings);
     if (val == "natural") {
       return ::rehax::ui::LengthTypes::Natural{};
     } else if (val == "fixed") {
       return ::rehax::ui::LengthTypes::Fixed {
-        Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "value"), bindings, retainedValues)
+        Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "value"), bindings)
       };
     } else if (val == "fill") {
       return ::rehax::ui::LengthTypes::Fill{};
     } else if (val == "percent") {
       return ::rehax::ui::LengthTypes::Percentage{
-        Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "value"), bindings, retainedValues)
+        Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "value"), bindings)
       };
     }
     return ::rehax::ui::LengthTypes::Natural();
@@ -155,8 +155,8 @@ struct Converter<::rehax::ui::StackLayoutDirection> {
       return Converter<std::string>::toScript(ctx, "horizontal");
     }
   }
-  static ::rehax::ui::StackLayoutDirection toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+  static ::rehax::ui::StackLayoutDirection toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings);
     if (val == "horizontal") {
       return ui::StackLayoutDirection::Horizontal;
     }
@@ -172,13 +172,13 @@ struct Converter<::rehax::ui::StackLayoutOptions> {
     runtime::SetObjectProperty(ctx, obj, "direction", Converter<::rehax::ui::StackLayoutDirection>::toScript(ctx, value.direction));
     return obj;
   }
-  static ::rehax::ui::StackLayoutOptions toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+  static ::rehax::ui::StackLayoutOptions toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
     ::rehax::ui::StackLayoutOptions options;
     if (runtime::HasObjectProperty(ctx, value, "spacing")) {
-      options.spacing = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "spacing"), bindings, retainedValues);
+      options.spacing = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "spacing"), bindings);
     }
     if (runtime::HasObjectProperty(ctx, value, "direction")) {
-      options.direction = Converter<::rehax::ui::StackLayoutDirection>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "direction"), bindings, retainedValues);
+      options.direction = Converter<::rehax::ui::StackLayoutDirection>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "direction"), bindings);
     }
     return options;
   }
@@ -200,8 +200,8 @@ struct Converter<::rehax::ui::FlexLayoutDirection> {
       return Converter<std::string>::toScript(ctx, "row-reverse");
     }
   }
-  static ::rehax::ui::FlexLayoutDirection toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+  static ::rehax::ui::FlexLayoutDirection toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings);
     if (val == "column") {
       return ui::FlexLayoutDirection::Column;
     }
@@ -228,8 +228,8 @@ struct Converter<::rehax::ui::FlexJustifyContent> {
       return Converter<std::string>::toScript(ctx, "center");
     }
   }
-  static ::rehax::ui::FlexJustifyContent toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+  static ::rehax::ui::FlexJustifyContent toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings);
     if (val == "flex-end") {
       return ui::FlexJustifyContent::FlexEnd;
     }
@@ -253,8 +253,8 @@ struct Converter<::rehax::ui::FlexAlignItems> {
       return Converter<std::string>::toScript(ctx, "center");
     }
   }
-  static ::rehax::ui::FlexAlignItems toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+  static ::rehax::ui::FlexAlignItems toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings);
     if (val == "flex-end") {
       return ui::FlexAlignItems::FlexEnd;
     }
@@ -275,17 +275,17 @@ struct Converter<::rehax::ui::FlexItem> {
     runtime::SetObjectProperty(ctx, obj, "alignSelf", Converter<::rehax::ui::FlexAlignItems>::toScript(ctx, value.alignSelf));
     return obj;
   }
-  static ::rehax::ui::FlexItem toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+  static ::rehax::ui::FlexItem toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
     ::rehax::ui::FlexItem flexItem;
     if (runtime::HasObjectProperty(ctx, value, "flexGrow")) {
-      flexItem.flexGrow = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "flexGrow"), bindings, retainedValues);
+      flexItem.flexGrow = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "flexGrow"), bindings);
       flexItem.hasFlexGrow = true;
     }
     if (runtime::HasObjectProperty(ctx, value, "order")) {
-      flexItem.order = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "order"), bindings, retainedValues);
+      flexItem.order = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "order"), bindings);
     }
     if (runtime::HasObjectProperty(ctx, value, "alignSelf")) {
-      flexItem.alignSelf = Converter<::rehax::ui::FlexAlignItems>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "alignSelf"), bindings, retainedValues);
+      flexItem.alignSelf = Converter<::rehax::ui::FlexAlignItems>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "alignSelf"), bindings);
     }
     return flexItem;
   }
@@ -307,23 +307,23 @@ struct Converter<::rehax::ui::FlexLayoutOptions> {
     runtime::SetObjectProperty(ctx, obj, "items", arr);
     return obj;
   }
-  static ::rehax::ui::FlexLayoutOptions toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+  static ::rehax::ui::FlexLayoutOptions toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
     ::rehax::ui::FlexLayoutOptions options;
     if (runtime::HasObjectProperty(ctx, value, "direction")) {
-      options.direction = Converter<::rehax::ui::FlexLayoutDirection>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "direction"), bindings, retainedValues);
+      options.direction = Converter<::rehax::ui::FlexLayoutDirection>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "direction"), bindings);
     }
     if (runtime::HasObjectProperty(ctx, value, "justifyContent")) {
-      options.justifyContent = Converter<::rehax::ui::FlexJustifyContent>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "justifyContent"), bindings, retainedValues);
+      options.justifyContent = Converter<::rehax::ui::FlexJustifyContent>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "justifyContent"), bindings);
     }
     if (runtime::HasObjectProperty(ctx, value, "alignItems")) {
-      options.alignItems = Converter<::rehax::ui::FlexAlignItems>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "alignItems"), bindings, retainedValues);
+      options.alignItems = Converter<::rehax::ui::FlexAlignItems>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "alignItems"), bindings);
     }
     if (runtime::HasObjectProperty(ctx, value, "items")) {
       runtime::Value items = runtime::GetObjectProperty(ctx, value, "items");
-      int length = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, items, "length"), bindings, retainedValues);
+      int length = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, items, "length"), bindings);
       for (int i = 0; i < length; i++) {
         auto item = runtime::GetArrayValue(ctx, items, i);
-        options.items.push_back(Converter<::rehax::ui::FlexItem>::toCpp(ctx, item, bindings, retainedValues));
+        options.items.push_back(Converter<::rehax::ui::FlexItem>::toCpp(ctx, item, bindings));
       }
     }
     return options;
@@ -352,8 +352,8 @@ struct Converter<::rehax::ui::GestureState> {
       return Converter<std::string>::toScript(ctx, "ended");
     }
   }
-  static ::rehax::ui::GestureState toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+  static ::rehax::ui::GestureState toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings);
     if (val == "recognized") {
       return ui::GestureState::Recognized;
     }
@@ -386,8 +386,8 @@ struct Converter<::rehax::ui::VectorLineCap> {
       return Converter<std::string>::toScript(ctx, "round");
     }
   }
-  static ::rehax::ui::VectorLineCap toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+  static ::rehax::ui::VectorLineCap toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings);
     if (val == "square") {
       return ui::VectorLineCap::Square;
     }
@@ -411,8 +411,8 @@ struct Converter<::rehax::ui::VectorLineJoin> {
       return Converter<std::string>::toScript(ctx, "bevel");
     }
   }
-  static ::rehax::ui::VectorLineJoin toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
-    auto val = Converter<std::string>::toCpp(ctx, value, bindings, retainedValues);
+  static ::rehax::ui::VectorLineJoin toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings);
     if (val == "round") {
       return ui::VectorLineJoin::Round;
     }
@@ -431,13 +431,13 @@ struct Converter<::rehax::ui::GradientStop> {
     runtime::SetObjectProperty(ctx, obj, "offset", Converter<float>::toScript(ctx, value.offset));
     return obj;
   }
-  static ::rehax::ui::GradientStop toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+  static ::rehax::ui::GradientStop toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
     ::rehax::ui::GradientStop stop;
     if (runtime::HasObjectProperty(ctx, value, "color")) {
-      stop.color = Converter<::rehax::ui::Color>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "color"), bindings, retainedValues);
+      stop.color = Converter<::rehax::ui::Color>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "color"), bindings);
     }
     if (runtime::HasObjectProperty(ctx, value, "offset")) {
-      stop.offset = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "offset"), bindings, retainedValues);
+      stop.offset = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "offset"), bindings);
     }
     return stop;
   }
@@ -455,14 +455,14 @@ struct Converter<::rehax::ui::Gradient> {
     runtime::SetObjectProperty(ctx, obj, "stops", arr);
     return obj;
   }
-  static ::rehax::ui::Gradient toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+  static ::rehax::ui::Gradient toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
     ::rehax::ui::Gradient gradient;
     if (runtime::HasObjectProperty(ctx, value, "stops")) {
       runtime::Value items = runtime::GetObjectProperty(ctx, value, "stops");
-      int length = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, items, "length"), bindings, retainedValues);
+      int length = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, items, "length"), bindings);
       for (int i = 0; i < length; i++) {
         auto item = runtime::GetArrayValue(ctx, items, i);
-        gradient.stops.push_back(Converter<::rehax::ui::GradientStop>::toCpp(ctx, item, bindings, retainedValues));
+        gradient.stops.push_back(Converter<::rehax::ui::GradientStop>::toCpp(ctx, item, bindings));
       }
     }
     return gradient;
@@ -477,13 +477,13 @@ struct Converter<::rehax::ui::FilterDef> {
     runtime::SetObjectProperty(ctx, obj, "blurRadius", Converter<float>::toScript(ctx, value.blurRadius));
     return obj;
   }
-  static ::rehax::ui::FilterDef toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+  static ::rehax::ui::FilterDef toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
     ::rehax::ui::FilterDef def;
     if (runtime::HasObjectProperty(ctx, value, "type")) {
-      def.type = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "type"), bindings, retainedValues);
+      def.type = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "type"), bindings);
     }
     if (runtime::HasObjectProperty(ctx, value, "blurRadius")) {
-      def.blurRadius = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "blurRadius"), bindings, retainedValues);
+      def.blurRadius = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "blurRadius"), bindings);
     }
     return def;
   }
@@ -501,14 +501,14 @@ struct Converter<::rehax::ui::Filters> {
     runtime::SetObjectProperty(ctx, obj, "defs", arr);
     return obj;
   }
-  static ::rehax::ui::Filters toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings, std::vector<runtime::Value>& retainedValues) {
+  static ::rehax::ui::Filters toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
     ::rehax::ui::Filters filters;
     if (runtime::HasObjectProperty(ctx, value, "defs")) {
       runtime::Value items = runtime::GetObjectProperty(ctx, value, "defs");
-      int length = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, items, "length"), bindings, retainedValues);
+      int length = Converter<int>::toCpp(ctx, runtime::GetObjectProperty(ctx, items, "length"), bindings);
       for (int i = 0; i < length; i++) {
         auto item = runtime::GetArrayValue(ctx, items, i);
-        filters.defs.push_back(Converter<::rehax::ui::FilterDef>::toCpp(ctx, item, bindings, retainedValues));
+        filters.defs.push_back(Converter<::rehax::ui::FilterDef>::toCpp(ctx, item, bindings));
       }
     }
     return filters;
