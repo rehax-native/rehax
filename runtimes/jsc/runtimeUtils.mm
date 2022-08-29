@@ -34,15 +34,21 @@ Value rehax::jsc::runtime::MakeArray(Context ctx) {
 void rehax::jsc::runtime::SetObjectProperty(Context ctx, Value object, std::string property, Value value) {
   auto propName = JSStringCreateWithUTF8CString(property.c_str());
   JSObjectSetProperty(ctx, (JSObjectRef) object, propName, value, kJSPropertyAttributeNone, nullptr);
+  JSStringRelease(propName);
 }
 
 Value rehax::jsc::runtime::GetObjectProperty(Context ctx, Value object, std::string property) {
   auto propName = JSStringCreateWithUTF8CString(property.c_str());
-  return JSObjectGetProperty(ctx, (JSObjectRef) object, propName, NULL);
+  Value prop = JSObjectGetProperty(ctx, (JSObjectRef) object, propName, NULL);
+  JSStringRelease(propName);
+  return prop;
 }
 
 bool rehax::jsc::runtime::HasObjectProperty(Context ctx, Value object, std::string property) {
-  return JSObjectHasProperty(ctx, (JSObjectRef) object, JSStringCreateWithUTF8CString(property.c_str()));
+  auto propName = JSStringCreateWithUTF8CString(property.c_str());
+  bool hasProp = JSObjectHasProperty(ctx, (JSObjectRef) object, propName);
+  JSStringRelease(propName);
+  return hasProp;
 }
 
 std::vector<std::string> rehax::jsc::runtime::GetObjectProperties(Context ctx, Value object) {

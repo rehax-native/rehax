@@ -45,6 +45,7 @@ void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::fluxe::View> view
   }
     
   JSObjectSetProperty(ctx, (JSObjectRef) rehax, rootName, rootView, kJSPropertyAttributeReadOnly, nullptr);
+  JSStringRelease(rootName);
 }
 #endif
 
@@ -65,5 +66,6 @@ void Runtime::setRootView(rehaxUtils::ObjectPointer<rehax::ui::appkit::View> vie
   }
     
   JSObjectSetProperty(ctx, (JSObjectRef) rehax, rootName, rootView, kJSPropertyAttributeReadOnly, nullptr);
+  JSStringRelease(rootName);
 }
 #endif

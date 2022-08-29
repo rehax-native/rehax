@@ -6,7 +6,10 @@
 #include "./runtimeUtils.h"
 #include <array>
 #include "rehaxUtils/timer/timer.h"
-#include "rehaxUtils/links/links.h"
+#include "rehaxUtils/linking/linking.h"
+#include "rehaxUtils/app/app.h"
+#include "rehaxUtils/paths/paths.h"
+#include "rehaxUtils/os/os.h"
 
 namespace rehax {
 namespace quickjs {

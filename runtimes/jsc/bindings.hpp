@@ -53,6 +53,7 @@ void Bindings::defineClass(std::string name, RegisteredClass * parentClass) {
   auto globalObject = JSContextGetGlobalObject(ctx);
   runtime::Value rehax = runtime::GetRehaxObject(ctx);
   JSObjectSetProperty(ctx, (JSObjectRef) rehax, className, jsClassObject, kJSPropertyAttributeReadOnly, NULL);
+  JSStringRelease(className);
   
   return clazz;
 }
@@ -74,6 +75,7 @@ void Bindings::bindMethod(std::string name, JSValueRef prototype) {
     return Converter<RET>::toScript(ctx, ret, privateData->bindings);
   });
   JSObjectSetProperty(ctx, (JSObjectRef) prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+  JSStringRelease(methodName);
 }
 
 template <typename View, void (View::*Method)(void)>
@@ -92,6 +94,7 @@ void Bindings::bindMethod(std::string name, JSValueRef prototype) {
     return JSValueMakeUndefined(ctx);
   });
   JSObjectSetProperty(ctx, (JSObjectRef) prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+  JSStringRelease(methodName);
 }
 
 template <typename View, typename T1, void (View::*Method)(T1)>
@@ -117,6 +120,7 @@ void Bindings::bindMethod(std::string name, JSValueRef prototype) {
     return JSValueMakeUndefined(ctx);
   });
   JSObjectSetProperty(ctx, (JSObjectRef) prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+  JSStringRelease(methodName);
 }
 
 template <typename View, typename R1, typename T1, R1 (View::*Method)(T1)>
@@ -142,6 +146,7 @@ void Bindings::bindMethod(std::string name, JSValueRef prototype) {
     return Converter<R1>::toScript(ctx, ret, privateData->bindings);
   });
   JSObjectSetProperty(ctx, (JSObjectRef) prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+  JSStringRelease(methodName);
 }
 
 template <typename View, typename T1, typename D1, void (View::*Method)(T1), void (View::*MethodDefault)(D1)>
@@ -171,6 +176,7 @@ void Bindings::bindMethod(std::string name,JSValueRef prototype) {
     return JSValueMakeUndefined(ctx);
   });
   JSObjectSetProperty(ctx, (JSObjectRef) prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+  JSStringRelease(methodName);
 }
 
 template <typename View, typename T1, typename T2, void (View::*Method)(T1, T2)>
@@ -197,6 +203,7 @@ void Bindings::bindMethod(std::string name,JSValueRef prototype) {
     return JSValueMakeUndefined(ctx);
   });
   JSObjectSetProperty(ctx, (JSObjectRef) prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+  JSStringRelease(methodName);
 }
 
 template <typename View, typename T1, typename T2, typename T3, void (View::*Method)(T1, T2)>
@@ -225,6 +232,7 @@ void Bindings::bindMethod(std::string name,JSValueRef prototype) {
     return JSValueMakeUndefined(ctx);
   });
   JSObjectSetProperty(ctx, (JSObjectRef) prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+  JSStringRelease(methodName);
 }
 
 template <typename View, typename T1, typename T2, typename T3, typename T4, void (View::*Method)(T1, T2, T3, T4)>
@@ -255,6 +263,7 @@ void Bindings::bindMethod(std::string name,JSValueRef prototype) {
     return JSValueMakeUndefined(ctx);
   });
   JSObjectSetProperty(ctx, (JSObjectRef) prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+  JSStringRelease(methodName);
 }
 
 template <typename View, typename T1, typename T2, typename T3, typename T4, typename T5, void (View::*Method)(T1, T2, T3, T4, T5)>
@@ -287,6 +296,7 @@ void Bindings::bindMethod(std::string name,JSValueRef prototype) {
     return JSValueMakeUndefined(ctx);
   });
   JSObjectSetProperty(ctx, (JSObjectRef) prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+  JSStringRelease(methodName);
 }
 
 template <typename View, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, void (View::*Method)(T1, T2, T3, T4, T5, T6)>
@@ -321,6 +331,7 @@ void Bindings::bindMethod(std::string name,JSValueRef prototype) {
     return JSValueMakeUndefined(ctx);
   });
   JSObjectSetProperty(ctx, (JSObjectRef) prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+  JSStringRelease(methodName);
 }
 
 template <typename View, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, void (View::*Method)(T1, T2, T3, T4, T5, T6, T7)>
@@ -358,4 +369,5 @@ void Bindings::bindMethod(std::string name,JSValueRef prototype) {
     return JSValueMakeUndefined(ctx);
   });
   JSObjectSetProperty(ctx, (JSObjectRef) prototype, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+  JSStringRelease(methodName);
 }

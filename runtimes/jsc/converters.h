@@ -22,6 +22,7 @@ struct Converter {
     JSObjectSetPrototype(ctx, object, registeredClass.prototype);
     auto __className = JSStringCreateWithUTF8CString(className.c_str());
     JSObjectSetProperty(ctx, object, JSStringCreateWithUTF8CString("__className"), (JSValueRef) JSValueMakeString(ctx, __className), kJSPropertyAttributeReadOnly, NULL);
+    JSStringRelease(__className);
 
     return object;
   }
@@ -36,7 +37,9 @@ template <>
 struct Converter<std::string> {
   static JSValueRef toScript(JSContextRef ctx, std::string value, Bindings * bindings = nullptr) {
     JSStringRef jsText = JSStringCreateWithUTF8CString(value.c_str());
-    return (JSValueRef) JSValueMakeString(ctx, jsText);
+    JSValueRef val = (JSValueRef) JSValueMakeString(ctx, jsText);
+    JSStringRelease(jsText);
+    return val;
   }
   static std::string toCpp(JSContextRef ctx, const JSValueRef str, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
     if (JSValueIsString(ctx, str)) {
@@ -144,13 +147,18 @@ struct Converter<std::function<void(void)>> {
     JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
 
     auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
-      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
+      JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
       auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
       fnPtr->fn();
       return JSValueMakeUndefined(ctx);
     });
-    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(methodName);
+    JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+    JSObjectSetProperty(ctx, functionObject, fnContainer, jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(fnContainer);
     return functionObject;
   }
   static std::function<void(void)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
@@ -187,7 +195,9 @@ struct Converter<std::function<void(T1)>> {
     JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
 
     auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
-      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
+      JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
       auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
       fnPtr->fn(
@@ -195,7 +205,10 @@ struct Converter<std::function<void(T1)>> {
       );
       return JSValueMakeUndefined(ctx);
     });
-    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(methodName);
+    JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+    JSObjectSetProperty(ctx, functionObject, fnContainer, jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(fnContainer);
     return functionObject;
   }
   static std::function<void(T1)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
@@ -233,7 +246,9 @@ struct Converter<std::function<void(T1, T2)>> {
     JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
 
     auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
-      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
+      JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
       auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
       fnPtr->fn(
@@ -242,7 +257,10 @@ struct Converter<std::function<void(T1, T2)>> {
       );
       return JSValueMakeUndefined(ctx);
     });
-    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(methodName);
+    JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+    JSObjectSetProperty(ctx, functionObject, fnContainer, jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(fnContainer);
     return functionObject;
   }
   static std::function<void(T1, T2)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
@@ -281,7 +299,9 @@ struct Converter<std::function<void(T1, T2, T3)>> {
     JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
 
     auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
-      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
+      JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
       auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
       fnPtr->fn(
@@ -291,7 +311,10 @@ struct Converter<std::function<void(T1, T2, T3)>> {
       );
       return JSValueMakeUndefined(ctx);
     });
-    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(methodName);
+    JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+    JSObjectSetProperty(ctx, functionObject, fnContainer, jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(fnContainer);
     return functionObject;
   }
   static std::function<void(T1, T2, T3)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
@@ -331,13 +354,18 @@ struct Converter<std::function<R1(void)>> {
     JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
 
     auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
-      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
+      JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
       auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
       auto ret = fnPtr->fn();
       return Converter<R1>::toScript(ctx, ret, privateData->bindings);
     });
-    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(methodName);
+    JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+    JSObjectSetProperty(ctx, functionObject, fnContainer, jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(fnContainer);
     return functionObject;
   }
   static std::function<R1(void)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
@@ -374,7 +402,9 @@ struct Converter<std::function<R1(T1)>> {
     JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
 
     auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
-      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
+      JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
       auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
       auto ret = fnPtr->fn(
@@ -382,7 +412,10 @@ struct Converter<std::function<R1(T1)>> {
       );
       return Converter<R1>::toScript(ctx, ret, privateData->bindings);
     });
-    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(methodName);
+    JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+    JSObjectSetProperty(ctx, functionObject, fnContainer, jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(fnContainer);
     return functionObject;
   }
   static std::function<R1(T1)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
@@ -422,7 +455,9 @@ struct Converter<std::function<R1(T1, T2)>> {
     JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
 
     auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
-      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
+      JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
       auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
       auto ret = fnPtr->fn(
@@ -431,7 +466,10 @@ struct Converter<std::function<R1(T1, T2)>> {
       );
       return Converter<R1>::toScript(ctx, ret, privateData->bindings);
     });
-    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(methodName);
+    JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+    JSObjectSetProperty(ctx, functionObject, fnContainer, jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(fnContainer);
     return functionObject;
   }
   static std::function<R1(T1, T2)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
@@ -472,7 +510,9 @@ struct Converter<std::function<R1(T1, T2, T3)>> {
     JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
 
     auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
-      auto jsFnContainer = JSObjectGetProperty(ctx, function, JSStringCreateWithUTF8CString("__fnContainer"), nullptr);
+      JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
+      JSStringRelease(fnContainer);
       auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
       auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings, privateData->retainedValues);
       auto ret = fnPtr->fn(
@@ -482,7 +522,10 @@ struct Converter<std::function<R1(T1, T2, T3)>> {
       );
       return Converter<R1>::toScript(ctx, ret, privateData->bindings);
     });
-    JSObjectSetProperty(ctx, functionObject, JSStringCreateWithUTF8CString("__fnContainer"), jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(methodName);
+    JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+    JSObjectSetProperty(ctx, functionObject, fnContainer, jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(fnContainer);
     return functionObject;
   }
   static std::function<R1(T1, T2, T3)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings, std::vector<JSValueRef>& retainedValues) {
