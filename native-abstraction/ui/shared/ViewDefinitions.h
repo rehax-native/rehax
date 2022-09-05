@@ -1,5 +1,7 @@
 #pragma once
 
+#include <variant>
+
 namespace rehax::ui {
 
 /** This is a universal default type. It is used everywhere there can be a default value. */

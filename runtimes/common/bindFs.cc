@@ -47,8 +47,8 @@ void Bindings::bindFs() {
     if (!runtime::IsValueUndefined(ctx, options) && !runtime::IsValueNull(ctx, options)) {
       std::vector<FileEntry> files = {};
       for (const auto & entry : std::filesystem::directory_iterator(pathName)) {
-        files.push_back({
-          .name = entry.path().filename(),
+        files.push_back(FileEntry {
+          .name = entry.path().filename().string(),
           .isFile = entry.is_regular_file(),
           .isDirectory = entry.is_directory(),
         });
@@ -57,7 +57,7 @@ void Bindings::bindFs() {
     }
     std::vector<std::string> files = {};
     for (const auto & entry : std::filesystem::directory_iterator(pathName)) {
-      files.push_back(entry.path());
+      files.push_back(entry.path().string());
     }
     return Converter<std::vector<std::string>>::toScript(ctx, files, this);
   }, this));

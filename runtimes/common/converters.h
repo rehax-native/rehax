@@ -1,4 +1,5 @@
 
+#ifndef JS_STRICT_NAN_BOXING
 template <>
 struct Converter<runtime::Value> {
   static runtime::Value toScript(runtime::Context ctx, runtime::Value val, Bindings * bindings) {
@@ -8,6 +9,7 @@ struct Converter<runtime::Value> {
     return value;
   }
 };
+#endif
 
 template <typename Object>
 struct Converter<rehaxUtils::ObjectPointer<Object>> {

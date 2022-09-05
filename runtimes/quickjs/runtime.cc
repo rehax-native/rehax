@@ -1,6 +1,5 @@
 #include "runtime.h"
 #include <quickjs-src/quickjs-libc.h>
-#include <thread>
 
 using namespace rehax::quickjs;
 

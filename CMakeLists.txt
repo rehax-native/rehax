@@ -1,8 +1,14 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.22)
 
 # project(Rehax)
-# set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 20)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(MACOSX TRUE)
+endif()
+if (WIN32)
+  set(WIN TRUE)
+endif()
 
 # # To create an xcode project for development:
 # # cmake -G Xcode -S examples/solidjs -B build_examples
@@ -35,10 +41,20 @@ function (rehax_add_to_executable app_name)
     # FetchContent_MakeAvailable(fluxe)
 
     if (NOT TARGET quickjs-lib)
-        FetchContent_Declare(quickjs
-            GIT_REPOSITORY https://github.com/bellard/quickjs.git
-            GIT_TAG        master
-        )
+        if (${WIN})
+            # quickjs isn't compatible with VS code out of the box
+            # This fork is.
+            FetchContent_Declare(quickjs
+                GIT_REPOSITORY https://github.com/c-smile/quickjspp.git
+                GIT_TAG        master
+            )
+        else()
+            FetchContent_Declare(quickjs
+                GIT_REPOSITORY https://github.com/bellard/quickjs.git
+                GIT_TAG        master
+            )
+        endif()
+
         FetchContent_MakeAvailable(quickjs)
         file(GLOB QUICK_JS_SRCS
             ${quickjs_SOURCE_DIR}/quickjs.c
@@ -54,7 +70,13 @@ function (rehax_add_to_executable app_name)
             ${QUICK_JS_SRCS}
         )
         target_compile_definitions(quickjs-lib PUBLIC -DCONFIG_VERSION="1.0.0")
-    endif ()
+
+        if (${WIN})
+            target_compile_definitions(quickjs-lib PUBLIC -DJS_STRICT_NAN_BOXING -DCONFIG_BIGNUM)
+        endif()
+
+        set_property(TARGET quickjs-lib PROPERTY CXX_STANDARD 17)
+    endif()
 
     FetchContent_Declare(rehaxUtils
         GIT_REPOSITORY https://github.com/rehax-native/utils.git
@@ -68,15 +90,44 @@ function (rehax_add_to_executable app_name)
 
     include_directories(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe)
     include_directories(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/third_party/skia)
-    link_directories(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist)
-    link_directories(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug)
+
+    find_library(
+        ICU_LIB
+        NAMES icu
+        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+    )
+    find_library(
+        SKIA_LIB
+        NAMES skia
+        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+    )
+    find_library(
+        SKPARAGRAPH_LIB
+        NAMES skparagraph
+        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+    )
+    find_library(
+        SKSHAPER_LIB
+        NAMES skshaper
+        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+    )
+    find_library(
+        SKTEXT_LIB
+        NAMES sktext
+        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+    )
+    find_library(
+        SKUNICODE_LIB
+        NAMES skunicode
+        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+    )
 
 
     file(GLOB REHAX_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/native-abstraction/ui/style.cc)
     file(GLOB REHAX_FLUXE_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/native-abstraction/ui/fluxe/components/**/*.cc)
     file(GLOB REHAX_APPKIT_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/native-abstraction/ui/appkit/components/**/*.mm)
     file(GLOB REHAX_JSC_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/jsc/runtime.mm ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/jsc/bindings.cc ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/jsc/runtimeUtils.mm)
-    file(GLOB REHAX_QUICKJS_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/quickjs/runtime.cc ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/quickjs/bindings.cc ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/quickjs/runtimeUtils.mm)
+    file(GLOB REHAX_QUICKJS_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/quickjs/runtime.cc ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/quickjs/bindings.cc ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/runtimes/quickjs/runtimeUtils.cc)
     file(REAL_PATH ${CMAKE_CURRENT_FUNCTION_LIST_DIR} REHAX_HEADER_INCLUDE_DIR)
 
     include_directories(${REHAX_HEADER_INCLUDE_DIR})
@@ -94,9 +145,20 @@ function (rehax_add_to_executable app_name)
         target_sources(${app_name} PUBLIC ${REHAX_QUICKJS_SRC_FILES})
         target_link_libraries(
             ${app_name}
-            rehax-utils-mac
             quickjs-lib
         )
+        if (${MACOSX})
+            target_link_libraries(
+                ${app_name}
+                rehax-utils-mac
+            )
+        endif()
+        if (${WIN})
+            target_link_libraries(
+                ${app_name}
+                rehax-utils-win
+            )
+        endif()
     else ()
         message(FATAL_ERROR "Runtime not supported: ${REHAX_RUNTIME}. please set RUNTIME. Candidates: jsc, quickjs")
     endif ()
@@ -114,22 +176,48 @@ function (rehax_add_to_executable app_name)
         target_compile_definitions(${app_name} PUBLIC -DREHAX_WITH_APPKIT)
     elseif (${REHAX_BACKEND} STREQUAL fluxe)
         target_sources(${app_name} PUBLIC ${REHAX_FLUXE_SRC_FILES} ${REHAX_SRC_FILES})
-        target_link_libraries(
-            ${app_name}
-            fluxe-mac
-            "-framework Foundation"
-            "-framework QuartzCore"
-            "-framework AppKit"
-            "-framework Metal"
-            "-framework MetalKit"
-            rehax-utils-mac
-            icu
-            skia
-            skparagraph
-            skshaper
-            sktext
-            skunicode
-        )
+        if (${MACOSX})
+            target_link_libraries(
+                ${app_name}
+                fluxe-mac
+                "-framework Foundation"
+                "-framework QuartzCore"
+                "-framework AppKit"
+                "-framework Metal"
+                "-framework MetalKit"
+                rehax-utils-mac
+                icu
+                skia
+                skparagraph
+                skshaper
+                sktext
+                skunicode
+            )
+        endif()
+        if (${WIN})
+            find_library(
+                FLUXE_WIN_LIB 
+                NAMES fluxe
+                PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist"
+                #  "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+            )
+            message(WARNING ${FLUXE_WIN_LIB})
+            message(WARNING ${SKIA_LIB})
+            message(WARNING ${SKUNICODE_LIB})
+            target_link_libraries(
+                ${app_name}
+                ${FLUXE_WIN_LIB}
+                rehax-utils-win
+                ${ICU_LIB}
+                ${SKIA_LIB}
+                ${SKPARAGRAPH_LIB}
+                ${SKSHAPER_LIB}
+                ${SKTEXT_LIB}
+                ${SKUNICODE_LIB}
+                opengl32
+            )
+            target_compile_definitions(${app_name} PUBLIC -DWINVER=0x0605)
+        endif()
         target_compile_definitions(${app_name} PUBLIC -DREHAX_WITH_FLUXE)
         # target_include_directories(${app_name} ${fluxe_SOURCE_DIR}/..)
         include_directories(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe)

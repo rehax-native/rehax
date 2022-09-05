@@ -30,7 +30,7 @@ void Bindings::defineClass(std::string name, RegisteredClass * parentClass) {
     classDef.finalizer = &finalizeViewInstance<Object>;
     classDef.exotic = nullptr;
     auto assignedId = JS_NewClass(rt, instanceClassId, &classDef);
-    assert(assignedId != -1);
+    // assert(assignedId != -1);
   } else {
     instanceClassId = parentClass->classId;
   }
