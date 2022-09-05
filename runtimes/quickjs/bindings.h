@@ -58,6 +58,7 @@ public:
     typename TextInput,
     typename VectorContainer,
     typename VectorElement,
+    typename VectorRect,
     typename VectorPath,
     typename ILayout,
     typename Gesture
@@ -100,6 +101,7 @@ public:
   template <typename View> void bindTextClassMethods(JSValue prototype);
   template <typename View> void bindTextInputClassMethods(JSValue prototype);
   template <typename View> void bindVectorElementClassMethods(JSValue prototype);
+  template <typename View> void bindVectorRectClassMethods(runtime::Value prototype);
   template <typename View> void bindVectorPathClassMethods(JSValue prototype);
   template <typename Layout, typename View> void bindStackLayoutClassMethods(JSValue prototype);
   template <typename Layout, typename View> void bindFlexLayoutClassMethods(JSValue prototype);

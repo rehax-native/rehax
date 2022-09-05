@@ -54,6 +54,11 @@ void Bindings::bindVectorElementClassMethods(runtime::Value prototype) {
 }
 
 template <typename View>
+void Bindings::bindVectorRectClassMethods(runtime::Value prototype) {
+  bindMethod<View, rehax::ui::Size, &View::setSize>("setSize", prototype);
+}
+
+template <typename View>
 void Bindings::bindVectorPathClassMethods(runtime::Value prototype) {
   bindMethod<View, &View::beginPath>("beginPath", prototype);
   bindMethod<View, float, &View::pathHorizontalTo>("pathHorizontalTo", prototype);
@@ -93,6 +98,7 @@ template <
   typename TextInput,
   typename VectorContainer,
   typename VectorElement,
+  typename VectorRect,
   typename VectorPath,
   typename ILayout,
   typename Gesture
@@ -127,6 +133,7 @@ void Bindings::bindRehax() {
   defineClass<TextInput>("TextInput", &classRegistry["View"]);
   defineClass<VectorContainer>("VectorContainer", &classRegistry["View"]);
   defineClass<VectorElement, false>("VectorElement", &classRegistry["View"]);
+  defineClass<VectorRect>("VectorRect", &classRegistry["VectorElement"]);
   defineClass<VectorPath>("VectorPath", &classRegistry["VectorElement"]);
 
   bindViewClassMethods<View, ILayout, Gesture>(classRegistry["View"].prototype);
@@ -134,6 +141,7 @@ void Bindings::bindRehax() {
   bindTextClassMethods<Text>(classRegistry["Text"].prototype);
   bindTextInputClassMethods<TextInput>(classRegistry["TextInput"].prototype);
   bindVectorElementClassMethods<VectorElement>(classRegistry["VectorElement"].prototype);
+  bindVectorRectClassMethods<VectorRect>(classRegistry["VectorRect"].prototype);
   bindVectorPathClassMethods<VectorPath>(classRegistry["VectorPath"].prototype);
 
   bindStackLayoutClassMethods<StackLayout, View>(classRegistry["StackLayout"].prototype);
@@ -160,6 +168,7 @@ void Bindings::bindAppkitRehax() {
     rehax::ui::appkit::TextInput,
     rehax::ui::appkit::VectorContainer,
     rehax::ui::appkit::VectorElement,
+    rehax::ui::appkit::VectorRect,
     rehax::ui::appkit::VectorPath,
     rehax::ui::appkit::ILayout,
     rehax::ui::appkit::Gesture
@@ -183,6 +192,7 @@ void Bindings::bindFluxeRehax() {
     rehax::ui::fluxe::TextInput,
     rehax::ui::fluxe::VectorContainer,
     rehax::ui::fluxe::VectorElement,
+    rehax::ui::fluxe::VectorRect,
     rehax::ui::fluxe::VectorPath,
     rehax::ui::fluxe::ILayout,
     rehax::ui::fluxe::Gesture

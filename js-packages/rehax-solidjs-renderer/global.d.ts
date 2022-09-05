@@ -47,8 +47,18 @@ export class RehaxTextInput extends RehaxView {}
 
 export class RehaxVectorContainer extends RehaxView {}
 
+export class RehaxVectorRect extends RehaxView {
+  setSize(width: number, height: number): void;
+}
+
 export class RehaxVectorPath extends RehaxView {
+  pathHorizontalTo(x: number): void;
+  pathVerticalTo(y: number): void;
   pathMoveTo(x: number, y: number): void;
+  pathMoveBy(x: number, y: number): void;
+  pathLineTo(x: number, y: number): void;
+  pathQuadraticBezier(x1: number, y1: number, x: number, y: number): void;
+  pathCubicBezier(x1: number, y1: number, x2: number, y2: number, x: number, y: number): void;
   pathArc(
     rx: number,
     ry: number,
@@ -58,6 +68,7 @@ export class RehaxVectorPath extends RehaxView {
     x: number,
     y: number
   ): void;
+  pathClose(): void;
 }
 
 export class RehaxILayout {}
@@ -75,6 +86,7 @@ declare global {
     Button: RehaxButton,
     TextInput: RehaxTextInput,
     VectorContainer: RehaxVectorContainer,
+    VectorRect: RehaxVectorRect,
     VectorPath: RehaxVectorPath,
     StackLayout: RehaxStackLayout,
     FlexLayout: RehaxFlexLayout,

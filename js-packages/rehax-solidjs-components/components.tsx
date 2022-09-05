@@ -1,4 +1,5 @@
 import {
+  RehaxVectorRect,
   RehaxVectorPath,
   RehaxILayout,
   RehaxView,
@@ -116,7 +117,7 @@ export interface TextProps extends ViewBaseProps {
   italic?: boolean;
   strikeThrough?: boolean;
   underlined?: boolean;
-  setFontFamilies?: string[]
+  fontFamilies?: string[]
 }
 
 /** A text view that can be styled and nested */
@@ -190,6 +191,7 @@ export function VectorContainer(
 export interface VectorElementProps extends ViewBaseProps {
   lineWidth?: number;
   strokeColor?: ColorType;
+  fillColor?: ColorType;
   lineCap?: "butt" | "round" | "square";
   lineJoin?: "miter" | "bevel" | "round";
   filters?: {
@@ -198,6 +200,14 @@ export interface VectorElementProps extends ViewBaseProps {
       blurRadius: number;
     }>;
   };
+}
+
+export interface VectorRectProps extends VectorElementProps {
+  size: { width: number, height: number};
+}
+
+export function VectorRect(props: VectorRectProps): RehaxVectorRect {
+  return <rehaxVectorRect {...props} />;
 }
 
 export interface VectorPathProps extends VectorElementProps {
@@ -210,8 +220,36 @@ export function VectorPath(props: VectorPathProps): RehaxVectorPath {
 
 // Vector Path operations
 
+export function HorizontalTo(x: number) {
+  return (path: RehaxVectorPath) => path.pathHorizontalTo(x);
+}
+
+export function VerticalTo(x: number) {
+  return (path: RehaxVectorPath) => path.pathVerticalTo(x);
+}
+
 export function MoveTo(x: number, y: number) {
   return (path: RehaxVectorPath) => path.pathMoveTo(x, y);
+}
+
+export function MoveBy(x: number, y: number) {
+  return (path: RehaxVectorPath) => path.pathMoveBy(x, y);
+}
+
+export function LineTo(x: number, y: number) {
+  return (path: RehaxVectorPath) => path.pathLineTo(x, y);
+}
+
+export function QuadraticBezier(x1: number, y1: number, x: number, y: number) {
+  return (path: RehaxVectorPath) => path.pathQuadraticBezier(x1, y1, x, y);
+}
+
+export function CubicBezier(x1: number, y1: number, x2: number, y2: number, x: number, y: number) {
+  return (path: RehaxVectorPath) => path.pathCubicBezier(x1, y1, x2, y2, x, y);
+}
+
+export function Close() {
+  return (path: RehaxVectorPath) => path.pathClose();
 }
 
 export function Arc(

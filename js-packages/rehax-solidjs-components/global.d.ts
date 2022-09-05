@@ -76,6 +76,7 @@ declare global {
       rehaxStackLayout: {}
       rehaxFlexLayout: {}
       rehaxVectorContainer: {}
+      rehaxVectorRect: {}
       rehaxVectorPath: {}
     }
   }

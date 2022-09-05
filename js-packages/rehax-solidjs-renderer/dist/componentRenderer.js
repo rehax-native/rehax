@@ -40,6 +40,7 @@ const ViewMap = {
     rehaxStackLayout: rehax.StackLayout,
     rehaxFlexLayout: rehax.FlexLayout,
     rehaxVectorContainer: rehax.VectorContainer,
+    rehaxVectorRect: rehax.VectorRect,
     rehaxVectorPath: rehax.VectorPath,
 };
 const PropHandlers = {
@@ -65,9 +66,6 @@ const PropHandlers = {
 export const { render, effect, memo, createComponent, createElement, createTextNode, insertNode, insert, spread, setProp, mergeProps, } = createRenderer({
     createElement(str) {
         const Component = ViewMap[str];
-        if (str === 'rehaxText') {
-            console.log(Component);
-        }
         if (Component) {
             return new Component();
         }

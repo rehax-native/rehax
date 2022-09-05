@@ -148,6 +148,26 @@ struct Converter<::rehax::ui::Length> {
 };
 
 template <>
+struct Converter<::rehax::ui::Size> {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::Size& value) {
+    runtime::Value obj = runtime::MakeObject(ctx);
+    runtime::SetObjectProperty(ctx, obj, "width", Converter<float>::toScript(ctx, value.width));
+    runtime::SetObjectProperty(ctx, obj, "height", Converter<float>::toScript(ctx, value.height));
+    return obj;
+  }
+  static ::rehax::ui::Size toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    ::rehax::ui::Size size;
+    if (runtime::HasObjectProperty(ctx, value, "width")) {
+      size.width = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "width"), bindings);
+    }
+    if (runtime::HasObjectProperty(ctx, value, "height")) {
+      size.height = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "height"), bindings);
+    }
+    return size;
+  }
+};
+
+template <>
 struct Converter<::rehax::ui::StackLayoutDirection> {
   static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::StackLayoutDirection& value) {
     if (value == ui::StackLayoutDirection::Vertical) {

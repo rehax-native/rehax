@@ -1,4 +1,4 @@
-import { RehaxVectorPath, RehaxILayout, RehaxView, RehaxText, RehaxButton, RehaxTextInput, RehaxFlexLayout, RehaxStackLayout, RehaxVectorContainer } from "../rehax-solidjs-renderer/global";
+import { RehaxVectorRect, RehaxVectorPath, RehaxILayout, RehaxView, RehaxText, RehaxButton, RehaxTextInput, RehaxFlexLayout, RehaxStackLayout, RehaxVectorContainer } from "../rehax-solidjs-renderer/global";
 import { JSX } from 'solid-js';
 export interface ColorType {
     /** Range 0 - 255 */
@@ -66,7 +66,12 @@ export interface ViewProps extends ViewBaseProps {
 export declare function View(props: ViewProps): RehaxView;
 export interface TextProps extends ViewBaseProps {
     children?: string | RehaxText | Array<string | RehaxText>;
-    color: ColorType;
+    textColor?: ColorType;
+    fontSize?: number;
+    italic?: boolean;
+    strikeThrough?: boolean;
+    underlined?: boolean;
+    fontFamilies?: string[];
 }
 /** A text view that can be styled and nested */
 export declare function Text(props: TextProps): RehaxText;
@@ -109,6 +114,7 @@ export declare function VectorContainer(props: VectorContainerProps): RehaxVecto
 export interface VectorElementProps extends ViewBaseProps {
     lineWidth?: number;
     strokeColor?: ColorType;
+    fillColor?: ColorType;
     lineCap?: "butt" | "round" | "square";
     lineJoin?: "miter" | "bevel" | "round";
     filters?: {
@@ -118,9 +124,23 @@ export interface VectorElementProps extends ViewBaseProps {
         }>;
     };
 }
+export interface VectorRectProps extends VectorElementProps {
+    size: {
+        width: number;
+        height: number;
+    };
+}
+export declare function VectorRect(props: VectorRectProps): RehaxVectorRect;
 export interface VectorPathProps extends VectorElementProps {
     operations: Array<(path: RehaxVectorPath) => void>;
 }
 export declare function VectorPath(props: VectorPathProps): RehaxVectorPath;
+export declare function HorizontalTo(x: number): (path: RehaxVectorPath) => void;
+export declare function VerticalTo(x: number): (path: RehaxVectorPath) => void;
 export declare function MoveTo(x: number, y: number): (path: RehaxVectorPath) => void;
+export declare function MoveBy(x: number, y: number): (path: RehaxVectorPath) => void;
+export declare function LineTo(x: number, y: number): (path: RehaxVectorPath) => void;
+export declare function QuadraticBezier(x1: number, y1: number, x: number, y: number): (path: RehaxVectorPath) => void;
+export declare function CubicBezier(x1: number, y1: number, x2: number, y2: number, x: number, y: number): (path: RehaxVectorPath) => void;
+export declare function Close(): (path: RehaxVectorPath) => void;
 export declare function Arc(rx: number, ry: number, xAxisRotation: number, largeArc: number, sweepFlag: number, x: number, y: number): (path: RehaxVectorPath) => void;

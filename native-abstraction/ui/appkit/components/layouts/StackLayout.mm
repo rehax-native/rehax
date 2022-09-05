@@ -112,14 +112,14 @@ void StackLayout::layoutContainer(void * container) {
 
     prevView = subView;
 
-    constraint = [NSLayoutConstraint constraintWithItem:view attribute:crossPropMax relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:subView attribute:crossPropMax multiplier:1.0 constant:-spacing];
+    constraint = [NSLayoutConstraint constraintWithItem:view attribute:crossPropMax relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:subView attribute:crossPropMax multiplier:1.0 constant:spacing];
     constraint.identifier = @"Stack cross pos max";
     constraint.priority = 800;
     [view addConstraint:constraint];
     [constraintsArray addObject:constraint];
     // NSLog(@"%d size %d", i, crossPropMax == NSLayoutAttributeRight);
 
-    constraint = [NSLayoutConstraint constraintWithItem:view attribute:crossPropMax relatedBy:NSLayoutRelationEqual toItem:subView attribute:crossPropMax multiplier:1.0 constant:-spacing];
+    constraint = [NSLayoutConstraint constraintWithItem:view attribute:crossPropMax relatedBy:NSLayoutRelationEqual toItem:subView attribute:crossPropMax multiplier:1.0 constant:spacing];
     constraint.identifier = @"Stack cross pos max eq";
     constraint.priority = 200;
     [view addConstraint:constraint];
@@ -129,14 +129,14 @@ void StackLayout::layoutContainer(void * container) {
   
   if (prevView) {
     if (view.subviews.count > 1) {
-      constraint = [NSLayoutConstraint constraintWithItem:view attribute:maxProp relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:prevView attribute:maxProp multiplier:1.0 constant:-spacing];
+      constraint = [NSLayoutConstraint constraintWithItem:view attribute:maxProp relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:prevView attribute:maxProp multiplier:1.0 constant:spacing];
       constraint.identifier = @"Stack max";
       constraint.priority = 800;
       [view addConstraint:constraint];
       [constraintsArray addObject:constraint];
       // NSLog(@"max %d", maxProp == NSLayoutAttributeBottom);
     } else {
-      constraint = [NSLayoutConstraint constraintWithItem:view attribute:maxProp relatedBy:NSLayoutRelationEqual toItem:prevView attribute:maxProp multiplier:1.0 constant:-spacing];
+      constraint = [NSLayoutConstraint constraintWithItem:view attribute:maxProp relatedBy:NSLayoutRelationEqual toItem:prevView attribute:maxProp multiplier:1.0 constant:spacing];
       constraint.identifier = @"Stack max";
       constraint.priority = 800;
       [view addConstraint:constraint];

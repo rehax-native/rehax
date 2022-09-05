@@ -40,6 +40,7 @@ const ViewMap: Record<string, any> = {
   rehaxStackLayout: rehax.StackLayout,
   rehaxFlexLayout: rehax.FlexLayout,
   rehaxVectorContainer: rehax.VectorContainer,
+  rehaxVectorRect: rehax.VectorRect,
   rehaxVectorPath: rehax.VectorPath,
 } as const;
 

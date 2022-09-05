@@ -31,6 +31,7 @@ int main() {
   vm->setRootView(container);
 
   std::ifstream t("index.native.js");
+
   std::stringstream buffer;
   buffer << t.rdbuf();
   vm->evaluate(buffer.str());

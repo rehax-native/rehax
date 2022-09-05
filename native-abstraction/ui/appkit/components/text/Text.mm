@@ -124,6 +124,29 @@ void Text::rebuildAttributedString() {
   NSTextView * view = (__bridge NSTextView *) this->nativeView;
   [view.textStorage setAttributedString:str];
   [view sizeToFit];
+
+  // we add a little inset and padding (in the constraints) because otherwise it cuts the text off weirdly
+    
+  view.textContainerInset = NSMakeSize(0, 2);
+    
+  [view.layoutManager ensureLayoutForTextContainer:view.textContainer];
+  CGSize size = [view.layoutManager usedRectForTextContainer:view.textContainer].size;
+    
+  NSArray * constraints = [view.constraints copy];
+  for (NSLayoutConstraint * constraint : constraints) {
+    if ([constraint.identifier isEqualToString:@"rhx_text_size"]) {
+      [view removeConstraint:constraint];
+    }
+  }
+
+  NSLayoutConstraint * constraint;
+  constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:size.height + 4];
+  constraint.identifier = @"rhx_text_size";
+  [view addConstraint:constraint];
+
+  constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:size.width + 2];
+  constraint.identifier = @"rhx_text_size";
+  [view addConstraint:constraint];
 }
 
 std::string Text::collectChildrenText() {

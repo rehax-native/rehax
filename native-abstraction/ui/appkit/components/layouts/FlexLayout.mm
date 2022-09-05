@@ -289,21 +289,21 @@ void FlexLayout::layoutContainer(void * nativeView) {
 
   // We want to always be as least as big as to contain all children
   // These are supposed to do this, but they cause some weirdness
-  // if (view.subviews.count > 0) {
-  //   auto subView = view.subviews[0];
-  //   constraint = [NSLayoutConstraint constraintWithItem:subView attribute:minProp relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:view attribute:minProp multiplier:1.0 constant:0];
-  //   constraint.identifier = @"Flex always enclose children";
-  //   constraint.priority = 1000;
-  //   [view addConstraint:constraint];
-  //   [constraintsArray addObject:constraint];
+  if (view.subviews.count > 0) {
+    auto subView = view.subviews[0];
+    constraint = [NSLayoutConstraint constraintWithItem:subView attribute:minProp relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:view attribute:minProp multiplier:1.0 constant:0];
+    constraint.identifier = @"Flex always enclose children";
+    constraint.priority = 1000;
+    [view addConstraint:constraint];
+    [constraintsArray addObject:constraint];
 
-  //   subView = view.subviews[view.subviews.count - 1];
-  //   constraint = [NSLayoutConstraint constraintWithItem:subView attribute:maxProp relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:maxProp multiplier:1.0 constant:0];
-  //   constraint.identifier = @"Flex always enclose children";
-  //   constraint.priority = 1000;
-  //   [view addConstraint:constraint];
-  //   [constraintsArray addObject:constraint];
-  // }
+    subView = view.subviews[view.subviews.count - 1];
+    constraint = [NSLayoutConstraint constraintWithItem:subView attribute:maxProp relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:maxProp multiplier:1.0 constant:0];
+    constraint.identifier = @"Flex always enclose children";
+    constraint.priority = 1000;
+    [view addConstraint:constraint];
+    [constraintsArray addObject:constraint];
+  }
 
   if ((justifyContent == FlexJustifyContent::FlexStart || totalFlex > 0.0) && view.subviews.count > 0) {
     auto subView = view.subviews[0];

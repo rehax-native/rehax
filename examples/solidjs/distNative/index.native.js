@@ -1,5 +1,11 @@
 'use strict';
 
+var crypto = require('crypto');
+
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var crypto__default = /*#__PURE__*/_interopDefaultLegacy(crypto);
+
 const equalFn = (a, b) => a === b;
 
 const $PROXY = Symbol("solid-proxy");
@@ -379,7 +385,7 @@ function handleError(err) {
   throw err;
 }
 
-function createComponent$2(Comp, props) {
+function createComponent$1(Comp, props) {
 
   return untrack(() => Comp(props || {}));
 }
@@ -425,7 +431,7 @@ function resolveSource(s) {
   return (s = typeof s === "function" ? s() : s) == null ? {} : s;
 }
 
-function mergeProps$3(...sources) {
+function mergeProps$2(...sources) {
   return new Proxy({
     get(property) {
       for (let i = sources.length - 1; i >= 0; i--) {
@@ -453,7 +459,7 @@ function mergeProps$3(...sources) {
   }, propTraps);
 }
 
-function memo$2(fn, equals) {
+function memo$1(fn, equals) {
   return createMemo(fn, undefined, !equals ? {
     equals
   } : undefined);
@@ -728,14 +734,14 @@ function createRenderer$1({
       return value;
     },
 
-    mergeProps: mergeProps$2,
+    mergeProps: mergeProps$1,
     effect: createRenderEffect,
-    memo: memo$2,
-    createComponent: createComponent$2
+    memo: memo$1,
+    createComponent: createComponent$1
   };
 }
 
-function mergeProps$2(...sources) {
+function mergeProps$1(...sources) {
   const target = {};
 
   for (let i = 0; i < sources.length; i++) {
@@ -750,189 +756,8 @@ function mergeProps$2(...sources) {
 
 function createRenderer(options) {
   const renderer = createRenderer$1(options);
-  renderer.mergeProps = mergeProps$3;
+  renderer.mergeProps = mergeProps$2;
   return renderer;
-}
-
-function capitalize$1(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-function gestureEnsure$1(node) {
-  if (!node._rhx_gestureHandler) {
-    const gesture = new rehax.Gesture();
-
-    function action() {
-      var _a;
-
-      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.action();
-    }
-
-    function onMouseDown(x, y) {
-      var _a;
-
-      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.onMouseDown({
-        x,
-        y
-      });
-    }
-
-    function onMouseUp(x, y) {
-      var _a;
-
-      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.onMouseUp({
-        x,
-        y
-      });
-    }
-
-    function onMouseMove(x, y) {
-      var _a;
-
-      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.onMouseMove({
-        x,
-        y
-      });
-    }
-
-    gesture.setup(action, onMouseDown, onMouseUp, onMouseMove);
-    node.addGesture(gesture);
-    node._rhx_gestureHandler = {
-      gesture,
-      action: () => {},
-      onMouseDown: () => {},
-      onMouseUp: () => {},
-      onMouseMove: () => {}
-    };
-  }
-}
-
-const ViewMap$1 = {
-  rehaxView: rehax.View,
-  rehaxText: rehax.Text,
-  rehaxButton: rehax.Button,
-  rehaxInput: rehax.TextInput,
-  rehaxStackLayout: rehax.StackLayout,
-  rehaxFlexLayout: rehax.FlexLayout,
-  rehaxVectorContainer: rehax.VectorContainer,
-  rehaxVectorPath: rehax.VectorPath
-};
-const PropHandlers$1 = {
-  onMouseDown: (node, value) => {
-    gestureEnsure$1(node);
-
-    if (node._rhx_gestureHandler) {
-      node._rhx_gestureHandler.onMouseDown = value;
-    }
-  },
-  onMouseUp: (node, value) => {
-    gestureEnsure$1(node);
-
-    if (node._rhx_gestureHandler) {
-      node._rhx_gestureHandler.onMouseUp = value;
-    }
-  },
-  onMouseMove: (node, value) => {
-    gestureEnsure$1(node);
-
-    if (node._rhx_gestureHandler) {
-      node._rhx_gestureHandler.onMouseMove = value;
-    }
-  }
-};
-const {
-  render: render$1,
-  effect: effect$1,
-  memo: memo$1,
-  createComponent: createComponent$1,
-  createElement: createElement$1,
-  createTextNode: createTextNode$1,
-  insertNode: insertNode$1,
-  insert: insert$1,
-  spread: spread$1,
-  setProp: setProp$1,
-  mergeProps: mergeProps$1
-} = createRenderer({
-  createElement(str) {
-    const Component = ViewMap$1[str];
-
-    if (str === 'rehaxText') {
-      console.log(Component);
-    }
-
-    if (Component) {
-      return new Component();
-    }
-
-    return null;
-  },
-
-  createTextNode(value) {
-    var textView = new rehax.Text();
-    textView.setText(String(value));
-    return textView;
-  },
-
-  replaceText(textView, value) {
-    textView.setText(value);
-  },
-
-  setProperty(node, name, value) {
-    const handler = PropHandlers$1[name];
-
-    if (handler) {
-      handler(node, value);
-      return;
-    }
-
-    if (node.__className === "VectorPath" && name === "operations") {
-      node.beginPath();
-
-      for (const op of value) {
-        op(node);
-      }
-
-      node.endPath();
-      return;
-    }
-
-    const setterName = `set${capitalize$1(name)}`;
-
-    if (setterName in node) {
-      node[setterName](value);
-    } else {
-      console.error(`Unknown property on ${node.__className}: ${name}`);
-    }
-  },
-
-  insertNode(parent, node, anchor) {
-    parent.addView(node, anchor);
-  },
-
-  isTextNode(node) {
-    return node.__className === "Text";
-  },
-
-  removeNode(parent, node) {
-    parent.removeView(node);
-  },
-
-  getParentNode(node) {
-    return node.getParent();
-  },
-
-  getFirstChild(node) {
-    return node.getFirstChild();
-  },
-
-  getNextSibling(node) {
-    return node.getNextSibling();
-  }
-
-}); // Forward Solid control flow
-
-function getRootView() {
-  return rehax.rootView;
 }
 
 function capitalize(str) {
@@ -996,6 +821,7 @@ const ViewMap = {
   rehaxStackLayout: rehax.StackLayout,
   rehaxFlexLayout: rehax.FlexLayout,
   rehaxVectorContainer: rehax.VectorContainer,
+  rehaxVectorRect: rehax.VectorRect,
   rehaxVectorPath: rehax.VectorPath
 };
 const PropHandlers = {
@@ -1076,13 +902,7 @@ const {
     const setterName = `set${capitalize(name)}`;
 
     if (setterName in node) {
-      if (typeof value === "string") {
-        // There seems to be a bug where when we don't use the string before sending it to JavascriptCore, it will crash
-        value.trim();
-        node[setterName](String(value));
-      } else {
-        node[setterName](value);
-      }
+      node[setterName](value);
     } else {
       console.error(`Unknown property on ${node.__className}: ${name}`);
     }
@@ -1114,6 +934,52 @@ const {
 
 }); // Forward Solid control flow
 
+function getRootView() {
+  return rehax.rootView;
+}
+
+const Color = {
+  /**
+   * RGB are in range 0 - 255, alpha is 0.0 - 1.0
+   */
+  RGBA(red, green, blue, alpha) {
+    return {
+      red,
+      green,
+      blue,
+      alpha
+    };
+  }
+
+};
+const Length = {
+  Fill() {
+    return {
+      type: "fill"
+    };
+  },
+
+  Natural() {
+    return {
+      type: "natural"
+    };
+  },
+
+  Fixed(value) {
+    return {
+      value,
+      type: "fixed"
+    };
+  },
+
+  Percent(value) {
+    return {
+      value,
+      type: "percent"
+    };
+  }
+
+};
 /** A base view */
 
 function View(props) {
@@ -1136,20 +1002,257 @@ function Button(props) {
     return _el$3;
   })();
 }
+/** A text input to capture all kind of user input */
 
-function App() {
+function TextInput(props) {
+  return (() => {
+    const _el$4 = createElement("rehaxInput");
+
+    spread(_el$4, props, false);
+
+    return _el$4;
+  })();
+}
+function FlexLayout(props) {
+  return (() => {
+    const _el$5 = createElement("rehaxFlexLayout");
+
+    spread(_el$5, props, false);
+
+    return _el$5;
+  })();
+}
+function StackLayout(props) {
+  return (() => {
+    const _el$6 = createElement("rehaxStackLayout");
+
+    spread(_el$6, props, false);
+
+    return _el$6;
+  })();
+}
+function VectorContainer(props) {
+  return (() => {
+    const _el$7 = createElement("rehaxVectorContainer");
+
+    spread(_el$7, props, false);
+
+    return _el$7;
+  })();
+}
+function VectorRect(props) {
+  return (() => {
+    const _el$8 = createElement("rehaxVectorRect");
+
+    spread(_el$8, props, false);
+
+    return _el$8;
+  })();
+}
+
+undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
+
+function Example1() {
   const [count, setCount] = createSignal(10);
-  return createComponent$1(View, {
+  const [display, setDisplay] = createSignal("flex");
+  const [justifyContent, setJustifyContent] = createSignal("flex-start");
+  const [alignItems, setAlignItems] = createSignal("flex-start");
+  const [cb, setCb] = createSignal(() => console.log(2));
+  return createComponent(View, {
+    get height() {
+      return Length.Fill();
+    },
+
+    get width() {
+      return Length.Fill();
+    },
+
     get children() {
-      return [createComponent$1(Button, {
-        title: "Click me",
+      return ["Count: ", memo(() => count()), createComponent(Button, {
+        title: "Test",
+        onPress: async () => {
+          // const res = await fetch('https://jsonplaceholder.typicode.com/photos')
+          // console.log('res')
+          // const text = await res.json()
+          // console.log(text)
+          // const timer = setInterval(() => {
+          //   console.log('timeout')
+          // clearTimeout(timer)
+          // }, 2000)
+          // console.log(rehax.app.getApplicationSupportDirectory())
+          // console.log(rehax.app.getCurrentUserHomeDirectory())
+          // console.log(rehax.app.getCurrentUserDesktopDirectory())
+          // console.log(rehax.app.getApplicationSupportDirectoryForApp())
+          // console.log(rehax.os.name())
+          // localStorage.setItem('test', 'my string');
+          // console.log(localStorage.getItem("test"));
+          const rnd = crypto__default["default"].randomBytes(10);
+          console.log(rnd);
+          console.log(rnd.readUInt32BE(0));
+          console.log(rnd.readUInt32BE(1));
+          const n = rnd.readUInt32BE(0);
+          setCb(() => () => console.log(n)); // }
+          // const result = rehax.fs.readdirSync("path")
+          // console.log(JSON.stringify(result))
+        }
+      }), createComponent(Button, {
+        title: "loop",
+
+        get onPress() {
+          return cb();
+        }
+
+      }), createComponent(VectorContainer, {
+        get width() {
+          return Length.Fixed(20);
+        },
+
+        get height() {
+          return Length.Fixed(20);
+        },
+
+        get children() {
+          return createComponent(VectorRect, {
+            size: {
+              width: 20,
+              height: 15
+            },
+
+            get fillColor() {
+              return Color.RGBA(255, 0, 0, 1);
+            }
+
+          });
+        }
+
+      }), createComponent(Button, {
+        get title() {
+          return `Switch flex/stack ${display()}`;
+        },
+
         onPress: () => {
           setCount(count() + 1);
+          setDisplay(display() === "flex" ? "none" : "flex");
         }
-      }), "Count: ", memo$1(() => count())];
+      }), createComponent(Button, {
+        get title() {
+          return `Switch justify content ${justifyContent()}`;
+        },
+
+        onPress: () => {
+          setCount(count() + 1);
+          const list = ["flex-start", "flex-end", "center"];
+          const nextIndex = (list.indexOf(justifyContent()) + 1) % list.length;
+          setJustifyContent(list[nextIndex]);
+        }
+      }), createComponent(Button, {
+        get title() {
+          return `Switch align items ${alignItems()}`;
+        },
+
+        onPress: () => {
+          setCount(count() + 1);
+          const list = ["flex-start", "flex-end", "center", "stretch"];
+          const nextIndex = (list.indexOf(alignItems()) + 1) % list.length;
+          setAlignItems(list[nextIndex]);
+        }
+      }), createComponent(TextInput, {}), createComponent(View, {
+        get width() {
+          return Length.Fixed(100);
+        },
+
+        get height() {
+          return Length.Fixed(100);
+        },
+
+        get backgroundColor() {
+          return Color.RGBA(0, 255, 0, 0.3);
+        }
+
+      }), createComponent(View, {
+        get height() {
+          return Length.Fixed(250);
+        },
+
+        get layout() {
+          return memo(() => display() === "flex", true)() ? createComponent(FlexLayout, {
+            get options() {
+              return {
+                direction: "column",
+                justifyContent: justifyContent(),
+                alignItems: alignItems() // alignItems: 'center'
+
+              };
+            }
+
+          }) : createComponent(StackLayout, {});
+        },
+
+        get children() {
+          return [createComponent(View, {
+            children: "Flex item 1"
+          }), createComponent(View, {
+            children: "Flex item 2 a little longer"
+          }), createComponent(View, {
+            children: "Flex item 3"
+          })];
+        }
+
+      }), createComponent(View, {
+        get height() {
+          return Length.Fixed(250);
+        },
+
+        get children() {
+          return [createComponent(View, {
+            children: "Stack item 1"
+          }), createComponent(View, {
+            children: "Stack item 2 a little longer"
+          }), createComponent(View, {
+            children: "Stack item 3"
+          })];
+        }
+
+      })];
     }
 
   });
 }
 
-render$1(() => createComponent$1(App, {}), getRootView());
+function App() {
+  return createComponent(Example1, {}); // return <Example3 />;
+  // return <Example4 />;
+  // return <Tester />;
+}
+
+render(() => createComponent(App, {}), getRootView());
