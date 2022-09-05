@@ -40,6 +40,7 @@ const ViewMap = {
     rehaxStackLayout: rehax.StackLayout,
     rehaxFlexLayout: rehax.FlexLayout,
     rehaxVectorContainer: rehax.VectorContainer,
+    rehaxVectorRect: rehax.VectorRect,
     rehaxVectorPath: rehax.VectorPath,
 };
 const PropHandlers = {

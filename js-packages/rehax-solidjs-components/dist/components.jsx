@@ -60,6 +60,9 @@ export function StackLayout(props) {
 export function VectorContainer(props) {
     return <rehaxVectorContainer {...props}/>;
 }
+export function VectorRect(props) {
+    return <rehaxVectorRect {...props}/>;
+}
 export function VectorPath(props) {
     return <rehaxVectorPath {...props}/>;
 }
@@ -84,6 +87,9 @@ export function QuadraticBezier(x1, y1, x, y) {
 }
 export function CubicBezier(x1, y1, x2, y2, x, y) {
     return (path) => path.pathCubicBezier(x1, y1, x2, y2, x, y);
+}
+export function Close() {
+    return (path) => path.pathClose();
 }
 export function Arc(rx, ry, xAxisRotation, largeArc, sweepFlag, x, y) {
     return (path) => path.pathArc(rx, ry, xAxisRotation, largeArc, sweepFlag, x, y);

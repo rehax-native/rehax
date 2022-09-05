@@ -31,4 +31,9 @@ using Length = std::variant<
   LengthTypes::Percentage
 >;
 
+struct Size {
+  float width;
+  float height;
+};
+
 }

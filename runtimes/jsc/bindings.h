@@ -53,6 +53,7 @@ public:
     typename TextInput,
     typename VectorContainer,
     typename VectorElement,
+    typename VectorRect,
     typename VectorPath,
     typename ILayout,
     typename Gesture
@@ -92,6 +93,7 @@ public:
   template <typename View> void bindTextClassMethods(runtime::Value prototype);
   template <typename View> void bindTextInputClassMethods(runtime::Value prototype);
   template <typename View> void bindVectorElementClassMethods(runtime::Value prototype);
+  template <typename View> void bindVectorRectClassMethods(runtime::Value prototype);
   template <typename View> void bindVectorPathClassMethods(runtime::Value prototype);
   template <typename Layout, typename View> void bindStackLayoutClassMethods(runtime::Value prototype);
   template <typename Layout, typename View> void bindFlexLayoutClassMethods(runtime::Value prototype);

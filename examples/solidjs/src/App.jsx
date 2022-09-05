@@ -6,6 +6,7 @@ import {
   Text,
   VectorContainer,
   VectorPath,
+  VectorRect,
   TextInput,
   Button,
   MoveTo,
@@ -30,39 +31,48 @@ function Example1() {
       // backgroundColor={Color.RGBA(0, 255, 0, 0.3)}
     >
       Count: {count()}
-      <Button title="Test" onPress={async () => {
-        // const res = await fetch('https://jsonplaceholder.typicode.com/photos')
-        // console.log('res')
-        // const text = await res.json()
-        // console.log(text)
+      <Button
+        title="Test"
+        onPress={async () => {
+          // const res = await fetch('https://jsonplaceholder.typicode.com/photos')
+          // console.log('res')
+          // const text = await res.json()
+          // console.log(text)
 
-        // const timer = setInterval(() => {
-        //   console.log('timeout')
-        // clearTimeout(timer)
-        // }, 2000)
+          // const timer = setInterval(() => {
+          //   console.log('timeout')
+          // clearTimeout(timer)
+          // }, 2000)
 
-        // console.log(rehax.app.getApplicationSupportDirectory())
-        // console.log(rehax.app.getCurrentUserHomeDirectory())
-        // console.log(rehax.app.getCurrentUserDesktopDirectory())
-        // console.log(rehax.app.getApplicationSupportDirectoryForApp())
-        // console.log(rehax.os.name())
+          // console.log(rehax.app.getApplicationSupportDirectory())
+          // console.log(rehax.app.getCurrentUserHomeDirectory())
+          // console.log(rehax.app.getCurrentUserDesktopDirectory())
+          // console.log(rehax.app.getApplicationSupportDirectoryForApp())
+          // console.log(rehax.os.name())
 
-        // localStorage.setItem('test', 'my string');
-        // console.log(localStorage.getItem("test"));
+          // localStorage.setItem('test', 'my string');
+          // console.log(localStorage.getItem("test"));
 
-        const rnd = crypto.randomBytes(10)
-        console.log(rnd)
-        console.log(rnd.readUInt32BE(0))
-        console.log(rnd.readUInt32BE(1))
+          const rnd = crypto.randomBytes(10);
+          console.log(rnd);
+          console.log(rnd.readUInt32BE(0));
+          console.log(rnd.readUInt32BE(1));
 
-        const n = rnd.readUInt32BE(0)
-        setCb(() => () => console.log(n))
+          const n = rnd.readUInt32BE(0);
+          setCb(() => () => console.log(n));
 
-        // }
-        // const result = rehax.fs.readdirSync("path")
-        // console.log(JSON.stringify(result))
-      }} />
+          // }
+          // const result = rehax.fs.readdirSync("path")
+          // console.log(JSON.stringify(result))
+        }}
+      />
       <Button title="loop" onPress={cb()} />
+      <VectorContainer width={Length.Fixed(20)} height={Length.Fixed(20)}>
+        <VectorRect
+          size={{ width: 20, height: 15 }}
+          fillColor={Color.RGBA(255, 0, 0, 1)}
+        />
+      </VectorContainer>
       <Button
         title={`Switch flex/stack ${display()}`}
         onPress={() => {

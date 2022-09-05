@@ -6,6 +6,7 @@
 #include "ui/appkit/components/text/Text.h"
 #include "ui/appkit/components/textInput/TextInput.h"
 #include "ui/appkit/components/vector/VectorContainer.h"
+#include "ui/appkit/components/vector/VectorRect.h"
 #include "ui/appkit/components/vector/VectorPath.h"
 #include "ui/appkit/components/layouts/StackLayout.h"
 #include "ui/appkit/components/layouts/FlexLayout.h"
@@ -18,6 +19,7 @@
 #include "ui/fluxe/components/text/Text.h"
 #include "ui/fluxe/components/textInput/TextInput.h"
 #include "ui/fluxe/components/vector/VectorContainer.h"
+#include "ui/fluxe/components/vector/VectorRect.h"
 #include "ui/fluxe/components/vector/VectorPath.h"
 #include "ui/fluxe/components/layouts/StackLayout.h"
 #include "ui/fluxe/components/layouts/FlexLayout.h"
@@ -36,6 +38,7 @@ namespace rehax::ui {
     using TextInput = impl::TextInput;
     using VectorContainer = impl::VectorContainer;
     using VectorElement = impl::VectorElement;
+    using VectorRect = impl::VectorRect;
     using VectorPath = impl::VectorPath;
     using ILayout = impl::ILayout;
     using StackLayout = impl::StackLayout;
@@ -52,6 +55,7 @@ namespace rehax::ui {
     using TextInput = impl::TextInput;
     using VectorContainer = impl::VectorContainer;
     using VectorElement = impl::VectorElement;
+    using VectorRect = impl::VectorRect;
     using VectorPath = impl::VectorPath;
     using ILayout = impl::ILayout;
     using StackLayout = impl::StackLayout;

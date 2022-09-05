@@ -10,8 +10,8 @@ importers:
       '@babel/cli': ^7.18.6
       '@babel/core': ^7.18.6
       '@rehax/fetch': ^0.0.1
-      '@rehax/solidjs-components': ^0.0.6
-      '@rehax/solidjs-renderer': ^0.0.6
+      '@rehax/solidjs-components': ^0.0.8
+      '@rehax/solidjs-renderer': ^0.0.8
       '@rollup/plugin-babel': ^5.3.1
       '@rollup/plugin-commonjs': ^22.0.1
       '@rollup/plugin-node-resolve': ^13.3.0
@@ -46,12 +46,12 @@ importers:
 
   js-packages/rehax-solidjs-components:
     specifiers:
-      '@rehax/solidjs-renderer': ^0.0.1
+      '@rehax/solidjs-renderer': ^0.0.8
       solid-js: ^1.4.8
       tslib: ^2.4.0
       typescript: ^4.7.4
     dependencies:
-      '@rehax/solidjs-renderer': 0.0.1
+      '@rehax/solidjs-renderer': link:../rehax-solidjs-renderer
       solid-js: 1.4.8
     devDependencies:
       tslib: 2.4.0
@@ -488,14 +488,6 @@ packages:
 
   /@rehax/fetch/0.0.1:
     resolution: {integrity: sha512-zgkK8VNVeYyE1OrhXU1+mBRZYC+fEZTgzxFnfHgchX6Hmgv1KJesrGlJBuGXVUSVwW5RMTcb9x5Fwl05IUn5Lg==}
-    dev: false
-
-  /@rehax/solidjs-renderer/0.0.1:
-    resolution: {integrity: sha512-pEGojVDeKS8cXj8aWDd1XZwxmzEqQ6anrhKM7KSJ3qJUVmBcZFYy5d8b0ejruu1A1aZRpJ0dtvmz5ZTKAYS+/g==}
-    dependencies:
-      parse-svg-path: 0.1.2
-      pure-color: 1.3.0
-      solid-js: 1.4.8
     dev: false
 
   /@rollup/plugin-babel/5.3.1_palyoikx6kq4yrfoc5jsznmrdi:
