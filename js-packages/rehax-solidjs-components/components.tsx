@@ -210,8 +210,32 @@ export function VectorPath(props: VectorPathProps): RehaxVectorPath {
 
 // Vector Path operations
 
+export function HorizontalTo(x: number) {
+  return (path: RehaxVectorPath) => path.pathHorizontalTo(x);
+}
+
+export function VerticalTo(x: number) {
+  return (path: RehaxVectorPath) => path.pathVerticalTo(x);
+}
+
 export function MoveTo(x: number, y: number) {
   return (path: RehaxVectorPath) => path.pathMoveTo(x, y);
+}
+
+export function MoveBy(x: number, y: number) {
+  return (path: RehaxVectorPath) => path.pathMoveBy(x, y);
+}
+
+export function LineTo(x: number, y: number) {
+  return (path: RehaxVectorPath) => path.pathLineTo(x, y);
+}
+
+export function QuadraticBezier(x1: number, y1: number, x: number, y: number) {
+  return (path: RehaxVectorPath) => path.pathQuadraticBezier(x1, y1, x, y);
+}
+
+export function CubicBezier(x1: number, y1: number, x2: number, y2: number, x: number, y: number) {
+  return (path: RehaxVectorPath) => path.pathCubicBezier(x1, y1, x2, y2, x, y);
 }
 
 export function Arc(
