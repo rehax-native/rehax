@@ -126,9 +126,9 @@ struct Converter<rehaxUtils::HttpRequest> {
     return {
       .url = url,
       .method = method,
-      .callback = callback,
       .requestHeaders = requestHeaders,
       .body = body,
+      .callback = callback,
     };
   }
 };

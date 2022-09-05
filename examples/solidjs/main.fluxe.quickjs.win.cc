@@ -1,11 +1,18 @@
 #include "../../runtimes/quickjs/runtime.h"
 #include <fluxe/views/EngineUtility.h>
 #include <iostream>
-#include <AppKit/AppKit.h>
+#include <filesystem>
+#include <fstream>
 
 using namespace rehax::ui::fluxe;
 
+// #if _WIN32
+// #include <windows.h>
+
+// int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show) {
+// #else
 int main() {
+// #endif
   auto container = View::Create();
   auto view = static_cast<fluxe::View *>(container->getNativeView());
 
@@ -23,10 +30,11 @@ int main() {
   vm->bindFluxeRehax();
   vm->setRootView(container);
 
-  NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
-  NSString * scriptPath = [NSString pathWithComponents:@[resourcePath, @"index.native.js"]];
-  NSString * script = [NSString stringWithContentsOfFile:scriptPath encoding:NSUTF8StringEncoding error:NULL];
-  vm->evaluate([script UTF8String]);
+  std::ifstream t("index.native.js");
+
+  std::stringstream buffer;
+  buffer << t.rdbuf();
+  vm->evaluate(buffer.str());
 
   fluxe::EngineUtility::startWithView(view->getThisPointer());
 

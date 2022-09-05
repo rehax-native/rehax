@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./bindings.h"
+#include <thread>
 
 namespace rehax {
 namespace quickjs {
