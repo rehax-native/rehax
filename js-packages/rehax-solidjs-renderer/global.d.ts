@@ -22,6 +22,8 @@ export class RehaxView {
   getFirstChild();
   getNextSibling();
 
+  setHorizontalPosition(horizontalPosition: LengthType): void;
+  setVerticalPosition(verticalPosition: LengthType): void;
   setWidth(width: LengthType): void;
   setHeight(height: LengthType): void;
   setBackgroundColor(color: ColorType): void;

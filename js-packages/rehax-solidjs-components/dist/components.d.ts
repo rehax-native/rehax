@@ -42,6 +42,8 @@ export declare const Length: {
     Percent(value: number): PercentLengthType;
 };
 export interface ViewBaseProps {
+    horizontalPosition?: LengthType;
+    verticalPosition?: LengthType;
     width?: LengthType;
     height?: LengthType;
     backgroundColor?: ColorType;

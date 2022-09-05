@@ -91,6 +91,8 @@ export const Length = {
 };
 
 export interface ViewBaseProps {
+  horizontalPosition?: LengthType;
+  verticalPosition?: LengthType;
   width?: LengthType;
   height?: LengthType;
   backgroundColor?: ColorType;

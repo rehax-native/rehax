@@ -1,6 +1,6 @@
 {
   "name": "@rehax/solidjs-components",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "main": "dist/components.jsx",
   "files": [

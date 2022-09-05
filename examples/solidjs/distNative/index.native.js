@@ -1,10 +1,6 @@
 'use strict';
 
-var crypto = require('crypto');
-
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-var crypto__default = /*#__PURE__*/_interopDefaultLegacy(crypto);
+require('crypto');
 
 const equalFn = (a, b) => a === b;
 
@@ -50,27 +46,6 @@ function createRoot(fn, detachedOwner) {
     Listener = listener;
     Owner = owner;
   }
-}
-
-function createSignal(value, options) {
-  options = options ? Object.assign({}, signalOptions, options) : signalOptions;
-  const s = {
-    value,
-    observers: null,
-    observerSlots: null,
-    pending: NOTPENDING,
-    comparator: options.equals || undefined
-  };
-
-  const setter = value => {
-    if (typeof value === "function") {
-      value = value(s.pending !== NOTPENDING ? s.pending : s.value);
-    }
-
-    return writeSignal(s, value);
-  };
-
-  return [readSignal.bind(s), setter];
 }
 
 function createRenderEffect(fn, value, options) {
@@ -938,20 +913,6 @@ function getRootView() {
   return rehax.rootView;
 }
 
-const Color = {
-  /**
-   * RGB are in range 0 - 255, alpha is 0.0 - 1.0
-   */
-  RGBA(red, green, blue, alpha) {
-    return {
-      red,
-      green,
-      blue,
-      alpha
-    };
-  }
-
-};
 const Length = {
   Fill() {
     return {
@@ -991,26 +952,15 @@ function View(props) {
     return _el$;
   })();
 }
-/** A button */
+/** A text view that can be styled and nested */
 
-function Button(props) {
+function Text(props) {
   return (() => {
-    const _el$3 = createElement("rehaxButton");
+    const _el$2 = createElement("rehaxText");
 
-    spread(_el$3, props, false);
+    spread(_el$2, props, false);
 
-    return _el$3;
-  })();
-}
-/** A text input to capture all kind of user input */
-
-function TextInput(props) {
-  return (() => {
-    const _el$4 = createElement("rehaxInput");
-
-    spread(_el$4, props, false);
-
-    return _el$4;
+    return _el$2;
   })();
 }
 function FlexLayout(props) {
@@ -1029,24 +979,6 @@ function StackLayout(props) {
     spread(_el$6, props, false);
 
     return _el$6;
-  })();
-}
-function VectorContainer(props) {
-  return (() => {
-    const _el$7 = createElement("rehaxVectorContainer");
-
-    spread(_el$7, props, false);
-
-    return _el$7;
-  })();
-}
-function VectorRect(props) {
-  return (() => {
-    const _el$8 = createElement("rehaxVectorRect");
-
-    spread(_el$8, props, false);
-
-    return _el$8;
   })();
 }
 
@@ -1082,167 +1014,45 @@ undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator)
   });
 };
 
-function Example1() {
-  const [count, setCount] = createSignal(10);
-  const [display, setDisplay] = createSignal("flex");
-  const [justifyContent, setJustifyContent] = createSignal("flex-start");
-  const [alignItems, setAlignItems] = createSignal("flex-start");
-  const [cb, setCb] = createSignal(() => console.log(2));
+function Example4Comp() {
   return createComponent(View, {
-    get height() {
-      return Length.Fill();
+    get width() {
+      return Length.Fixed(100);
     },
 
-    get width() {
-      return Length.Fill();
+    get layout() {
+      return createComponent(FlexLayout, {
+        options: {
+          alignItems: "center"
+        }
+      });
+    },
+
+    children: "My name 01"
+  });
+}
+
+function Example4() {
+  return createComponent(View, {
+    get layout() {
+      return createComponent(StackLayout, {
+        options: {
+          spacing: 20
+        }
+      });
     },
 
     get children() {
-      return ["Count: ", memo(() => count()), createComponent(Button, {
-        title: "Test",
-        onPress: async () => {
-          // const res = await fetch('https://jsonplaceholder.typicode.com/photos')
-          // console.log('res')
-          // const text = await res.json()
-          // console.log(text)
-          // const timer = setInterval(() => {
-          //   console.log('timeout')
-          // clearTimeout(timer)
-          // }, 2000)
-          // console.log(rehax.app.getApplicationSupportDirectory())
-          // console.log(rehax.app.getCurrentUserHomeDirectory())
-          // console.log(rehax.app.getCurrentUserDesktopDirectory())
-          // console.log(rehax.app.getApplicationSupportDirectoryForApp())
-          // console.log(rehax.os.name())
-          // localStorage.setItem('test', 'my string');
-          // console.log(localStorage.getItem("test"));
-          const rnd = crypto__default["default"].randomBytes(10);
-          console.log(rnd);
-          console.log(rnd.readUInt32BE(0));
-          console.log(rnd.readUInt32BE(1));
-          const n = rnd.readUInt32BE(0);
-          setCb(() => () => console.log(n)); // }
-          // const result = rehax.fs.readdirSync("path")
-          // console.log(JSON.stringify(result))
-        }
-      }), createComponent(Button, {
-        title: "loop",
-
-        get onPress() {
-          return cb();
-        }
-
-      }), createComponent(VectorContainer, {
-        get width() {
-          return Length.Fixed(20);
-        },
-
-        get height() {
-          return Length.Fixed(20);
-        },
-
-        get children() {
-          return createComponent(VectorRect, {
-            size: {
-              width: 20,
-              height: 15
-            },
-
-            get fillColor() {
-              return Color.RGBA(255, 0, 0, 1);
-            }
-
-          });
-        }
-
-      }), createComponent(Button, {
-        get title() {
-          return `Switch flex/stack ${display()}`;
-        },
-
-        onPress: () => {
-          setCount(count() + 1);
-          setDisplay(display() === "flex" ? "none" : "flex");
-        }
-      }), createComponent(Button, {
-        get title() {
-          return `Switch justify content ${justifyContent()}`;
-        },
-
-        onPress: () => {
-          setCount(count() + 1);
-          const list = ["flex-start", "flex-end", "center"];
-          const nextIndex = (list.indexOf(justifyContent()) + 1) % list.length;
-          setJustifyContent(list[nextIndex]);
-        }
-      }), createComponent(Button, {
-        get title() {
-          return `Switch align items ${alignItems()}`;
-        },
-
-        onPress: () => {
-          setCount(count() + 1);
-          const list = ["flex-start", "flex-end", "center", "stretch"];
-          const nextIndex = (list.indexOf(alignItems()) + 1) % list.length;
-          setAlignItems(list[nextIndex]);
-        }
-      }), createComponent(TextInput, {}), createComponent(View, {
-        get width() {
+      return [createComponent(Example4Comp, {}), createComponent(Example4Comp, {}), createComponent(Example4Comp, {}), createComponent(Text, {
+        get horizontalPosition() {
           return Length.Fixed(100);
         },
 
-        get height() {
-          return Length.Fixed(100);
+        get verticalPosition() {
+          return Length.Fixed(5);
         },
 
-        get backgroundColor() {
-          return Color.RGBA(0, 255, 0, 0.3);
-        }
-
-      }), createComponent(View, {
-        get height() {
-          return Length.Fixed(250);
-        },
-
-        get layout() {
-          return memo(() => display() === "flex", true)() ? createComponent(FlexLayout, {
-            get options() {
-              return {
-                direction: "column",
-                justifyContent: justifyContent(),
-                alignItems: alignItems() // alignItems: 'center'
-
-              };
-            }
-
-          }) : createComponent(StackLayout, {});
-        },
-
-        get children() {
-          return [createComponent(View, {
-            children: "Flex item 1"
-          }), createComponent(View, {
-            children: "Flex item 2 a little longer"
-          }), createComponent(View, {
-            children: "Flex item 3"
-          })];
-        }
-
-      }), createComponent(View, {
-        get height() {
-          return Length.Fixed(250);
-        },
-
-        get children() {
-          return [createComponent(View, {
-            children: "Stack item 1"
-          }), createComponent(View, {
-            children: "Stack item 2 a little longer"
-          }), createComponent(View, {
-            children: "Stack item 3"
-          })];
-        }
-
+        children: "Hello"
       })];
     }
 
@@ -1250,9 +1060,9 @@ function Example1() {
 }
 
 function App() {
-  return createComponent(Example1, {}); // return <Example3 />;
-  // return <Example4 />;
-  // return <Tester />;
+  // return <Example1 />;
+  // return <Example3 />;
+  return createComponent(Example4, {}); // return <Tester />;
 }
 
 render(() => createComponent(App, {}), getRootView());

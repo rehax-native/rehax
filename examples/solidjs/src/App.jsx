@@ -221,17 +221,22 @@ function Example4Comp() {
 }
 
 function Example4() {
-  return <View>
-    <Example4Comp />
-    <Example4Comp />
-    <Example4Comp />
-  </View>
+  return (
+    <View layout={<StackLayout options={{ spacing: 20 }} />}>
+      <Example4Comp />
+      <Example4Comp />
+      <Example4Comp />
+      <Text horizontalPosition={Length.Fixed(100)} verticalPosition={Length.Fixed(5)}>
+        Hello
+      </Text>
+    </View>
+  );
 }
 
 function App() {
-  return <Example1 />;
+  // return <Example1 />;
   // return <Example3 />;
-  // return <Example4 />;
+  return <Example4 />;
   // return <Tester />;
 }
 
