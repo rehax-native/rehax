@@ -64,8 +64,26 @@ export function VectorPath(props) {
     return <rehaxVectorPath {...props}/>;
 }
 // Vector Path operations
+export function HorizontalTo(x) {
+    return (path) => path.pathHorizontalTo(x);
+}
+export function VerticalTo(x) {
+    return (path) => path.pathVerticalTo(x);
+}
 export function MoveTo(x, y) {
     return (path) => path.pathMoveTo(x, y);
+}
+export function MoveBy(x, y) {
+    return (path) => path.pathMoveBy(x, y);
+}
+export function LineTo(x, y) {
+    return (path) => path.pathLineTo(x, y);
+}
+export function QuadraticBezier(x1, y1, x, y) {
+    return (path) => path.pathQuadraticBezier(x1, y1, x, y);
+}
+export function CubicBezier(x1, y1, x2, y2, x, y) {
+    return (path) => path.pathCubicBezier(x1, y1, x2, y2, x, y);
 }
 export function Arc(rx, ry, xAxisRotation, largeArc, sweepFlag, x, y) {
     return (path) => path.pathArc(rx, ry, xAxisRotation, largeArc, sweepFlag, x, y);
