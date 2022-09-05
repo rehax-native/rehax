@@ -1,5 +1,11 @@
 'use strict';
 
+var crypto = require('crypto');
+
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var crypto__default = /*#__PURE__*/_interopDefaultLegacy(crypto);
+
 const equalFn = (a, b) => a === b;
 
 const $PROXY = Symbol("solid-proxy");
@@ -379,7 +385,7 @@ function handleError(err) {
   throw err;
 }
 
-function createComponent$1(Comp, props) {
+function createComponent$2(Comp, props) {
 
   return untrack(() => Comp(props || {}));
 }
@@ -425,7 +431,7 @@ function resolveSource(s) {
   return (s = typeof s === "function" ? s() : s) == null ? {} : s;
 }
 
-function mergeProps$2(...sources) {
+function mergeProps$3(...sources) {
   return new Proxy({
     get(property) {
       for (let i = sources.length - 1; i >= 0; i--) {
@@ -453,7 +459,7 @@ function mergeProps$2(...sources) {
   }, propTraps);
 }
 
-function memo$1(fn, equals) {
+function memo$2(fn, equals) {
   return createMemo(fn, undefined, !equals ? {
     equals
   } : undefined);
@@ -728,14 +734,14 @@ function createRenderer$1({
       return value;
     },
 
-    mergeProps: mergeProps$1,
+    mergeProps: mergeProps$2,
     effect: createRenderEffect,
-    memo: memo$1,
-    createComponent: createComponent$1
+    memo: memo$2,
+    createComponent: createComponent$2
   };
 }
 
-function mergeProps$1(...sources) {
+function mergeProps$2(...sources) {
   const target = {};
 
   for (let i = 0; i < sources.length; i++) {
@@ -750,245 +756,277 @@ function mergeProps$1(...sources) {
 
 function createRenderer(options) {
   const renderer = createRenderer$1(options);
-  renderer.mergeProps = mergeProps$2;
+  renderer.mergeProps = mergeProps$3;
   return renderer;
 }
 
-var parseSvgPath = parse$1;
-/**
- * expected argument lengths
- * @type {Object}
- */
+function capitalize$1(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
-var length = {
-  a: 7,
-  c: 6,
-  h: 1,
-  l: 2,
-  m: 2,
-  q: 4,
-  s: 4,
-  t: 2,
-  v: 1,
-  z: 0
-};
-/**
- * segment pattern
- * @type {RegExp}
- */
+function gestureEnsure$1(node) {
+  if (!node._rhx_gestureHandler) {
+    const gesture = new rehax.Gesture();
 
-var segment = /([astvzqmhlc])([^astvzqmhlc]*)/ig;
-/**
- * parse an svg path data string. Generates an Array
- * of commands where each command is an Array of the
- * form `[command, arg1, arg2, ...]`
- *
- * @param {String} path
- * @return {Array}
- */
+    function action() {
+      var _a;
 
-function parse$1(path) {
-  var data = [];
-  path.replace(segment, function (_, command, args) {
-    var type = command.toLowerCase();
-    args = parseValues(args); // overloaded moveTo
-
-    if (type == 'm' && args.length > 2) {
-      data.push([command].concat(args.splice(0, 2)));
-      type = 'l';
-      command = command == 'm' ? 'l' : 'L';
+      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.action();
     }
 
-    while (true) {
-      if (args.length == length[type]) {
-        args.unshift(command);
-        return data.push(args);
+    function onMouseDown(x, y) {
+      var _a;
+
+      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.onMouseDown({
+        x,
+        y
+      });
+    }
+
+    function onMouseUp(x, y) {
+      var _a;
+
+      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.onMouseUp({
+        x,
+        y
+      });
+    }
+
+    function onMouseMove(x, y) {
+      var _a;
+
+      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.onMouseMove({
+        x,
+        y
+      });
+    }
+
+    gesture.setup(action, onMouseDown, onMouseUp, onMouseMove);
+    node.addGesture(gesture);
+    node._rhx_gestureHandler = {
+      gesture,
+      action: () => {},
+      onMouseDown: () => {},
+      onMouseUp: () => {},
+      onMouseMove: () => {}
+    };
+  }
+}
+
+const ViewMap$1 = {
+  rehaxView: rehax.View,
+  rehaxText: rehax.Text,
+  rehaxButton: rehax.Button,
+  rehaxInput: rehax.TextInput,
+  rehaxStackLayout: rehax.StackLayout,
+  rehaxFlexLayout: rehax.FlexLayout,
+  rehaxVectorContainer: rehax.VectorContainer,
+  rehaxVectorPath: rehax.VectorPath
+};
+const PropHandlers$1 = {
+  onMouseDown: (node, value) => {
+    gestureEnsure$1(node);
+
+    if (node._rhx_gestureHandler) {
+      node._rhx_gestureHandler.onMouseDown = value;
+    }
+  },
+  onMouseUp: (node, value) => {
+    gestureEnsure$1(node);
+
+    if (node._rhx_gestureHandler) {
+      node._rhx_gestureHandler.onMouseUp = value;
+    }
+  },
+  onMouseMove: (node, value) => {
+    gestureEnsure$1(node);
+
+    if (node._rhx_gestureHandler) {
+      node._rhx_gestureHandler.onMouseMove = value;
+    }
+  }
+};
+const {
+  render: render$1,
+  effect: effect$1,
+  memo: memo$1,
+  createComponent: createComponent$1,
+  createElement: createElement$1,
+  createTextNode: createTextNode$1,
+  insertNode: insertNode$1,
+  insert: insert$1,
+  spread: spread$1,
+  setProp: setProp$1,
+  mergeProps: mergeProps$1
+} = createRenderer({
+  createElement(str) {
+    const Component = ViewMap$1[str];
+
+    if (str === 'rehaxText') {
+      console.log(Component);
+    }
+
+    if (Component) {
+      return new Component();
+    }
+
+    return null;
+  },
+
+  createTextNode(value) {
+    var textView = new rehax.Text();
+    textView.setText(String(value));
+    return textView;
+  },
+
+  replaceText(textView, value) {
+    textView.setText(value);
+  },
+
+  setProperty(node, name, value) {
+    const handler = PropHandlers$1[name];
+
+    if (handler) {
+      handler(node, value);
+      return;
+    }
+
+    if (node.__className === "VectorPath" && name === "operations") {
+      node.beginPath();
+
+      for (const op of value) {
+        op(node);
       }
 
-      if (args.length < length[type]) throw new Error('malformed path data');
-      data.push([command].concat(args.splice(0, length[type])));
+      node.endPath();
+      return;
     }
-  });
-  return data;
-}
 
-var number = /-?[0-9]*\.?[0-9]+(?:e[-+]?\d+)?/ig;
+    const setterName = `set${capitalize$1(name)}`;
 
-function parseValues(args) {
-  var numbers = args.match(number);
-  return numbers ? numbers.map(Number) : [];
-}
-
-var component = /-?\d+(\.\d+)?%?/g;
-
-function extractComponents$2(color) {
-  return color.match(component);
-}
-
-var extractComponents_1 = extractComponents$2;
-
-function clamp$2(val, min, max) {
-  return Math.min(Math.max(val, min), max);
-}
-
-var clamp_1 = clamp$2;
-
-var extractComponents$1 = extractComponents_1;
-var clamp$1 = clamp_1;
-
-function parseHslComponent(component, i) {
-  component = parseFloat(component);
-
-  switch (i) {
-    case 0:
-      return clamp$1(component, 0, 360);
-
-    case 1:
-    case 2:
-      return clamp$1(component, 0, 100);
-
-    case 3:
-      return clamp$1(component, 0, 1);
-  }
-}
-
-function hsl$1(color) {
-  return extractComponents$1(color).map(parseHslComponent);
-}
-
-var hsl_1 = hsl$1;
-
-function expand(hex) {
-  var result = "#";
-
-  for (var i = 1; i < hex.length; i++) {
-    var val = hex.charAt(i);
-    result += val + val;
-  }
-
-  return result;
-}
-
-function hex$1(hex) {
-  // #RGB or #RGBA
-  if (hex.length === 4 || hex.length === 5) {
-    hex = expand(hex);
-  }
-
-  var rgb = [parseInt(hex.substring(1, 3), 16), parseInt(hex.substring(3, 5), 16), parseInt(hex.substring(5, 7), 16)]; // #RRGGBBAA
-
-  if (hex.length === 9) {
-    var alpha = parseFloat((parseInt(hex.substring(7, 9), 16) / 255).toFixed(2));
-    rgb.push(alpha);
-  }
-
-  return rgb;
-}
-
-var hex_1 = hex$1;
-
-var extractComponents = extractComponents_1;
-var clamp = clamp_1;
-
-function parseRgbComponent(component, i) {
-  if (i < 3) {
-    if (component.indexOf('%') != -1) {
-      return Math.round(255 * clamp(parseInt(component, 10), 0, 100) / 100);
+    if (setterName in node) {
+      node[setterName](value);
     } else {
-      return clamp(parseInt(component, 10), 0, 255);
+      console.error(`Unknown property on ${node.__className}: ${name}`);
     }
-  } else {
-    return clamp(parseFloat(component), 0, 1);
-  }
-}
+  },
 
-function rgb$1(color) {
-  return extractComponents(color).map(parseRgbComponent);
-}
+  insertNode(parent, node, anchor) {
+    parent.addView(node, anchor);
+  },
 
-var rgb_1 = rgb$1;
+  isTextNode(node) {
+    return node.__className === "Text";
+  },
 
-function hsl2rgb$1(hsl) {
-  var h = hsl[0] / 360,
-      s = hsl[1] / 100,
-      l = hsl[2] / 100,
-      t1,
-      t2,
-      t3,
-      rgb,
-      val;
+  removeNode(parent, node) {
+    parent.removeView(node);
+  },
 
-  if (s == 0) {
-    val = l * 255;
-    return [val, val, val];
-  }
+  getParentNode(node) {
+    return node.getParent();
+  },
 
-  if (l < 0.5) t2 = l * (1 + s);else t2 = l + s - l * s;
-  t1 = 2 * l - t2;
-  rgb = [0, 0, 0];
+  getFirstChild(node) {
+    return node.getFirstChild();
+  },
 
-  for (var i = 0; i < 3; i++) {
-    t3 = h + 1 / 3 * -(i - 1);
-    t3 < 0 && t3++;
-    t3 > 1 && t3--;
-    if (6 * t3 < 1) val = t1 + (t2 - t1) * 6 * t3;else if (2 * t3 < 1) val = t2;else if (3 * t3 < 2) val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;else val = t1;
-    rgb[i] = val * 255;
+  getNextSibling(node) {
+    return node.getNextSibling();
   }
 
-  return rgb;
+}); // Forward Solid control flow
+
+function getRootView() {
+  return rehax.rootView;
 }
-
-var hsl2rgb_1 = hsl2rgb$1;
-
-var hsl = hsl_1;
-var hex = hex_1;
-var rgb = rgb_1;
-var hsl2rgb = hsl2rgb_1;
-
-function hsl2rgbParse(color) {
-  var h = hsl(color);
-  var r = hsl2rgb(h); // handle alpha since hsl2rgb doesn't know (or care!) about it
-
-  if (h.length === 4) {
-    r.push(h[3]);
-  }
-
-  return r;
-}
-
-var space2parser = {
-  "#": hex,
-  "hsl": hsl2rgbParse,
-  "rgb": rgb
-};
-
-function parse(color) {
-  for (var scheme in space2parser) {
-    if (color.indexOf(scheme) === 0) {
-      return space2parser[scheme](color);
-    }
-  }
-}
-
-parse.rgb = rgb;
-parse.hsl = hsl;
-parse.hex = hex;
-var parse_1 = parse;
 
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function convertColor(color) {
-  const result = parse_1(color);
-  return {
-    red: result[0],
-    green: result[1],
-    blue: result[2],
-    alpha: result[3]
-  };
+function gestureEnsure(node) {
+  if (!node._rhx_gestureHandler) {
+    const gesture = new rehax.Gesture();
+
+    function action() {
+      var _a;
+
+      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.action();
+    }
+
+    function onMouseDown(x, y) {
+      var _a;
+
+      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.onMouseDown({
+        x,
+        y
+      });
+    }
+
+    function onMouseUp(x, y) {
+      var _a;
+
+      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.onMouseUp({
+        x,
+        y
+      });
+    }
+
+    function onMouseMove(x, y) {
+      var _a;
+
+      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.onMouseMove({
+        x,
+        y
+      });
+    }
+
+    gesture.setup(action, onMouseDown, onMouseUp, onMouseMove);
+    node.addGesture(gesture);
+    node._rhx_gestureHandler = {
+      gesture,
+      action: () => {},
+      onMouseDown: () => {},
+      onMouseUp: () => {},
+      onMouseMove: () => {}
+    };
+  }
 }
 
+const ViewMap = {
+  rehaxView: rehax.View,
+  rehaxText: rehax.Text,
+  rehaxButton: rehax.Button,
+  rehaxInput: rehax.TextInput,
+  rehaxStackLayout: rehax.StackLayout,
+  rehaxFlexLayout: rehax.FlexLayout,
+  rehaxVectorContainer: rehax.VectorContainer,
+  rehaxVectorPath: rehax.VectorPath
+};
+const PropHandlers = {
+  onMouseDown: (node, value) => {
+    gestureEnsure(node);
+
+    if (node._rhx_gestureHandler) {
+      node._rhx_gestureHandler.onMouseDown = value;
+    }
+  },
+  onMouseUp: (node, value) => {
+    gestureEnsure(node);
+
+    if (node._rhx_gestureHandler) {
+      node._rhx_gestureHandler.onMouseUp = value;
+    }
+  },
+  onMouseMove: (node, value) => {
+    gestureEnsure(node);
+
+    if (node._rhx_gestureHandler) {
+      node._rhx_gestureHandler.onMouseMove = value;
+    }
+  }
+};
 const {
   render,
   effect,
@@ -1002,246 +1040,359 @@ const {
   setProp,
   mergeProps
 } = createRenderer({
-  createElement(string) {
-    // console.log(`Create element: ${string} ${View}`);
-    switch (string) {
-      case "div":
-        //> view: div -> View
-        return new View();
+  createElement(str) {
+    const Component = ViewMap[str];
 
-      case "button":
-        //> view: button -> Button
-        return new Button();
-
-      case "input":
-        //> view: input -> TextInput
-        return new TextInput();
-
-      case "svg":
-        //> view: svg -> VectorContainer
-        return new VectorContainer();
-
-      case "path":
-        //> view: path -> VectorPath
-        return new VectorPath();
-
-      default:
-        return null;
+    if (Component) {
+      return new Component();
     }
+
+    return null;
   },
 
   createTextNode(value) {
-    // console.log(`Create text: ${value}`);
-    var textView = new Text();
-    textView.setText(value);
+    var textView = new rehax.Text();
+    textView.setText(String(value));
     return textView;
   },
 
   replaceText(textView, value) {
-    // console.log(`Replace text: ${value}`);
     textView.setText(value);
   },
 
   setProperty(node, name, value) {
-    // console.log(`Set prop: ${node} ${name}`);
-    if (name === "style") {
-      // We try to set all the properties of the style object
-      // Everything we don't know we just ignore
-      for (let key of Object.keys(value)) {
-        if (key === "width") {
-          /*>
-            view prop: width -> setWidth
-            `px` will be converted to setWidthFixed
-            `%` will be converted to setWidthPercentage
-          */
-          node.setWidthFixed(Number(value[key])); // todo parse %, px, etc
-        } else if (key === "height") {
-          /*>
-            view prop: height -> setHeight
-            `px` will be converted to setHeightFixed
-            `%` will be converted to setHeightPercentage
-          */
-          node.setHeightFixed(Number(value[key])); // todo parse %, px, etc
-        } else if (key === 'display') {
-          if (value[key] === 'flex' && node._rhx_styleDisplay !== 'flex') {
-            node._rhx_styleDisplay = 'flex';
-            node.setLayout(new FlexLayout());
-          } else if (value[key] !== 'flex' && node._rhx_styleDisplay === 'flex') {
-            node._rhx_styleDisplay = null;
-            node.setLayout(new StackLayout());
-          }
-        } else {
-          const setterName = `set${capitalize(key)}`;
+    const handler = PropHandlers[name];
 
-          if (setterName in node) {
-            node[setterName](value[key]);
-          }
-        }
-      }
-
+    if (handler) {
+      handler(node, value);
       return;
-    } else if (name === 'd') {
-      /*>
-        path prop: d
-        This takes the same format as the path attribute of a svg element
-        It calls the `beginPath`, then the converted commands, then `endPath` of the VectorPath
-        M x y -> pathMoveTo(x, y)
-        m x y -> pathMoveBy(x, y)
-        L x y -> pathLineTo(x, y)
-        Z -> closePath
-        z -> closePath
-      */
-      const parts = parseSvgPath(value);
-      const mapCommand = {
-        M: 'pathMoveTo',
-        m: 'pathMoveBy',
-        L: 'pathLineTo',
-        // l: 'pathLineBy',
-        // C: 'bezierCurveTo',
-        Z: 'closePath',
-        z: 'closePath'
-      };
+    }
+
+    if (node.__className === "VectorPath" && name === "operations") {
       node.beginPath();
 
-      for (let part of parts) {
-        if (mapCommand[part[0]] in node) {
-          node[mapCommand[part[0]]](...part.slice(1));
-        } else {
-          console.error(`Unknown svg path command ${part[0]}`);
-        }
+      for (const op of value) {
+        op(node);
       }
 
       node.endPath();
       return;
     }
 
-    if (name == 'fill') {
-      //> svg prop: fill -> setFill
-      node.setFillColor(convertColor(value));
-      return;
-    } else if (name == 'stroke') {
-      //> svg prop: stroke -> setStroke
-      node.setStrokeColor(convertColor(value));
-      return;
-    } else if (name == 'strokeWidth') {
-      //> svg prop: strokeWidth -> setLineWidth
-      node.setLineWidth(Number(value));
-      return;
-    }
-
     const setterName = `set${capitalize(name)}`;
 
     if (setterName in node) {
-      node[setterName](value);
+      if (typeof value === "string") {
+        // There seems to be a bug where when we don't use the string before sending it to JavascriptCore, it will crash
+        value.trim();
+        node[setterName](String(value));
+      } else {
+        node[setterName](value);
+      }
     } else {
-      console.error(`Unknown property: ${name}`);
-    } // if (name === "style") Object.assign(node.style, value);
-    // else if (name.startsWith("on")) node[name.toLowerCase()] = value;
-    // // else if (PROPERTIES.has(name)) node[name] = value;
-    // else node.setAttribute(name, value);
-
+      console.error(`Unknown property on ${node.__className}: ${name}`);
+    }
   },
 
   insertNode(parent, node, anchor) {
-    // console.log(`Insert node`);
     parent.addView(node, anchor);
   },
 
   isTextNode(node) {
-    // console.log(`Is text ${node.__className}`);
     return node.__className === "Text";
   },
 
   removeNode(parent, node) {
-    // console.log('Remove node')
-    parent.removeChild(node);
+    parent.removeView(node);
   },
 
   getParentNode(node) {
-    // console.log('Get parent')
     return node.getParent();
   },
 
   getFirstChild(node) {
-    // console.log('Get first child')
     return node.getFirstChild();
   },
 
   getNextSibling(node) {
-    // console.log('Get next sibling')
     return node.getNextSibling();
   }
 
 }); // Forward Solid control flow
-function getRootView() {
-  return rootView;
-}
 
-function App() {
-  const [count, setCount] = createSignal(10);
+const Color = {
+  /**
+   * RGB are in range 0 - 255, alpha is 0.0 - 1.0
+   */
+  RGBA(red, green, blue, alpha) {
+    return {
+      red,
+      green,
+      blue,
+      alpha
+    };
+  }
+
+};
+const Length = {
+  Fill() {
+    return {
+      type: "fill"
+    };
+  },
+
+  Natural() {
+    return {
+      type: "natural"
+    };
+  },
+
+  Fixed(value) {
+    return {
+      value,
+      type: "fixed"
+    };
+  },
+
+  Percent(value) {
+    return {
+      value,
+      type: "percent"
+    };
+  }
+
+};
+/** A base view */
+
+function View(props) {
   return (() => {
-    const _el$ = createElement("div"),
-          _el$2 = createElement("button"),
-          _el$3 = createTextNode(`Count: `),
-          _el$4 = createElement("input"),
-          _el$5 = createElement("svg"),
-          _el$6 = createElement("path"),
-          _el$7 = createElement("div"),
-          _el$8 = createElement("div"),
-          _el$10 = createElement("div"),
-          _el$12 = createElement("div");
+    const _el$ = createElement("rehaxView");
 
-    insertNode(_el$, _el$2);
-
-    insertNode(_el$, _el$3);
-
-    insertNode(_el$, _el$4);
-
-    insertNode(_el$, _el$5);
-
-    insertNode(_el$, _el$7);
-
-    setProp(_el$2, "title", "Click me");
-
-    setProp(_el$2, "onPress", () => {
-      setCount(count() + 1);
-    });
-
-    insert(_el$, count, _el$4);
-
-    insertNode(_el$5, _el$6);
-
-    setProp(_el$5, "style", {
-      width: 100,
-      height: 100
-    });
-
-    setProp(_el$6, "d", "M 0 0 L 50 50 L 70 50 L 70 80 L 10 20");
-
-    setProp(_el$6, "strokeWidth", 3);
-
-    setProp(_el$6, "fill", "rgba(0, 255, 0, 1)");
-
-    setProp(_el$6, "stroke", "rgba(255, 0, 0, 1)");
-
-    insertNode(_el$7, _el$8);
-
-    insertNode(_el$7, _el$10);
-
-    insertNode(_el$7, _el$12);
-
-    setProp(_el$7, "style", {
-      display: 'flex'
-    });
-
-    insertNode(_el$8, createTextNode(`Flex item 1`));
-
-    insertNode(_el$10, createTextNode(`Flex item 2`));
-
-    insertNode(_el$12, createTextNode(`Flex item 3`));
+    spread(_el$, props, false);
 
     return _el$;
   })();
 }
+/** A button */
 
-render(() => createComponent(App, {}), getRootView());
+function Button(props) {
+  return (() => {
+    const _el$3 = createElement("rehaxButton");
+
+    spread(_el$3, props, false);
+
+    return _el$3;
+  })();
+}
+/** A text input to capture all kind of user input */
+
+function TextInput(props) {
+  return (() => {
+    const _el$4 = createElement("rehaxInput");
+
+    spread(_el$4, props, false);
+
+    return _el$4;
+  })();
+}
+function FlexLayout(props) {
+  return (() => {
+    const _el$5 = createElement("rehaxFlexLayout");
+
+    spread(_el$5, props, false);
+
+    return _el$5;
+  })();
+}
+function StackLayout(props) {
+  return (() => {
+    const _el$6 = createElement("rehaxStackLayout");
+
+    spread(_el$6, props, false);
+
+    return _el$6;
+  })();
+}
+
+undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
+
+function Example1() {
+  const [count, setCount] = createSignal(10);
+  const [display, setDisplay] = createSignal("flex");
+  const [justifyContent, setJustifyContent] = createSignal("flex-start");
+  const [alignItems, setAlignItems] = createSignal("flex-start");
+  const [cb, setCb] = createSignal(() => console.log(2));
+  return createComponent$1(View, {
+    get height() {
+      return Length.Fill();
+    },
+
+    get width() {
+      return Length.Fill();
+    },
+
+    get children() {
+      return ["Count: ", memo$1(() => count()), createComponent$1(Button, {
+        title: "Test",
+        onPress: async () => {
+          // const res = await fetch('https://jsonplaceholder.typicode.com/photos')
+          // console.log('res')
+          // const text = await res.json()
+          // console.log(text)
+          // const timer = setInterval(() => {
+          //   console.log('timeout')
+          // clearTimeout(timer)
+          // }, 2000)
+          // console.log(rehax.app.getApplicationSupportDirectory())
+          // console.log(rehax.app.getCurrentUserHomeDirectory())
+          // console.log(rehax.app.getCurrentUserDesktopDirectory())
+          // console.log(rehax.app.getApplicationSupportDirectoryForApp())
+          // console.log(rehax.os.name())
+          // localStorage.setItem('test', 'my string');
+          // console.log(localStorage.getItem("test"));
+          const rnd = crypto__default["default"].randomBytes(10);
+          console.log(rnd);
+          console.log(rnd.readUInt32BE(0));
+          console.log(rnd.readUInt32BE(1));
+          const n = rnd.readUInt32BE(0);
+          setCb(() => () => console.log(n)); // }
+          // const result = rehax.fs.readdirSync("path")
+          // console.log(JSON.stringify(result))
+        }
+      }), createComponent$1(Button, {
+        title: "loop",
+
+        get onPress() {
+          return cb();
+        }
+
+      }), createComponent$1(Button, {
+        get title() {
+          return `Switch flex/stack ${display()}`;
+        },
+
+        onPress: () => {
+          setCount(count() + 1);
+          setDisplay(display() === "flex" ? "none" : "flex");
+        }
+      }), createComponent$1(Button, {
+        get title() {
+          return `Switch justify content ${justifyContent()}`;
+        },
+
+        onPress: () => {
+          setCount(count() + 1);
+          const list = ["flex-start", "flex-end", "center"];
+          const nextIndex = (list.indexOf(justifyContent()) + 1) % list.length;
+          setJustifyContent(list[nextIndex]);
+        }
+      }), createComponent$1(Button, {
+        get title() {
+          return `Switch align items ${alignItems()}`;
+        },
+
+        onPress: () => {
+          setCount(count() + 1);
+          const list = ["flex-start", "flex-end", "center", "stretch"];
+          const nextIndex = (list.indexOf(alignItems()) + 1) % list.length;
+          setAlignItems(list[nextIndex]);
+        }
+      }), createComponent$1(TextInput, {}), createComponent$1(View, {
+        get width() {
+          return Length.Fixed(100);
+        },
+
+        get height() {
+          return Length.Fixed(100);
+        },
+
+        get backgroundColor() {
+          return Color.RGBA(0, 255, 0, 0.3);
+        }
+
+      }), createComponent$1(View, {
+        get height() {
+          return Length.Fixed(250);
+        },
+
+        get layout() {
+          return memo$1(() => display() === "flex", true)() ? createComponent$1(FlexLayout, {
+            get options() {
+              return {
+                direction: "column",
+                justifyContent: justifyContent(),
+                alignItems: alignItems() // alignItems: 'center'
+
+              };
+            }
+
+          }) : createComponent$1(StackLayout, {});
+        },
+
+        get children() {
+          return [createComponent$1(View, {
+            children: "Flex item 1"
+          }), createComponent$1(View, {
+            children: "Flex item 2 a little longer"
+          }), createComponent$1(View, {
+            children: "Flex item 3"
+          })];
+        }
+
+      }), createComponent$1(View, {
+        get height() {
+          return Length.Fixed(250);
+        },
+
+        get children() {
+          return [createComponent$1(View, {
+            children: "Stack item 1"
+          }), createComponent$1(View, {
+            children: "Stack item 2 a little longer"
+          }), createComponent$1(View, {
+            children: "Stack item 3"
+          })];
+        }
+
+      })];
+    }
+
+  });
+}
+
+function App() {
+  return createComponent$1(Example1, {}); // return <Example3 />;
+  // return <Tester />;
+}
+
+render$1(() => createComponent$1(App, {}), getRootView());
