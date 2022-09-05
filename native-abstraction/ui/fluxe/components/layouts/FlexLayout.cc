@@ -13,8 +13,8 @@ std::string FlexLayout::description() {
   return stringStream.str();
 }
 
-void FlexLayout::layoutContainer(void * container) {
-  auto view = static_cast<::fluxe::View *>(container);
+void FlexLayout::layoutContainer(View * container) {
+  auto view = static_cast<::fluxe::View *>(container->getNativeView());
   if (nativeInfo == nullptr) {
     auto layout = Object<::fluxe::FlexLayout>::Create();
     layout->increaseReferenceCount();
@@ -70,7 +70,7 @@ void FlexLayout::layoutContainer(void * container) {
   view->setNeedsRerender(true);
 }
 
-void FlexLayout::removeLayout(void * container) {
+void FlexLayout::removeLayout(View * container) {
   if (nativeInfo != nullptr) {
     auto layout = static_cast<::fluxe::FlexLayout *>(nativeInfo);
     layout->decreaseReferenceCount();
@@ -79,10 +79,10 @@ void FlexLayout::removeLayout(void * container) {
   }
 }
 
-void FlexLayout::onViewAdded(void * nativeView, void * addedNativeView) {
-  layoutContainer(nativeView);
+void FlexLayout::onViewAdded(View * view, View * addedView) {
+  layoutContainer(view);
 }
 
-void FlexLayout::onViewRemoved(void * nativeView, void * removedNativeView) {
-  layoutContainer(nativeView);
+void FlexLayout::onViewRemoved(View * view, View * removedView) {
+  layoutContainer(view);
 }

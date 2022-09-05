@@ -129,9 +129,19 @@ void View::setHorizontalPositionNatural(ObjectPointer<View> previousView) {
 }
 
 void View::setVerticalPositionFixed(float y) {
+  auto view = static_cast<::fluxe::View *>(nativeView);
+  view->setPosition(::fluxe::LayoutPositionOverride {
+    .top = ::fluxe::PositionDimensionTypes::Fixed{y},
+    .left = view->layoutPositionOverride.value.left,
+  });
 }
 
 void View::setHorizontalPositionFixed(float x) {
+  auto view = static_cast<::fluxe::View *>(nativeView);
+  view->setPosition(::fluxe::LayoutPositionOverride {
+    .top = view->layoutPositionOverride.value.top,
+    .left = ::fluxe::PositionDimensionTypes::Fixed{x},
+  });
 }
 
 void View::setBackgroundColor(rehax::ui::Color color) {

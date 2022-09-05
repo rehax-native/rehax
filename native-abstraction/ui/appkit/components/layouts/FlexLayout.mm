@@ -158,8 +158,8 @@ std::tuple<NSLayoutAttribute, NSLayoutAttribute, bool, NSLayoutAttribute> flexLa
   return std::tuple<NSLayoutAttribute, NSLayoutAttribute, bool, NSLayoutAttribute>(propSize, propMin, hasTwo, propMax);
 }
 
-void FlexLayout::layoutContainer(void * nativeView) {
-  NSView * view = (__bridge NSView *) nativeView;
+void FlexLayout::layoutContainer(View * container) {
+  NSView * view = (__bridge NSView *) container->getNativeView();
     
   // if (nativeInfo != nullptr) {
   //   FlexViewLayouter * layouter = (FlexViewLayouter * ) nativeInfo;
@@ -178,7 +178,7 @@ void FlexLayout::layoutContainer(void * nativeView) {
   // }
   // return;
   
-  removeLayout(nativeView);
+  removeLayout(container);
   
   NSMutableArray * constraintsArray = [NSMutableArray array];
   nativeInfo = (void*) CFBridgingRetain(constraintsArray);
@@ -356,7 +356,7 @@ void FlexLayout::layoutContainer(void * nativeView) {
 //  NSLog(@"Added %lu constraints", constraintsArray.count);
 }
 
-void FlexLayout::removeLayout(void * container) {
+void FlexLayout::removeLayout(View * container) {
   if (nativeInfo != nullptr)
   {
     NSArray<NSLayoutConstraint*> * constraints = (NSArray<NSLayoutConstraint*> *) CFBridgingRelease(nativeInfo);
@@ -374,12 +374,12 @@ void FlexLayout::removeLayout(void * container) {
   }
 }
 
-void FlexLayout::onViewAdded(void * nativeView, void * addedNativeView) {
+void FlexLayout::onViewAdded(View * view, View * addedView) {
   // TODO: Instead of relayouting everything, we should just make the necessary updates
-  layoutContainer(nativeView);
+  layoutContainer(view);
 }
 
-void FlexLayout::onViewRemoved(void * nativeView, void * removedNativeView) {
+void FlexLayout::onViewRemoved(View * view, View * removedView) {
   // TODO: Instead of relayouting everything, we should just make the necessary updates
-  layoutContainer(nativeView);
+  layoutContainer(view);
 }

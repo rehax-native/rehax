@@ -12,8 +12,8 @@ std::string StackLayout::description() {
   return stringStream.str();
 }
 
-void StackLayout::layoutContainer(void * container) {
-  auto view = static_cast<::fluxe::View *>(container);
+void StackLayout::layoutContainer(View * container) {
+  auto view = static_cast<::fluxe::View *>(container->getNativeView());
   if (nativeInfo == nullptr) {
     auto layout = Object<::fluxe::StackLayout>::Create();
     layout->increaseReferenceCount();
@@ -33,7 +33,7 @@ void StackLayout::layoutContainer(void * container) {
   view->setNeedsRerender(true);
 }
 
-void StackLayout::removeLayout(void * container) {
+void StackLayout::removeLayout(View * container) {
   if (nativeInfo != nullptr) {
     auto layout = static_cast<::fluxe::StackLayout *>(nativeInfo);
     layout->decreaseReferenceCount();
@@ -42,10 +42,10 @@ void StackLayout::removeLayout(void * container) {
   }
 }
 
-void StackLayout::onViewAdded(void * nativeView, void * addedNativeView) {
-  layoutContainer(nativeView);
+void StackLayout::onViewAdded(View * view, View * addedView) {
+  layoutContainer(view);
 }
 
-void StackLayout::onViewRemoved(void * nativeView, void * removedNativeView) {
-  layoutContainer(nativeView);
+void StackLayout::onViewRemoved(View * view, View * removedView) {
+  layoutContainer(view);
 }

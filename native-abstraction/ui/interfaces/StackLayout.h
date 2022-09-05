@@ -1,4 +1,6 @@
 
+class View;
+
 class StackLayout : public ILayout {
 public:
   RHX_EXPORT static std::string ClassName();
@@ -14,10 +16,10 @@ public:
   RHX_EXPORT void setOptions(StackLayoutOptions options);
   RHX_EXPORT void setOptions(rehax::ui::DefaultValue);
 
-  RHX_EXPORT void layoutContainer(void * nativeView);
-  RHX_EXPORT void removeLayout(void * nativeView);
-  RHX_EXPORT void onViewAdded(void * nativeView, void * addedNativeView);
-  RHX_EXPORT void onViewRemoved(void * nativeView, void * removedNativeView);
+  RHX_EXPORT void layoutContainer(View * view);
+  RHX_EXPORT void removeLayout(View * view);
+  RHX_EXPORT void onViewAdded(View * view, View * addedView);
+  RHX_EXPORT void onViewRemoved(View * view, View * removedView);
 
 private:
   float spacing = 0.0;

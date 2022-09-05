@@ -33,6 +33,9 @@ void View::addView(ObjectPointer<View> view) {
   addNativeView(view->nativeView);
   view->setWidth(view->width);
   view->setHeight(view->height);
+  view->setHorizontalPosition(view->horizontalPosition);
+  view->setVerticalPosition(view->verticalPosition);
+  _layout->onViewAdded(this, view.get());
 }
 
 void View::addView(ObjectPointer<View> view, ObjectPointer<View> beforeView) {
@@ -44,16 +47,39 @@ void View::addView(ObjectPointer<View> view, ObjectPointer<View> beforeView) {
   addNativeView(view->nativeView, beforeView->nativeView);
   view->setWidth(view->width);
   view->setHeight(view->height);
+  view->setHorizontalPosition(view->horizontalPosition);
+  view->setVerticalPosition(view->verticalPosition);
+
+  _layout->onViewAdded(this, view.get());
 }
 
 void View::removeView(ObjectPointer<View> view) {
   this->removeContainerView(view);
   removeNativeView(view->nativeView);
+  _layout->onViewRemoved(this, view.get());
 }
 
 void View::removeFromParent() {
   this->removeContainerFromParent();
   removeFromNativeParent();
+
+  parent->_layout->onViewRemoved(parent.get(), this);
+}
+
+rehax::ui::Length View::getHorizontalPosition() {
+  return horizontalPosition;
+}
+
+rehax::ui::Length View::getVerticalPosition() {
+  return verticalPosition;
+}
+
+rehax::ui::Length View::getWidth() {
+  return width;
+}
+
+rehax::ui::Length View::getHeight() {
+  return height;
 }
 
 std::vector<View *> View::getChildren() {
@@ -133,11 +159,45 @@ void View::setLayout(rehaxUtils::ObjectPointer<ILayout> layout) {
   }
   this->_layout = layout;
   layout->containerView = getThisPointer();
-  _layout->layoutContainer(nativeView);
+  _layout->layoutContainer(this);
 }
 
 void View::layout() {
-  _layout->layoutContainer(nativeView);
+  _layout->layoutContainer(this);
+}
+
+void View::setHorizontalPosition(rehax::ui::Length horizontalPosition) {
+  this->horizontalPosition = horizontalPosition;
+  if (auto * p = std::get_if<LengthTypes::Natural>(&horizontalPosition)) {
+//    setHorizontalPositionNatural();
+  } else if (auto * p = std::get_if<LengthTypes::Fixed>(&horizontalPosition)) {
+    setHorizontalPositionFixed(p->length);
+  // } else if (auto * p = std::get_if<LengthTypes::Fill>(&horizontalPosition)) {
+  //   setLeftFill();
+  } else if (auto * p = std::get_if<LengthTypes::Percentage>(&horizontalPosition)) {
+    // setLeftPercentage(p->percent);
+  }
+}
+
+void View::setVerticalPosition(rehax::ui::Length verticalPosition) {
+  this->verticalPosition = verticalPosition;
+  if (auto * p = std::get_if<LengthTypes::Natural>(&verticalPosition)) {
+//    setVerticalPositionNatural();
+  } else if (auto * p = std::get_if<LengthTypes::Fixed>(&verticalPosition)) {
+    setVerticalPositionFixed(p->length);
+  // } else if (auto * p = std::get_if<LengthTypes::Fill>(&left)) {
+  //   setLeftFill();
+  } else if (auto * p = std::get_if<LengthTypes::Percentage>(&verticalPosition)) {
+    // setTopPercentage(p->percent);
+  }
+}
+
+void View::setHorizontalPosition(rehax::ui::DefaultValue) {
+  setHorizontalPosition(rehax::ui::LengthTypes::Natural{});
+}
+
+void View::setVerticalPosition(rehax::ui::DefaultValue) {
+  setVerticalPosition(rehax::ui::LengthTypes::Natural{});
 }
 
 void View::setWidth(Length width) {

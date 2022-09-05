@@ -42,10 +42,19 @@ public:
   RHX_EXPORT void removeFromNativeParent();
 
   // Layouting
+  RHX_EXPORT void setHorizontalPosition(rehax::ui::Length left);
+  RHX_EXPORT void setVerticalPosition(rehax::ui::Length top);
+  RHX_EXPORT void setHorizontalPosition(rehax::ui::DefaultValue);
+  RHX_EXPORT void setVerticalPosition(rehax::ui::DefaultValue);
+  RHX_EXPORT rehax::ui::Length getHorizontalPosition();
+  RHX_EXPORT rehax::ui::Length getVerticalPosition();
+
   RHX_EXPORT void setWidth(rehax::ui::Length width);
   RHX_EXPORT void setHeight(rehax::ui::Length height);
   RHX_EXPORT void setWidth(rehax::ui::DefaultValue);
   RHX_EXPORT void setHeight(rehax::ui::DefaultValue);
+  RHX_EXPORT rehax::ui::Length getWidth();
+  RHX_EXPORT rehax::ui::Length getHeight();
 
   RHX_EXPORT void setVerticalPositionNatural(ObjectPointer<View> previousView);
   RHX_EXPORT void setHorizontalPositionNatural(ObjectPointer<View> previousView);
@@ -72,6 +81,8 @@ protected:
   std::vector<View *> children;
   rehaxUtils::WeakObjectPointer<View> parent = rehaxUtils::WeakObjectPointer<View>();
   std::set<Gesture *> gestures;
+  rehax::ui::Length verticalPosition;
+  rehax::ui::Length horizontalPosition;
   rehax::ui::Length width;
   rehax::ui::Length height;
 

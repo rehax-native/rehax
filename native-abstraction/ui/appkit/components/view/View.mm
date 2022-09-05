@@ -37,8 +37,6 @@ void View::addNativeView(void * child) {
   [childView setFrame:view.bounds];
   childView.translatesAutoresizingMaskIntoConstraints = NO;
   [view addSubview:childView];
-
-  _layout->onViewAdded(nativeView, child);
 }
 
 void View::addNativeView(void * child, void * beforeChild) {
@@ -48,15 +46,11 @@ void View::addNativeView(void * child, void * beforeChild) {
   [childView setFrame:view.bounds];
   childView.translatesAutoresizingMaskIntoConstraints = NO;
   [view addSubview:childView positioned:NSWindowBelow relativeTo:beforeChildView];
-
-  _layout->onViewAdded(nativeView, child);
 }
 
 void View::removeNativeView(void * child) {
   NSView * childView = (__bridge NSView *) child;
   [childView removeFromSuperview];
-
-  _layout->onViewRemoved(nativeView, child);
 }
 
 void View::removeFromNativeParent() {
@@ -64,7 +58,6 @@ void View::removeFromNativeParent() {
   [view removeFromSuperview];
     
   auto parent = (View *) this->getParent().get();
-  parent->_layout->onViewRemoved(parent->nativeView, nativeView);
 }
 
 void View::setWidthFill() {

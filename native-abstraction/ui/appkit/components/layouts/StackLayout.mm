@@ -52,8 +52,8 @@ std::string StackLayout::description() {
 // }
 // @end
 
-void StackLayout::layoutContainer(void * container) {
-  const NSView * view = (__bridge NSView *) container;
+void StackLayout::layoutContainer(View * container) {
+  const NSView * view = (__bridge NSView *) container->getNativeView();
   NSView * prevView = NULL;
 
 //  if (nativeInfo != nullptr) {
@@ -83,9 +83,16 @@ void StackLayout::layoutContainer(void * container) {
   const auto crossPropSize = isHorizontal ? NSLayoutAttributeHeight : NSLayoutAttributeWidth;
   
   NSLayoutConstraint * constraint;
+  const auto children = container->getChildren();
+  int stackedViewsCount = 0;
 
   for (int i = 0; i < view.subviews.count; i++) {
     NSView * subView = view.subviews[i];
+    auto pos = isHorizontal ? children[i]->getHorizontalPosition() : children[i]->getVerticalPosition();
+    if (std::get_if<LengthTypes::Fixed>(&pos)) {
+      continue;
+    }
+    stackedViewsCount++;
 
     constraint = [NSLayoutConstraint constraintWithItem:view attribute:crossPropMin relatedBy:NSLayoutRelationEqual toItem:subView attribute:crossPropMin multiplier:1.0 constant:-spacing];
     constraint.identifier = @"Stack cross pos min";
@@ -128,7 +135,7 @@ void StackLayout::layoutContainer(void * container) {
   }
   
   if (prevView) {
-    if (view.subviews.count > 1) {
+    if (stackedViewsCount > 1) {
       constraint = [NSLayoutConstraint constraintWithItem:view attribute:maxProp relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:prevView attribute:maxProp multiplier:1.0 constant:spacing];
       constraint.identifier = @"Stack max";
       constraint.priority = 800;
@@ -146,7 +153,7 @@ void StackLayout::layoutContainer(void * container) {
   }
 }
 
-void StackLayout::removeLayout(void * container) {
+void StackLayout::removeLayout(View * container) {
   if (nativeInfo != nullptr)
   {
     NSArray<NSLayoutConstraint*> * constraints = (NSArray<NSLayoutConstraint*> *) CFBridgingRelease(nativeInfo);
@@ -165,12 +172,12 @@ void StackLayout::removeLayout(void * container) {
   }
 }
 
-void StackLayout::onViewAdded(void * nativeView, void * addedNativeView) {
+void StackLayout::onViewAdded(View * view, View * addedView) {
   // TODO: Instead of relayouting everything, we should just make the necessary updates
-  layoutContainer(nativeView);
+  layoutContainer(view);
 }
 
-void StackLayout::onViewRemoved(void * nativeView, void * removedNativeView) {
+void StackLayout::onViewRemoved(View * view, View * removedView) {
   // TODO: Instead of relayouting everything, we should just make the necessary updates
-  layoutContainer(nativeView);
+  layoutContainer(view);
 }

@@ -8,6 +8,8 @@ void Bindings::bindViewClassMethods(runtime::Value prototype) {
   bindMethod<View, rehaxUtils::WeakObjectPointer<View>, &View::getParent>("getParent", prototype);
   bindMethod<View, rehaxUtils::WeakObjectPointer<View>, &View::getFirstChild>("getFirstChild", prototype);
   bindMethod<View, rehaxUtils::WeakObjectPointer<View>, &View::getNextSibling>("getNextSibling", prototype);
+  bindMethod<View, rehax::ui::Length, &View::setVerticalPosition>("setVerticalPosition", prototype);
+  bindMethod<View, rehax::ui::Length, &View::setHorizontalPosition>("setHorizontalPosition", prototype);
   bindMethod<View, rehax::ui::Length, &View::setWidth>("setWidth", prototype);
   bindMethod<View, rehax::ui::Length, &View::setHeight>("setHeight", prototype);
   bindMethod<View, rehaxUtils::ObjectPointer<Layout>, &View::setLayout>("setLayout", prototype);
