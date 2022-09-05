@@ -19,7 +19,7 @@ importers:
       rollup: ^2.77.0
       solid-js: ^1.4.8
     dependencies:
-      '@rehax/fetch': link:../../js-packages/fetch
+      '@rehax/fetch': 0.0.1
       '@rehax/solidjs-components': link:../../js-packages/rehax-solidjs-components
       '@rehax/solidjs-renderer': link:../../js-packages/rehax-solidjs-renderer
       solid-js: 1.4.8
@@ -485,6 +485,10 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@rehax/fetch/0.0.1:
+    resolution: {integrity: sha512-zgkK8VNVeYyE1OrhXU1+mBRZYC+fEZTgzxFnfHgchX6Hmgv1KJesrGlJBuGXVUSVwW5RMTcb9x5Fwl05IUn5Lg==}
+    dev: false
 
   /@rehax/solidjs-renderer/0.0.1:
     resolution: {integrity: sha512-pEGojVDeKS8cXj8aWDd1XZwxmzEqQ6anrhKM7KSJ3qJUVmBcZFYy5d8b0ejruu1A1aZRpJ0dtvmz5ZTKAYS+/g==}
