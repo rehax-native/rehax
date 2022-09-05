@@ -4,6 +4,7 @@ export interface FetchRequest {
   url?: string;
   method?: HttpMethod;
   headers?: Record<string, string>;
+  body?: string;
 }
 
 export interface FetchReponse {
