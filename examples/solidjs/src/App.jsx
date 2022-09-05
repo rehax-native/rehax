@@ -202,9 +202,36 @@ function Example3() {
   );
 }
 
+function Example4Comp() {
+  return (
+    <View
+      width={Length.Fixed(100)}
+      layout={
+        <FlexLayout
+          options={{
+            alignItems: "center",
+          }}
+        />
+      }
+    >
+      My name
+      01
+    </View>
+  );
+}
+
+function Example4() {
+  return <View>
+    <Example4Comp />
+    <Example4Comp />
+    <Example4Comp />
+  </View>
+}
+
 function App() {
   return <Example1 />;
   // return <Example3 />;
+  // return <Example4 />;
   // return <Tester />;
 }
 

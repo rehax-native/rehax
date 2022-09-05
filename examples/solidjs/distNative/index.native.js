@@ -1251,6 +1251,7 @@ function Example1() {
 
 function App() {
   return createComponent(Example1, {}); // return <Example3 />;
+  // return <Example4 />;
   // return <Tester />;
 }
 
