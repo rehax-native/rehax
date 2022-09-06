@@ -26,7 +26,7 @@ function (rehax_add_to_executable app_name)
         PARSE_ARGV 1
         REHAX
         ""
-        "RUNTIME;BACKEND;BUNDLE_COMMAND"
+        "RUNTIME;BACKEND;BUNDLE_COMMAND;FLUXE_LOCATION"
         ""
     )
 
@@ -88,8 +88,12 @@ function (rehax_add_to_executable app_name)
     include_directories(${quickjs_SOURCE_DIR}/..)
     include_directories(${rehaxUtils_SOURCE_DIR})
 
-    include_directories(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe)
-    include_directories(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/third_party/skia)
+    if (NOT "${REHAX_FLUXE_LOCATION}" STREQUAL "")
+        # include_directories(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe)
+        # include_directories(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/third_party/skia)
+        include_directories(${REHAX_FLUXE_LOCATION})
+        include_directories(${REHAX_FLUXE_LOCATION}/third_party/skia)
+    endif()
 
     find_library(
         ICU_LIB
@@ -175,12 +179,16 @@ function (rehax_add_to_executable app_name)
         )
         target_compile_definitions(${app_name} PUBLIC -DREHAX_WITH_APPKIT)
     elseif (${REHAX_BACKEND} STREQUAL fluxe)
+        if ("${REHAX_FLUXE_LOCATION}" STREQUAL "")
+            message(FATAL_ERROR "fluxe selected as backend, but not FLUXE_LOCATION was passed")
+        endif()
         target_sources(${app_name} PUBLIC ${REHAX_FLUXE_SRC_FILES} ${REHAX_SRC_FILES})
         if (${MACOSX})
             find_library(
                 FLUXE_MAC_LIB 
                 NAMES fluxe
-                PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out"
+                PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
+                # PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out"
             )
             target_link_libraries(
                 ${app_name}
@@ -203,7 +211,8 @@ function (rehax_add_to_executable app_name)
             find_library(
                 FLUXE_WIN_LIB 
                 NAMES fluxe
-                PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist"
+                PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
+                # PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out"
                 #  "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
             )
             message(WARNING ${FLUXE_WIN_LIB})
