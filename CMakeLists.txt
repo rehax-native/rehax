@@ -3,13 +3,6 @@ cmake_minimum_required(VERSION 3.21)
 # project(Rehax)
 set(CMAKE_CXX_STANDARD 20)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(MACOSX TRUE)
-endif()
-if (WIN32)
-  set(WIN TRUE)
-endif()
-
 # # To create an xcode project for development:
 # # cmake -G Xcode -S examples/solidjs -B build_examples
 
@@ -29,6 +22,14 @@ function (rehax_add_to_executable app_name)
         "RUNTIME;BACKEND;BUNDLE_COMMAND;FLUXE_LOCATION"
         ""
     )
+
+    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(MACOSX TRUE)
+    endif()
+    if (WIN32)
+    set(WIN TRUE)
+    endif()
+
 
     include(FetchContent)
 
@@ -180,7 +181,7 @@ function (rehax_add_to_executable app_name)
         target_compile_definitions(${app_name} PUBLIC -DREHAX_WITH_APPKIT)
     elseif (${REHAX_BACKEND} STREQUAL fluxe)
         if ("${REHAX_FLUXE_LOCATION}" STREQUAL "")
-            message(FATAL_ERROR "fluxe selected as backend, but not FLUXE_LOCATION was passed")
+            message(FATAL_ERROR "fluxe selected as backend, but no FLUXE_LOCATION was passed")
         endif()
         target_sources(${app_name} PUBLIC ${REHAX_FLUXE_SRC_FILES} ${REHAX_SRC_FILES})
         if (${MACOSX})
