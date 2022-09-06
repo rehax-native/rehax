@@ -98,32 +98,32 @@ function (rehax_add_to_executable app_name)
     find_library(
         ICU_LIB
         NAMES icu
-        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+        PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
     )
     find_library(
         SKIA_LIB
         NAMES skia
-        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+        PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
     )
     find_library(
         SKPARAGRAPH_LIB
         NAMES skparagraph
-        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+        PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
     )
     find_library(
         SKSHAPER_LIB
         NAMES skshaper
-        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+        PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
     )
     find_library(
         SKTEXT_LIB
         NAMES sktext
-        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+        PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
     )
     find_library(
         SKUNICODE_LIB
         NAMES skunicode
-        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+        PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
     )
 
 
