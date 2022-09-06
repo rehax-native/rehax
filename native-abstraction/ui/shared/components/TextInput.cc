@@ -21,3 +21,15 @@ std::string TextInput::instanceClassName() {
 void TextInput::setValue(rehax::ui::DefaultValue) {
   setValue("");
 }
+
+void TextInput::setOnValueChange(rehax::ui::DefaultValue) {
+  setOnValueChange([] (std::string) {});
+}
+
+void TextInput::setOnFocus(rehax::ui::DefaultValue) {
+  setOnFocus([] () {});
+}
+
+void TextInput::setOnBlur(rehax::ui::DefaultValue) {
+  setOnBlur([] () {});
+}

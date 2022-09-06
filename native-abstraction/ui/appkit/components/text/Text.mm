@@ -129,6 +129,8 @@ void Text::rebuildAttributedString() {
     
   view.textContainerInset = NSMakeSize(0, 2);
     
+  view.frame = CGRectMake(0, 0, 1000, 20); // Need this otherwise if you update the text the letters will appear vertically
+
   [view.layoutManager ensureLayoutForTextContainer:view.textContainer];
   CGSize size = [view.layoutManager usedRectForTextContainer:view.textContainer].size;
     

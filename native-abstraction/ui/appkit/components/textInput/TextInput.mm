@@ -17,7 +17,7 @@ std::string TextInput::description() {
 }
 
 void TextInput::createNativeView() {
-  NSTextField * view = [NSTextField new];
+  NSTextField * view = [FunctionalNSTextField new];
   [view setFrame:NSMakeRect(0, 0, 200, 200)];
   [view setStringValue:@""];
   view.editable = YES;
@@ -94,9 +94,28 @@ void TextInput::setTextAlignment(TextAlignment alignment) {
   }
 }
 
-void TextInput::setOnValueChange(std::function<void(void)> onValueChange) {
+void TextInput::setOnValueChange(std::function<void(std::string)> onValueChange) {
   FunctionalNSTextField * view = (__bridge FunctionalNSTextField *) this->nativeView;
   [view setCallback:onValueChange];
+}
+
+void TextInput::focus() {
+  FunctionalNSTextField * view = (__bridge FunctionalNSTextField *) this->nativeView;
+  [view becomeFirstResponder];
+  // If we do it manually it doesn't detect the focus change
+  if (view->focusCallback) {
+    view->focusCallback();
+  }
+}
+
+void TextInput::setOnFocus(std::function<void(void)> onFocus) {
+  FunctionalNSTextField * view = (__bridge FunctionalNSTextField *) this->nativeView;
+  [view setOnFocusCallback:onFocus];
+}
+
+void TextInput::setOnBlur(std::function<void(void)> onBlur) {
+  FunctionalNSTextField * view = (__bridge FunctionalNSTextField *) this->nativeView;
+  [view setOnBlurCallback:onBlur];
 }
 
 }

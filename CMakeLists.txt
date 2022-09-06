@@ -94,32 +94,32 @@ function (rehax_add_to_executable app_name)
     find_library(
         ICU_LIB
         NAMES icu
-        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
     )
     find_library(
         SKIA_LIB
         NAMES skia
-        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
     )
     find_library(
         SKPARAGRAPH_LIB
         NAMES skparagraph
-        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
     )
     find_library(
         SKSHAPER_LIB
         NAMES skshaper
-        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
     )
     find_library(
         SKTEXT_LIB
         NAMES sktext
-        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
     )
     find_library(
         SKUNICODE_LIB
         NAMES skunicode
-        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+        PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
     )
 
 
@@ -177,21 +177,26 @@ function (rehax_add_to_executable app_name)
     elseif (${REHAX_BACKEND} STREQUAL fluxe)
         target_sources(${app_name} PUBLIC ${REHAX_FLUXE_SRC_FILES} ${REHAX_SRC_FILES})
         if (${MACOSX})
+            find_library(
+                FLUXE_MAC_LIB 
+                NAMES fluxe
+                PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out"
+            )
             target_link_libraries(
                 ${app_name}
-                fluxe-mac
+                ${FLUXE_MAC_LIB}
                 "-framework Foundation"
                 "-framework QuartzCore"
                 "-framework AppKit"
                 "-framework Metal"
                 "-framework MetalKit"
                 rehax-utils-mac
-                icu
-                skia
-                skparagraph
-                skshaper
-                sktext
-                skunicode
+                ${ICU_LIB}
+                ${SKIA_LIB}
+                ${SKPARAGRAPH_LIB}
+                ${SKSHAPER_LIB}
+                ${SKTEXT_LIB}
+                ${SKUNICODE_LIB}
             )
         endif()
         if (${WIN})

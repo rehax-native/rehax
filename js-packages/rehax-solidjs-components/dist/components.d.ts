@@ -86,6 +86,8 @@ export declare function Button(props: ButtonProps): RehaxButton;
 export interface TextInputProps extends ViewBaseProps {
     value: string;
     onValueChange: () => void;
+    onFocus: () => void;
+    onBlur: () => void;
 }
 /** A text input to capture all kind of user input */
 export declare function TextInput(props: TextInputProps): RehaxTextInput;

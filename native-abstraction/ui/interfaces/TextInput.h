@@ -11,11 +11,17 @@ public:
 
   RHX_EXPORT virtual void createNativeView() override;
 
+  RHX_EXPORT void focus();
+  RHX_EXPORT void setOnFocus(std::function<void(void)> onFocus);
+  RHX_EXPORT void setOnFocus(rehax::ui::DefaultValue);
+  RHX_EXPORT void setOnBlur(std::function<void(void)> onBlur);
+  RHX_EXPORT void setOnBlur(rehax::ui::DefaultValue);
+
   RHX_EXPORT void setValue(std::string value);
   RHX_EXPORT void setValue(rehax::ui::DefaultValue);
   RHX_EXPORT std::string getValue();
 
-  RHX_EXPORT void setOnValueChange(std::function<void(void)> onValueChange);
+  RHX_EXPORT void setOnValueChange(std::function<void(std::string)> onValueChange);
   RHX_EXPORT void setOnValueChange(rehax::ui::DefaultValue);
 
   RHX_EXPORT void setPlaceholder(std::string placeholder);

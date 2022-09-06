@@ -963,6 +963,28 @@ function Text(props) {
     return _el$2;
   })();
 }
+/** A button */
+
+function Button(props) {
+  return (() => {
+    const _el$3 = createElement("rehaxButton");
+
+    spread(_el$3, props, false);
+
+    return _el$3;
+  })();
+}
+/** A text input to capture all kind of user input */
+
+function TextInput(props) {
+  return (() => {
+    const _el$4 = createElement("rehaxInput");
+
+    spread(_el$4, props, false);
+
+    return _el$4;
+  })();
+}
 function FlexLayout(props) {
   return (() => {
     const _el$5 = createElement("rehaxFlexLayout");
@@ -1033,6 +1055,7 @@ function Example4Comp() {
 }
 
 function Example4() {
+  let input;
   return createComponent(View, {
     get layout() {
       return createComponent(StackLayout, {
@@ -1053,6 +1076,20 @@ function Example4() {
         },
 
         children: "Hello"
+      }), createComponent(TextInput, {
+        onValueChange: () => console.log('change'),
+        onBlur: () => console.log('blurred')
+      }), createComponent(TextInput, {
+        ref(r$) {
+          const _ref$ = input;
+          typeof _ref$ === "function" ? _ref$(r$) : input = r$;
+        },
+
+        onValueChange: () => console.log('change'),
+        onFocus: () => console.log('focused')
+      }), createComponent(Button, {
+        title: "Focus input",
+        onPress: () => input.focus()
       })];
     }
 

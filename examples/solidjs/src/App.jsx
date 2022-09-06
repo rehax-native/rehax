@@ -221,6 +221,7 @@ function Example4Comp() {
 }
 
 function Example4() {
+  let input
   return (
     <View layout={<StackLayout options={{ spacing: 20 }} />}>
       <Example4Comp />
@@ -229,6 +230,9 @@ function Example4() {
       <Text horizontalPosition={Length.Fixed(100)} verticalPosition={Length.Fixed(5)}>
         Hello
       </Text>
+      <TextInput onValueChange={() => console.log('change')} onBlur={() => console.log('blurred')} />
+      <TextInput ref={input} onValueChange={() => console.log('change')} onFocus={() => console.log('focused')} />
+      <Button title="Focus input" onPress={() => input.focus()} />
     </View>
   );
 }

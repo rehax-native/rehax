@@ -73,11 +73,26 @@ void TextInput::setTextAlignment(TextAlignment alignment) {
   // }
 }
 
-void TextInput::setOnValueChange(std::function<void(void)> onValueChange) {
+void TextInput::setOnValueChange(std::function<void(std::string)> onValueChange) {
   auto view = static_cast<::fluxe::TextInput *>(this->nativeView);
   view->onValueChanged = [onValueChange] (std::string value) {
-    onValueChange();
+    onValueChange(value);
   };
+}
+
+void TextInput::focus() {
+  auto view = static_cast<::fluxe::TextInput *>(this->nativeView);
+  view->focus();
+}
+
+void TextInput::setOnFocus(std::function<void(void)> onFocus) {
+  auto view = static_cast<::fluxe::TextInput *>(this->nativeView);
+  view->onFocus = onFocus;
+}
+
+void TextInput::setOnBlur(std::function<void(void)> onBlur) {
+  auto view = static_cast<::fluxe::TextInput *>(this->nativeView);
+  view->onBlur = onBlur;
 }
 
 }

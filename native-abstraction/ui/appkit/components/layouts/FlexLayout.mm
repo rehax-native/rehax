@@ -197,6 +197,7 @@ void FlexLayout::layoutContainer(View * container) {
   float totalFlex = 0.0;
   NSView * prevFlexView = NULL;
   float prevFlex = 0.0;
+  const auto children = container->getChildren();
 
   if (view.subviews.count > 0) {
 
@@ -235,6 +236,10 @@ void FlexLayout::layoutContainer(View * container) {
   }
 
   for (int i = 1; i < view.subviews.count; i++) {
+    auto pos = isHorizontal ? children[i]->getHorizontalPosition() : children[i]->getVerticalPosition();
+    if (std::get_if<LengthTypes::Fixed>(&pos)) {
+      continue;
+    }
     NSView * subView = view.subviews[i];
     auto itemProps = crossProps;
     if (items.size() > i) {

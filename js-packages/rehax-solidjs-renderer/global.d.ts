@@ -45,7 +45,11 @@ export class RehaxText extends RehaxView {
 
 export class RehaxButton extends RehaxView {}
 
-export class RehaxTextInput extends RehaxView {}
+export class RehaxTextInput extends RehaxView {
+  focus(): void;
+  setOnFocus(cb: () => void): void;
+  setOnBlur(cb: () => void): void;
+}
 
 export class RehaxVectorContainer extends RehaxView {}
 
