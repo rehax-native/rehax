@@ -190,6 +190,8 @@ function (rehax_add_to_executable app_name)
                 PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
                 # PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out"
             )
+            message(WARNING ${FLUXE_MAC_LIB})
+            message(WARNING ${SKIA_LIB})
             target_link_libraries(
                 ${app_name}
                 ${FLUXE_MAC_LIB}
