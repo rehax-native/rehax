@@ -139,7 +139,7 @@ public:
     JS_FreeValue(ctx, fn);
   }
   JSValue call(JSContext * ctx, size_t numArgs, JSValue * args) {
-    auto ret = JS_Call(ctx, fn, JS_NULL, 0, {});
+    auto ret = JS_Call(ctx, fn, JS_NULL, numArgs, args);
     return ret;
   }
 private:

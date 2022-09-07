@@ -1075,6 +1075,7 @@ function Example4() {
           return Length.Fixed(5);
         },
 
+        onMouseMove: e => console.log(e.x),
         children: "Hello"
       }), createComponent(TextInput, {
         onValueChange: () => console.log('change'),

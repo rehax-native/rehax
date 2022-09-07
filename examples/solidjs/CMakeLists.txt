@@ -5,6 +5,13 @@ set(CMAKE_CXX_STANDARD 20)
 
 include(../../CMakeLists.txt)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(MACOSX TRUE)
+endif()
+if (WIN32)
+    set(WIN TRUE)
+endif()
+
 if (${MACOSX})
     # Example appkit jsc
     add_executable(
@@ -75,7 +82,7 @@ if (${MACOSX})
         RUNTIME jsc
         BACKEND fluxe
         BUNDLE_COMMAND "PATH=/Users/denis/.nvm/versions/node/v16.16.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin pnpm run buildNative"
-        FLUXE_LOCATION "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../../../fluxe"
+        FLUXE_LOCATION "${CMAKE_CURRENT_LIST_DIR}/../../../fluxe"
     )
 endif()
 
@@ -116,5 +123,5 @@ rehax_add_to_executable(
     RUNTIME quickjs
     BACKEND fluxe
     BUNDLE_COMMAND "PATH=/Users/denis/.nvm/versions/node/v16.16.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin pnpm run buildNative"
-    FLUXE_LOCATION "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../../../fluxe"
+    FLUXE_LOCATION "${CMAKE_CURRENT_LIST_DIR}/../../../fluxe"
 )

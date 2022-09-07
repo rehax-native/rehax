@@ -227,7 +227,7 @@ function Example4() {
       <Example4Comp />
       <Example4Comp />
       <Example4Comp />
-      <Text horizontalPosition={Length.Fixed(100)} verticalPosition={Length.Fixed(5)}>
+      <Text horizontalPosition={Length.Fixed(100)} verticalPosition={Length.Fixed(5)} onMouseMove={e => console.log(e.x)}>
         Hello
       </Text>
       <TextInput onValueChange={() => console.log('change')} onBlur={() => console.log('blurred')} />

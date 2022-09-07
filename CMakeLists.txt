@@ -24,10 +24,10 @@ function (rehax_add_to_executable app_name)
     )
 
     if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(MACOSX TRUE)
+        set(MACOSX TRUE)
     endif()
     if (WIN32)
-    set(WIN TRUE)
+        set(WIN TRUE)
     endif()
 
 
