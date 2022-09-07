@@ -69,15 +69,15 @@
 declare global {
   declare namespace JSX {
     export interface IntrinsicElements {
-      rehaxView: {}
-      rehaxButton: {}
-      rehaxText: {}
-      rehaxInput: {}
-      rehaxStackLayout: {}
-      rehaxFlexLayout: {}
-      rehaxVectorContainer: {}
-      rehaxVectorRect: {}
-      rehaxVectorPath: {}
+      rehaxView: {};
+      rehaxButton: {};
+      rehaxText: {};
+      rehaxInput: {};
+      rehaxStackLayout: {};
+      rehaxFlexLayout: {};
+      rehaxVectorContainer: {};
+      rehaxVectorRect: {};
+      rehaxVectorPath: {};
     }
   }
 }

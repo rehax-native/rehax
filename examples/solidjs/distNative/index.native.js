@@ -1079,7 +1079,8 @@ function Example4() {
         children: "Hello"
       }), createComponent(TextInput, {
         onValueChange: () => console.log('change'),
-        onBlur: () => console.log('blurred')
+        onBlur: () => console.log('blurred'),
+        onSubmit: () => console.log('submitted')
       }), createComponent(TextInput, {
         ref(r$) {
           const _ref$ = input;

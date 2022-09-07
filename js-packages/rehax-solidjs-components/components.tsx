@@ -9,8 +9,8 @@ import {
   RehaxFlexLayout,
   RehaxStackLayout,
   RehaxVectorContainer,
-} from "../rehax-solidjs-renderer/global";
-import { JSX } from 'solid-js'
+} from "@rehax/solidjs-renderer/global";
+import { JSX } from "solid-js";
 
 export interface ColorType {
   /** Range 0 - 255 */
@@ -104,7 +104,7 @@ export interface ViewBaseProps {
 }
 
 export interface ViewProps extends ViewBaseProps {
-  children?: JSX.Element
+  children?: JSX.Element;
 }
 
 /** A base view */
@@ -119,7 +119,7 @@ export interface TextProps extends ViewBaseProps {
   italic?: boolean;
   strikeThrough?: boolean;
   underlined?: boolean;
-  fontFamilies?: string[]
+  fontFamilies?: string[];
 }
 
 /** A text view that can be styled and nested */
@@ -139,10 +139,11 @@ export function Button(props: ButtonProps): RehaxButton {
 
 export interface TextInputProps extends ViewBaseProps {
   value: string;
-  onValueChange: () => void;
+  onValueChange: (value: string) => void;
 
   onFocus: () => void;
   onBlur: () => void;
+  onSubmit: () => void;
 }
 
 /** A text input to capture all kind of user input */
@@ -184,7 +185,7 @@ export function StackLayout(props: StackLayoutProps): RehaxStackLayout {
 }
 
 export interface VectorContainerProps extends ViewBaseProps {
-  children?: JSX.Element
+  children?: JSX.Element;
 }
 
 export function VectorContainer(
@@ -208,7 +209,7 @@ export interface VectorElementProps extends ViewBaseProps {
 }
 
 export interface VectorRectProps extends VectorElementProps {
-  size: { width: number, height: number};
+  size: { width: number; height: number };
 }
 
 export function VectorRect(props: VectorRectProps): RehaxVectorRect {
@@ -249,7 +250,14 @@ export function QuadraticBezier(x1: number, y1: number, x: number, y: number) {
   return (path: RehaxVectorPath) => path.pathQuadraticBezier(x1, y1, x, y);
 }
 
-export function CubicBezier(x1: number, y1: number, x2: number, y2: number, x: number, y: number) {
+export function CubicBezier(
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  x: number,
+  y: number
+) {
   return (path: RehaxVectorPath) => path.pathCubicBezier(x1, y1, x2, y2, x, y);
 }
 

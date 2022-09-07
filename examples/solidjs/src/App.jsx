@@ -230,7 +230,7 @@ function Example4() {
       <Text horizontalPosition={Length.Fixed(100)} verticalPosition={Length.Fixed(5)} onMouseMove={e => console.log(e.x)}>
         Hello
       </Text>
-      <TextInput onValueChange={() => console.log('change')} onBlur={() => console.log('blurred')} />
+      <TextInput onValueChange={() => console.log('change')} onBlur={() => console.log('blurred')} onSubmit={() => console.log('submitted')} />
       <TextInput ref={input} onValueChange={() => console.log('change')} onFocus={() => console.log('focused')} />
       <Button title="Focus input" onPress={() => input.focus()} />
     </View>
