@@ -52,15 +52,15 @@ void Gesture::setState(GestureState state) {
 
 RehaxFluxeIEventListener::RehaxFluxeIEventListener() {}
 
-void RehaxFluxeIEventListener::onMouseDown(::fluxe::MouseDownEvent event) {
+void RehaxFluxeIEventListener::onMouseDown(::fluxe::MouseDownEvent & event) {
   callbacks->mouseDown(event.left, event.top);
 }
 
-void RehaxFluxeIEventListener::onMouseUp(::fluxe::MouseUpEvent event) {
+void RehaxFluxeIEventListener::onMouseUp(::fluxe::MouseUpEvent & event) {
   callbacks->mouseUp(event.left, event.top);
 }
 
-void RehaxFluxeIEventListener::onMouseMove(::fluxe::MouseMoveEvent event) {
+void RehaxFluxeIEventListener::onMouseMove(::fluxe::MouseMoveEvent & event) {
   callbacks->mouseMove(event.left, event.top);
 }
 

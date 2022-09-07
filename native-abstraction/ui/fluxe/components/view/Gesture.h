@@ -20,9 +20,9 @@ class RehaxFluxeIEventListener : public ::fluxe::IEventListener {
 public:
   RehaxFluxeIEventListener();
 //   virtual ~IEventListener() = default;
-  virtual void onMouseDown(::fluxe::MouseDownEvent event);
-  virtual void onMouseUp(::fluxe::MouseUpEvent event);
-  virtual void onMouseMove(::fluxe::MouseMoveEvent event);
+  virtual void onMouseDown(::fluxe::MouseDownEvent & event);
+  virtual void onMouseUp(::fluxe::MouseUpEvent & event);
+  virtual void onMouseMove(::fluxe::MouseMoveEvent & event);
 //   virtual void onMouseEnter(::fluxe::MouseEnterEvent event);
 //   virtual void onMouseExit(::fluxe::MouseExitEvent event);
 
