@@ -1,4 +1,4 @@
-import { RehaxVectorRect, RehaxVectorPath, RehaxILayout, RehaxView, RehaxText, RehaxButton, RehaxTextInput, RehaxFlexLayout, RehaxStackLayout, RehaxVectorContainer } from "@rehax/solidjs-renderer/global";
+import { RehaxVectorRect, RehaxVectorPath, RehaxILayout, RehaxView, RehaxText, RehaxButton, RehaxTextInput, RehaxFlexLayout, RehaxStackLayout, RehaxVectorContainer } from "../rehax-solidjs-renderer/global";
 import { JSX } from "solid-js";
 export interface ColorType {
     /** Range 0 - 255 */
@@ -84,11 +84,11 @@ export interface ButtonProps extends ViewBaseProps {
 /** A button */
 export declare function Button(props: ButtonProps): RehaxButton;
 export interface TextInputProps extends ViewBaseProps {
-    value: string;
-    onValueChange: (value: string) => void;
-    onFocus: () => void;
-    onBlur: () => void;
-    onSubmit: () => void;
+    value?: string;
+    onValueChange?: (value: string) => void;
+    onFocus?: () => void;
+    onBlur?: () => void;
+    onSubmit?: () => void;
 }
 /** A text input to capture all kind of user input */
 export declare function TextInput(props: TextInputProps): RehaxTextInput;
