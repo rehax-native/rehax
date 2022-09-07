@@ -33,3 +33,7 @@ void TextInput::setOnFocus(rehax::ui::DefaultValue) {
 void TextInput::setOnBlur(rehax::ui::DefaultValue) {
   setOnBlur([] () {});
 }
+
+void TextInput::setOnSubmit(rehax::ui::DefaultValue) {
+  setOnSubmit([] () {});
+}

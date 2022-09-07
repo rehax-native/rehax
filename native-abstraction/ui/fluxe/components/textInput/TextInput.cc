@@ -95,4 +95,9 @@ void TextInput::setOnBlur(std::function<void(void)> onBlur) {
   view->onBlur = onBlur;
 }
 
+void TextInput::setOnSubmit(std::function<void(void)> onSubmit) {
+  auto view = static_cast<::fluxe::TextInput *>(this->nativeView);
+  view->onSubmit = onSubmit;
+}
+
 }

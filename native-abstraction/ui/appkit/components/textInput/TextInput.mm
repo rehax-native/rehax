@@ -118,4 +118,9 @@ void TextInput::setOnBlur(std::function<void(void)> onBlur) {
   [view setOnBlurCallback:onBlur];
 }
 
+void TextInput::setOnSubmit(std::function<void(void)> onSubmit) {
+  FunctionalNSTextField * view = (__bridge FunctionalNSTextField *) this->nativeView;
+  [view setOnSubmitCallback:onSubmit];
+}
+
 }

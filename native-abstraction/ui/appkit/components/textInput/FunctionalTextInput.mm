@@ -21,6 +21,13 @@
   blurCallback = cb;
 }
 
+- (void)setOnSubmitCallback:(std::function<void(void)>)cb
+{
+  self.target = self;
+  submitCallback = cb;
+  self.action = @selector(onSubmit);
+}
+
 - (void)controlTextDidChange:(id)notification
 {
   if (callback) {
@@ -48,6 +55,13 @@
 {
   if (blurCallback) {
     blurCallback();
+  }
+}
+
+- (void)onSubmit
+{
+  if (submitCallback) {
+    submitCallback();
   }
 }
 

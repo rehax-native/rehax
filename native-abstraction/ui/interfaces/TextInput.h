@@ -16,6 +16,8 @@ public:
   RHX_EXPORT void setOnFocus(rehax::ui::DefaultValue);
   RHX_EXPORT void setOnBlur(std::function<void(void)> onBlur);
   RHX_EXPORT void setOnBlur(rehax::ui::DefaultValue);
+  RHX_EXPORT void setOnSubmit(std::function<void(void)> onSubmit);
+  RHX_EXPORT void setOnSubmit(rehax::ui::DefaultValue);
 
   RHX_EXPORT void setValue(std::string value);
   RHX_EXPORT void setValue(rehax::ui::DefaultValue);

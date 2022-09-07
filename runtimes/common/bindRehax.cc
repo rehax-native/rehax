@@ -45,6 +45,7 @@ void Bindings::bindTextInputClassMethods(runtime::Value prototype) {
   bindMethod<View, &View::focus>("focus", prototype);
   bindMethod<View, std::function<void(void)>, rehax::ui::DefaultValue, &View::setOnFocus, &View::setOnFocus>("setOnFocus", prototype);
   bindMethod<View, std::function<void(void)>, rehax::ui::DefaultValue, &View::setOnBlur, &View::setOnBlur>("setOnBlur", prototype);
+  bindMethod<View, std::function<void(void)>, rehax::ui::DefaultValue, &View::setOnSubmit, &View::setOnSubmit>("setOnSubmit", prototype);
 }
 
 template <typename View>
