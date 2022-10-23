@@ -793,6 +793,7 @@ const ViewMap = {
   rehaxText: rehax.Text,
   rehaxButton: rehax.Button,
   rehaxInput: rehax.TextInput,
+  rehaxSelect: rehax.Select,
   rehaxStackLayout: rehax.StackLayout,
   rehaxFlexLayout: rehax.FlexLayout,
   rehaxVectorContainer: rehax.VectorContainer,
@@ -985,22 +986,33 @@ function TextInput(props) {
     return _el$4;
   })();
 }
-function FlexLayout(props) {
+/** A text input to capture all kind of user input */
+
+function Select(props) {
   return (() => {
-    const _el$5 = createElement("rehaxFlexLayout");
+    const _el$5 = createElement("rehaxSelect");
 
     spread(_el$5, props, false);
 
     return _el$5;
   })();
 }
-function StackLayout(props) {
+function FlexLayout(props) {
   return (() => {
-    const _el$6 = createElement("rehaxStackLayout");
+    const _el$6 = createElement("rehaxFlexLayout");
 
     spread(_el$6, props, false);
 
     return _el$6;
+  })();
+}
+function StackLayout(props) {
+  return (() => {
+    const _el$7 = createElement("rehaxStackLayout");
+
+    spread(_el$7, props, false);
+
+    return _el$7;
   })();
 }
 
@@ -1078,20 +1090,29 @@ function Example4() {
         onMouseMove: e => console.log(e.x),
         children: "Hello"
       }), createComponent(TextInput, {
-        onValueChange: () => console.log('change'),
-        onBlur: () => console.log('blurred'),
-        onSubmit: () => console.log('submitted')
+        onValueChange: () => console.log("change"),
+        onBlur: () => console.log("blurred"),
+        onSubmit: () => console.log("submitted")
       }), createComponent(TextInput, {
         ref(r$) {
           const _ref$ = input;
           typeof _ref$ === "function" ? _ref$(r$) : input = r$;
         },
 
-        onValueChange: () => console.log('change'),
-        onFocus: () => console.log('focused')
+        onValueChange: () => console.log("change"),
+        onFocus: () => console.log("focused")
       }), createComponent(Button, {
         title: "Focus input",
         onPress: () => input.focus()
+      }), createComponent(Select, {
+        options: [{
+          value: "val1",
+          name: "Value 1"
+        }, {
+          value: "val2",
+          name: "Value 2"
+        }],
+        onValueChange: value => console.log(value.name)
       })];
     }
 

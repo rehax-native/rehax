@@ -37,6 +37,7 @@ const ViewMap: Record<string, any> = {
   rehaxText: rehax.Text,
   rehaxButton: rehax.Button,
   rehaxInput: rehax.TextInput,
+  rehaxSelect: rehax.Select,
   rehaxStackLayout: rehax.StackLayout,
   rehaxFlexLayout: rehax.FlexLayout,
   rehaxVectorContainer: rehax.VectorContainer,

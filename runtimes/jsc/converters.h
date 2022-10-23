@@ -275,10 +275,10 @@ struct Converter<std::function<void(T1, T2)>> {
   static std::function<void(T1, T2)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
     JSObjectRef callback = (JSObjectRef) value;
     rehaxUtils::ObjectPointer<ScriptFunctionContainer> fnPtr = rehaxUtils::Object<ScriptFunctionContainer>::Create(ctx, callback);
-    auto fn = [ctx, fnPtr] (T1 a, T2 b) {
+    auto fn = [ctx, bindings, fnPtr] (T1 a, T2 b) {
       JSValueRef arguments[] = {
-        Converter<T1>::toScript(ctx, a),
-        Converter<T2>::toScript(ctx, b),
+        Converter<T1>::toScript(ctx, a, bindings),
+        Converter<T2>::toScript(ctx, b, bindings),
       };
       fnPtr->call(ctx, 2, arguments);
     };

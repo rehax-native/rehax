@@ -87,7 +87,7 @@ struct Converter<std::unordered_map<std::string, T>> {
 
 template <>
 struct Converter<::rehax::ui::Color> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::Color value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::Color value, Bindings * bindings) {
     runtime::Value object = runtime::MakeObject(ctx);
     runtime::SetObjectProperty(ctx, object, "red", Converter<float>::toScript(ctx, value.r * 255.0));
     runtime::SetObjectProperty(ctx, object, "green", Converter<float>::toScript(ctx, value.g * 255.0));
@@ -111,7 +111,7 @@ struct Converter<::rehax::ui::Color> {
 
 template <>
 struct Converter<::rehax::ui::Length> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::Length value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::Length value, Bindings * bindings) {
     runtime::Value object = runtime::MakeObject(ctx);
 
     if (auto * p = std::get_if<::rehax::ui::LengthTypes::Natural>(&value)) {
@@ -149,7 +149,7 @@ struct Converter<::rehax::ui::Length> {
 
 template <>
 struct Converter<::rehax::ui::Size> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::Size& value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::Size& value, Bindings * bindings) {
     runtime::Value obj = runtime::MakeObject(ctx);
     runtime::SetObjectProperty(ctx, obj, "width", Converter<float>::toScript(ctx, value.width));
     runtime::SetObjectProperty(ctx, obj, "height", Converter<float>::toScript(ctx, value.height));
@@ -169,7 +169,7 @@ struct Converter<::rehax::ui::Size> {
 
 template <>
 struct Converter<::rehax::ui::StackLayoutDirection> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::StackLayoutDirection& value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::StackLayoutDirection& value, Bindings * bindings) {
     if (value == ui::StackLayoutDirection::Vertical) {
       return Converter<std::string>::toScript(ctx, "vertical");
     }
@@ -188,10 +188,10 @@ struct Converter<::rehax::ui::StackLayoutDirection> {
 
 template <>
 struct Converter<::rehax::ui::StackLayoutOptions> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::StackLayoutOptions& value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::StackLayoutOptions& value, Bindings * bindings) {
     runtime::Value obj = runtime::MakeObject(ctx);
     runtime::SetObjectProperty(ctx, obj, "spacing", Converter<float>::toScript(ctx, value.spacing));
-    runtime::SetObjectProperty(ctx, obj, "direction", Converter<::rehax::ui::StackLayoutDirection>::toScript(ctx, value.direction));
+    runtime::SetObjectProperty(ctx, obj, "direction", Converter<::rehax::ui::StackLayoutDirection>::toScript(ctx, value.direction, bindings));
     return obj;
   }
   static ::rehax::ui::StackLayoutOptions toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
@@ -208,7 +208,7 @@ struct Converter<::rehax::ui::StackLayoutOptions> {
 
 template <>
 struct Converter<::rehax::ui::FlexLayoutDirection> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::FlexLayoutDirection& value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::FlexLayoutDirection& value, Bindings * bindings) {
     if (value == ui::FlexLayoutDirection::Column) {
       return Converter<std::string>::toScript(ctx, "column");
     }
@@ -239,7 +239,7 @@ struct Converter<::rehax::ui::FlexLayoutDirection> {
 
 template <>
 struct Converter<::rehax::ui::FlexJustifyContent> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::FlexJustifyContent& value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::FlexJustifyContent& value, Bindings * bindings) {
     if (value == ui::FlexJustifyContent::FlexStart) {
       return Converter<std::string>::toScript(ctx, "flex-start");
     }
@@ -264,7 +264,7 @@ struct Converter<::rehax::ui::FlexJustifyContent> {
 
 template <>
 struct Converter<::rehax::ui::FlexAlignItems> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::FlexAlignItems& value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::FlexAlignItems& value, Bindings * bindings) {
     if (value == ui::FlexAlignItems::FlexStart) {
       return Converter<std::string>::toScript(ctx, "flex-start");
     }
@@ -289,12 +289,12 @@ struct Converter<::rehax::ui::FlexAlignItems> {
 
 template <>
 struct Converter<::rehax::ui::FlexItem> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::FlexItem& value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::FlexItem& value, Bindings * bindings) {
     runtime::Value obj = runtime::MakeObject(ctx);
     runtime::SetObjectProperty(ctx, obj, "flexGrow", Converter<float>::toScript(ctx, value.flexGrow));
     runtime::SetObjectProperty(ctx, obj, "hasFlexGrow", Converter<bool>::toScript(ctx, value.hasFlexGrow));
     runtime::SetObjectProperty(ctx, obj, "order", Converter<int>::toScript(ctx, value.order));
-    runtime::SetObjectProperty(ctx, obj, "alignSelf", Converter<::rehax::ui::FlexAlignItems>::toScript(ctx, value.alignSelf));
+    runtime::SetObjectProperty(ctx, obj, "alignSelf", Converter<::rehax::ui::FlexAlignItems>::toScript(ctx, value.alignSelf, bindings));
     return obj;
   }
   static ::rehax::ui::FlexItem toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
@@ -315,15 +315,15 @@ struct Converter<::rehax::ui::FlexItem> {
 
 template <>
 struct Converter<::rehax::ui::FlexLayoutOptions> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::FlexLayoutOptions& value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::FlexLayoutOptions& value, Bindings * bindings) {
     runtime::Value obj = runtime::MakeObject(ctx);
-    runtime::SetObjectProperty(ctx, obj, "direction", Converter<::rehax::ui::FlexLayoutDirection>::toScript(ctx, value.direction));
-    runtime::SetObjectProperty(ctx, obj, "justifyContent", Converter<::rehax::ui::FlexJustifyContent>::toScript(ctx, value.justifyContent));
-    runtime::SetObjectProperty(ctx, obj, "alignItems", Converter<::rehax::ui::FlexAlignItems>::toScript(ctx, value.alignItems));
+    runtime::SetObjectProperty(ctx, obj, "direction", Converter<::rehax::ui::FlexLayoutDirection>::toScript(ctx, value.direction, bindings));
+    runtime::SetObjectProperty(ctx, obj, "justifyContent", Converter<::rehax::ui::FlexJustifyContent>::toScript(ctx, value.justifyContent, bindings));
+    runtime::SetObjectProperty(ctx, obj, "alignItems", Converter<::rehax::ui::FlexAlignItems>::toScript(ctx, value.alignItems, bindings));
 
     auto arr = runtime::MakeArray(ctx);
     for (int i = 0; i < value.items.size(); i++) {
-      auto js = Converter<::rehax::ui::FlexItem>::toScript(ctx, value.items[i]);
+      auto js = Converter<::rehax::ui::FlexItem>::toScript(ctx, value.items[i], bindings);
       runtime::SetArrayValue(ctx, arr, i, js);
     }
     runtime::SetObjectProperty(ctx, obj, "items", arr);
@@ -354,7 +354,7 @@ struct Converter<::rehax::ui::FlexLayoutOptions> {
 
 template <>
 struct Converter<::rehax::ui::GestureState> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::GestureState& value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::GestureState& value, Bindings * bindings) {
     if (value == ui::GestureState::Possible) {
       return Converter<std::string>::toScript(ctx, "possible");
     }
@@ -396,8 +396,28 @@ struct Converter<::rehax::ui::GestureState> {
 };
 
 template <>
+struct Converter<::rehax::ui::SelectOption> {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::SelectOption& value, Bindings * bindings) {
+    runtime::Value obj = runtime::MakeObject(ctx);
+    runtime::SetObjectProperty(ctx, obj, "name", Converter<std::string>::toScript(ctx, value.name));
+    runtime::SetObjectProperty(ctx, obj, "value", Converter<std::string>::toScript(ctx, value.value));
+    return obj;
+  }
+  static ::rehax::ui::SelectOption toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    ::rehax::ui::SelectOption option;
+    if (runtime::HasObjectProperty(ctx, value, "name")) {
+      option.name = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "name"), bindings);
+    }
+    if (runtime::HasObjectProperty(ctx, value, "value")) {
+      option.value = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "value"), bindings);
+    }
+    return option;
+  }
+};
+
+template <>
 struct Converter<::rehax::ui::VectorLineCap> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::VectorLineCap& value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::VectorLineCap& value, Bindings * bindings) {
     if (value == ui::VectorLineCap::Butt) {
       return Converter<std::string>::toScript(ctx, "butt");
     }
@@ -422,7 +442,7 @@ struct Converter<::rehax::ui::VectorLineCap> {
 
 template <>
 struct Converter<::rehax::ui::VectorLineJoin> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::VectorLineJoin& value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::VectorLineJoin& value, Bindings * bindings) {
     if (value == ui::VectorLineJoin::Miter) {
       return Converter<std::string>::toScript(ctx, "miter");
     }
@@ -447,9 +467,9 @@ struct Converter<::rehax::ui::VectorLineJoin> {
 
 template <>
 struct Converter<::rehax::ui::GradientStop> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::GradientStop& value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::GradientStop& value, Bindings * bindings) {
     runtime::Value obj = runtime::MakeObject(ctx);
-    runtime::SetObjectProperty(ctx, obj, "color", Converter<::rehax::ui::Color>::toScript(ctx, value.color));
+    runtime::SetObjectProperty(ctx, obj, "color", Converter<::rehax::ui::Color>::toScript(ctx, value.color, bindings));
     runtime::SetObjectProperty(ctx, obj, "offset", Converter<float>::toScript(ctx, value.offset));
     return obj;
   }
@@ -467,11 +487,11 @@ struct Converter<::rehax::ui::GradientStop> {
 
 template <>
 struct Converter<::rehax::ui::Gradient> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::Gradient& value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::Gradient& value, Bindings * bindings) {
     auto obj = runtime::MakeObject(ctx);
     auto arr = runtime::MakeArray(ctx);
     for (int i = 0; i < value.stops.size(); i++) {
-      auto js = Converter<::rehax::ui::GradientStop>::toScript(ctx, value.stops[i]);
+      auto js = Converter<::rehax::ui::GradientStop>::toScript(ctx, value.stops[i], bindings);
       runtime::SetArrayValue(ctx, arr, i, js);
     }
     runtime::SetObjectProperty(ctx, obj, "stops", arr);
@@ -493,7 +513,7 @@ struct Converter<::rehax::ui::Gradient> {
 
 template <>
 struct Converter<::rehax::ui::FilterDef> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::FilterDef& value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::FilterDef& value, Bindings * bindings) {
     auto obj = runtime::MakeObject(ctx);
     runtime::SetObjectProperty(ctx, obj, "type", Converter<int>::toScript(ctx, value.type));
     runtime::SetObjectProperty(ctx, obj, "blurRadius", Converter<float>::toScript(ctx, value.blurRadius));
@@ -513,11 +533,11 @@ struct Converter<::rehax::ui::FilterDef> {
 
 template <>
 struct Converter<::rehax::ui::Filters> {
-  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::Filters& value) {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::Filters& value, Bindings * bindings) {
     auto obj = runtime::MakeObject(ctx);
     auto arr = runtime::MakeArray(ctx);
     for (int i = 0; i < value.defs.size(); i++) {
-      auto js = Converter<::rehax::ui::FilterDef>::toScript(ctx, value.defs[i]);
+      auto js = Converter<::rehax::ui::FilterDef>::toScript(ctx, value.defs[i], bindings);
       runtime::SetArrayValue(ctx, arr, i, js);
     }
     runtime::SetObjectProperty(ctx, obj, "defs", arr);

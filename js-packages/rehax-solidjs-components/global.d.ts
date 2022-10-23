@@ -73,6 +73,7 @@ declare global {
       rehaxButton: {};
       rehaxText: {};
       rehaxInput: {};
+      rehaxSelect: {};
       rehaxStackLayout: {};
       rehaxFlexLayout: {};
       rehaxVectorContainer: {};

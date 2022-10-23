@@ -1,6 +1,6 @@
 {
   "name": "@rehax/solidjs-renderer",
-  "version": "0.0.12",
+  "version": "0.0.15",
   "description": "",
   "main": "dist/index.js",
   "files": [

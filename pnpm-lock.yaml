@@ -10,8 +10,8 @@ importers:
       '@babel/cli': ^7.18.6
       '@babel/core': ^7.18.6
       '@rehax/fetch': ^0.0.1
-      '@rehax/solidjs-components': ^0.0.8
-      '@rehax/solidjs-renderer': ^0.0.8
+      '@rehax/solidjs-components': ^0.0.13
+      '@rehax/solidjs-renderer': ^0.0.13
       '@rollup/plugin-babel': ^5.3.1
       '@rollup/plugin-commonjs': ^22.0.1
       '@rollup/plugin-node-resolve': ^13.3.0
@@ -46,7 +46,7 @@ importers:
 
   js-packages/rehax-solidjs-components:
     specifiers:
-      '@rehax/solidjs-renderer': ^0.0.8
+      '@rehax/solidjs-renderer': ^0.0.13
       solid-js: ^1.4.8
       tslib: ^2.4.0
       typescript: ^4.7.4

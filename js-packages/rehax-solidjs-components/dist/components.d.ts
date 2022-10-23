@@ -1,4 +1,4 @@
-import { RehaxVectorRect, RehaxVectorPath, RehaxILayout, RehaxView, RehaxText, RehaxButton, RehaxTextInput, RehaxFlexLayout, RehaxStackLayout, RehaxVectorContainer } from "../rehax-solidjs-renderer/global";
+import { RehaxVectorRect, RehaxVectorPath, RehaxILayout, RehaxView, RehaxText, RehaxButton, RehaxTextInput, RehaxSelect, RehaxFlexLayout, RehaxStackLayout, RehaxVectorContainer } from "../rehax-solidjs-renderer/global";
 import { JSX } from "solid-js";
 export interface ColorType {
     /** Range 0 - 255 */
@@ -92,6 +92,14 @@ export interface TextInputProps extends ViewBaseProps {
 }
 /** A text input to capture all kind of user input */
 export declare function TextInput(props: TextInputProps): RehaxTextInput;
+export interface SelectProps extends ViewBaseProps {
+    options?: ({
+        value: string;
+        name: string;
+    })[];
+}
+/** A text input to capture all kind of user input */
+export declare function Select(props: SelectProps): RehaxSelect;
 export interface FlexLayoutProps extends ViewBaseProps {
     options?: {
         direction?: "row" | "column" | "row-reverse" | "column-reverse";

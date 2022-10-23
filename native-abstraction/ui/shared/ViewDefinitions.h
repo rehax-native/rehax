@@ -38,4 +38,9 @@ struct Size {
   float height;
 };
 
+struct SelectOption {
+  std::string name;
+  std::string value;
+};
+
 }

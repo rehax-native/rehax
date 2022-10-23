@@ -6,6 +6,7 @@ import {
   RehaxText,
   RehaxButton,
   RehaxTextInput,
+  RehaxSelect,
   RehaxFlexLayout,
   RehaxStackLayout,
   RehaxVectorContainer,
@@ -149,6 +150,21 @@ export interface TextInputProps extends ViewBaseProps {
 /** A text input to capture all kind of user input */
 export function TextInput(props: TextInputProps): RehaxTextInput {
   return <rehaxInput {...props} />;
+}
+
+interface SelectOption {
+  value: string;
+  name: string;
+}
+
+export interface SelectProps extends ViewBaseProps {
+  options?: SelectOption[]
+  onValueChange?: (value?: SelectOption) => void;
+}
+
+/** A text input to capture all kind of user input */
+export function Select(props: SelectProps): RehaxSelect {
+  return <rehaxSelect {...props} />;
 }
 
 export interface FlexLayoutProps extends ViewBaseProps {

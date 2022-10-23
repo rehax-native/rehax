@@ -51,6 +51,7 @@ public:
     typename Button,
     typename Text,
     typename TextInput,
+    typename Select,
     typename VectorContainer,
     typename VectorElement,
     typename VectorRect,
@@ -92,6 +93,7 @@ public:
   template <typename View> void bindButtonClassMethods(runtime::Value prototype);
   template <typename View> void bindTextClassMethods(runtime::Value prototype);
   template <typename View> void bindTextInputClassMethods(runtime::Value prototype);
+  template <typename View> void bindSelectClassMethods(runtime::Value prototype);
   template <typename View> void bindVectorElementClassMethods(runtime::Value prototype);
   template <typename View> void bindVectorRectClassMethods(runtime::Value prototype);
   template <typename View> void bindVectorPathClassMethods(runtime::Value prototype);

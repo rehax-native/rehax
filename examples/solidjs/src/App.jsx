@@ -13,6 +13,7 @@ import {
   Arc,
   FlexLayout,
   StackLayout,
+  Select,
 } from "@rehax/solidjs-components";
 import fetch from "@rehax/fetch";
 import crypto from 'crypto'
@@ -227,12 +228,31 @@ function Example4() {
       <Example4Comp />
       <Example4Comp />
       <Example4Comp />
-      <Text horizontalPosition={Length.Fixed(100)} verticalPosition={Length.Fixed(5)} onMouseMove={e => console.log(e.x)}>
+      <Text
+        horizontalPosition={Length.Fixed(100)}
+        verticalPosition={Length.Fixed(5)}
+        onMouseMove={(e) => console.log(e.x)}
+      >
         Hello
       </Text>
-      <TextInput onValueChange={() => console.log('change')} onBlur={() => console.log('blurred')} onSubmit={() => console.log('submitted')} />
-      <TextInput ref={input} onValueChange={() => console.log('change')} onFocus={() => console.log('focused')} />
+      <TextInput
+        onValueChange={() => console.log("change")}
+        onBlur={() => console.log("blurred")}
+        onSubmit={() => console.log("submitted")}
+      />
+      <TextInput
+        ref={input}
+        onValueChange={() => console.log("change")}
+        onFocus={() => console.log("focused")}
+      />
       <Button title="Focus input" onPress={() => input.focus()} />
+      <Select
+        options={[
+          { value: "val1", name: "Value 1" },
+          { value: "val2", name: "Value 2" },
+        ]}
+        onValueChange={value => console.log(value.name)}
+      ></Select>
     </View>
   );
 }

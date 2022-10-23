@@ -49,6 +49,15 @@ void Bindings::bindTextInputClassMethods(runtime::Value prototype) {
 }
 
 template <typename View>
+void Bindings::bindSelectClassMethods(runtime::Value prototype) {
+  bindMethod<View, std::string, rehax::ui::DefaultValue, &View::setValue, &View::setValue>("setValue", prototype);
+  bindMethod<View, std::string, &View::getValue>("getValue", prototype);
+  bindMethod<View, std::vector<ui::SelectOption>, rehax::ui::DefaultValue, &View::setOptions, &View::setOptions>("setOptions", prototype);
+  bindMethod<View, std::vector<ui::SelectOption>, &View::getOptions>("getOptions", prototype);
+  bindMethod<View, std::function<void(ui::SelectOption)>, rehax::ui::DefaultValue, &View::setOnValueChange, &View::setOnValueChange>("setOnValueChange", prototype);
+}
+
+template <typename View>
 void Bindings::bindVectorElementClassMethods(runtime::Value prototype) {
   bindMethod<View, float, rehax::ui::DefaultValue, &View::setLineWidth, &View::setLineWidth>("setLineWidth", prototype);
   bindMethod<View, rehax::ui::VectorLineJoin, rehax::ui::DefaultValue, &View::setLineJoin, &View::setLineJoin>("setLineJoin", prototype);
@@ -103,6 +112,7 @@ template <
   typename Button,
   typename Text,
   typename TextInput,
+  typename Select,
   typename VectorContainer,
   typename VectorElement,
   typename VectorRect,
@@ -138,6 +148,7 @@ void Bindings::bindRehax() {
   defineClass<Button>("Button", &classRegistry["View"]);
   defineClass<Text>("Text", &classRegistry["View"]);
   defineClass<TextInput>("TextInput", &classRegistry["View"]);
+  defineClass<Select>("Select", &classRegistry["View"]);
   defineClass<VectorContainer>("VectorContainer", &classRegistry["View"]);
   defineClass<VectorElement, false>("VectorElement", &classRegistry["View"]);
   defineClass<VectorRect>("VectorRect", &classRegistry["VectorElement"]);
@@ -147,6 +158,7 @@ void Bindings::bindRehax() {
   bindButtonClassMethods<Button>(classRegistry["Button"].prototype);
   bindTextClassMethods<Text>(classRegistry["Text"].prototype);
   bindTextInputClassMethods<TextInput>(classRegistry["TextInput"].prototype);
+  bindSelectClassMethods<Select>(classRegistry["Select"].prototype);
   bindVectorElementClassMethods<VectorElement>(classRegistry["VectorElement"].prototype);
   bindVectorRectClassMethods<VectorRect>(classRegistry["VectorRect"].prototype);
   bindVectorPathClassMethods<VectorPath>(classRegistry["VectorPath"].prototype);
@@ -173,6 +185,7 @@ void Bindings::bindAppkitRehax() {
     rehax::ui::appkit::Button,
     rehax::ui::appkit::Text,
     rehax::ui::appkit::TextInput,
+    rehax::ui::appkit::Select,
     rehax::ui::appkit::VectorContainer,
     rehax::ui::appkit::VectorElement,
     rehax::ui::appkit::VectorRect,
@@ -197,6 +210,7 @@ void Bindings::bindFluxeRehax() {
     rehax::ui::fluxe::Button,
     rehax::ui::fluxe::Text,
     rehax::ui::fluxe::TextInput,
+    rehax::ui::fluxe::Select,
     rehax::ui::fluxe::VectorContainer,
     rehax::ui::fluxe::VectorElement,
     rehax::ui::fluxe::VectorRect,

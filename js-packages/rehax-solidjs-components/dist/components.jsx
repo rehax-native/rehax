@@ -51,6 +51,10 @@ export function Button(props) {
 export function TextInput(props) {
     return <rehaxInput {...props}/>;
 }
+/** A text input to capture all kind of user input */
+export function Select(props) {
+    return <rehaxSelect {...props}/>;
+}
 export function FlexLayout(props) {
     return <rehaxFlexLayout {...props}/>;
 }

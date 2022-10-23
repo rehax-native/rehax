@@ -52,6 +52,9 @@ export class RehaxTextInput extends RehaxView {
   setOnSubmit(cb: () => void): void;
 }
 
+export class RehaxSelect extends RehaxView {
+}
+
 export class RehaxVectorContainer extends RehaxView {}
 
 export class RehaxVectorRect extends RehaxView {
@@ -92,6 +95,7 @@ declare global {
     Text: RehaxText,
     Button: RehaxButton,
     TextInput: RehaxTextInput,
+    Select: RehaxSelect,
     VectorContainer: RehaxVectorContainer,
     VectorRect: RehaxVectorRect,
     VectorPath: RehaxVectorPath,
