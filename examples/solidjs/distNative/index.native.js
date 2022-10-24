@@ -821,6 +821,11 @@ const PropHandlers = {
     if (node._rhx_gestureHandler) {
       node._rhx_gestureHandler.onMouseMove = value;
     }
+  },
+  onKey: (node, value) => {
+    const keyHandler = new rehax.KeyHandler();
+    keyHandler.setup(value);
+    node.addKeyHandler(keyHandler);
   }
 };
 const {
@@ -1076,6 +1081,8 @@ function Example4() {
         }
       });
     },
+
+    onKey: e => console.log(JSON.stringify(e)),
 
     get children() {
       return [createComponent(Example4Comp, {}), createComponent(Example4Comp, {}), createComponent(Example4Comp, {}), createComponent(Text, {

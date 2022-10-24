@@ -4,6 +4,7 @@
 #include <fluxe/layout/LayoutTypes.h>
 #include "../layouts/StackLayout.h"
 #include "Gesture.h"
+#include "KeyHandler.h"
 
 namespace rehax::ui::fluxe::impl {
 
@@ -166,6 +167,14 @@ void View::removeGesture(ObjectPointer<Gesture> gesture)
 //   NSGestureRecognizer * rec = (__bridge NSGestureRecognizer *) nativeGesture.native;
 
 //   [view addGestureRecognizer:rec];
+}
+
+void View::addKeyHandler(ObjectPointer<KeyHandler> keyHandler) {
+  auto view = static_cast<::fluxe::View *>(nativeView);
+
+std::cout << " add key handler " << std::endl;
+  auto listener = view->addEventListener<RehaxFluxeKeyListener>(keyHandler);
+  // listener->callbacks = static_cast<GestureCallbackContainer *>(gesture->native);
 }
 
 }

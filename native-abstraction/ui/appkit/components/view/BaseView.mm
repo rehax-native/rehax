@@ -19,6 +19,32 @@
 //   }
 // }
 
+- (BOOL)acceptsFirstResponder {
+  return YES;
+}
+
+-(void)keyDown:(NSEvent *)event
+{
+  rehax::ui::KeyEvent keyEvent {
+    .isKeyDown = true,
+    .key = [[event charactersIgnoringModifiers] cStringUsingEncoding:NSUTF8StringEncoding],
+  };
+  for (auto handler : keyHandlers) {
+    handler(keyEvent);
+  }
+}
+
+-(void)keyUp:(NSEvent *)event
+{
+  rehax::ui::KeyEvent keyEvent {
+    .isKeyDown = false,
+    .key = [[event charactersIgnoringModifiers] cStringUsingEncoding:NSUTF8StringEncoding],
+  };
+  for (auto handler : keyHandlers) {
+    handler(keyEvent);
+  }
+}
+
 @end
 
 // @implementation ViewLayouter

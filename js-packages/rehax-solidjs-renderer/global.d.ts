@@ -9,6 +9,15 @@ export class RehaxGesture {
   ): void;
 }
 
+interface KeyEvent {
+  key: string;
+  isKeyDown: boolean;
+}
+
+export class RehaxKeyHandler {
+  setup(handleKey: (event: KeyEvent) => void): void;
+}
+
 export interface XYCoords {
   x: number;
   y: number;
@@ -29,6 +38,7 @@ export class RehaxView {
   setBackgroundColor(color: ColorType): void;
 
   addGesture(gesture: RehaxGesture): void;
+  addKeyHandler(keyHandler: RehaxKeyHandler): void;
 
   _rhx_gestureHandler?: {
     gesture: RehaxGesture;
@@ -52,8 +62,7 @@ export class RehaxTextInput extends RehaxView {
   setOnSubmit(cb: () => void): void;
 }
 
-export class RehaxSelect extends RehaxView {
-}
+export class RehaxSelect extends RehaxView {}
 
 export class RehaxVectorContainer extends RehaxView {}
 
@@ -68,7 +77,14 @@ export class RehaxVectorPath extends RehaxView {
   pathMoveBy(x: number, y: number): void;
   pathLineTo(x: number, y: number): void;
   pathQuadraticBezier(x1: number, y1: number, x: number, y: number): void;
-  pathCubicBezier(x1: number, y1: number, x2: number, y2: number, x: number, y: number): void;
+  pathCubicBezier(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    x: number,
+    y: number
+  ): void;
   pathArc(
     rx: number,
     ry: number,
@@ -91,6 +107,7 @@ declare global {
   export const rehax = {
     rootView: RehaxView,
     Gesture: RehaxGesture,
+    KeyHandler: RehaxKeyHandler,
     View: RehaxView,
     Text: RehaxText,
     Button: RehaxButton,
@@ -101,7 +118,7 @@ declare global {
     VectorPath: RehaxVectorPath,
     StackLayout: RehaxStackLayout,
     FlexLayout: RehaxFlexLayout,
-  }
+  };
 }
 
 export {};

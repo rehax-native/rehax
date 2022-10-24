@@ -102,6 +102,8 @@ export interface ViewBaseProps {
   onMouseDown?: (e: { x: number; y: number }) => void;
   onMouseMove?: (e: { x: number; y: number }) => void;
   onMouseUp?: (e: { x: number; y: number }) => void;
+
+  onKey?: (e: { key: string; isKeyDown: boolean }) => void;
 }
 
 export interface ViewProps extends ViewBaseProps {

@@ -63,6 +63,11 @@ const PropHandlers = {
             node._rhx_gestureHandler.onMouseMove = value;
         }
     },
+    onKey: (node, value) => {
+        const keyHandler = new rehax.KeyHandler();
+        keyHandler.setup(value);
+        node.addKeyHandler(keyHandler);
+    },
 };
 export const { render, effect, memo, createComponent, createElement, createTextNode, insertNode, insert, spread, setProp, mergeProps, } = createRenderer({
     createElement(str) {

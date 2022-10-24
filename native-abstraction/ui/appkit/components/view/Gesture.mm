@@ -50,7 +50,7 @@ using namespace rehax::ui::appkit::impl;
 #include "../../../shared/components/Gesture.cc"
 
 std::string Gesture::description() {
-  return "Gesture/fluxe";
+  return "Gesture/AppKit";
 }
 
 Gesture::~Gesture() {

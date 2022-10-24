@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "@rehax/fetch": "^0.0.1",
-    "@rehax/solidjs-components": "^0.0.15",
-    "@rehax/solidjs-renderer": "^0.0.15",
+    "@rehax/solidjs-components": "workspace:^0.0.16",
+    "@rehax/solidjs-renderer": "workspace:^0.0.16",
     "solid-js": "^1.4.8"
   }
 }

@@ -64,6 +64,11 @@ const PropHandlers: Record<string, (node: RehaxView, value: any) => void> = {
       node._rhx_gestureHandler.onMouseMove = value;
     }
   },
+  onKey: (node: RehaxView, value) => {
+    const keyHandler = new rehax.KeyHandler();
+    keyHandler.setup(value);
+    node.addKeyHandler(keyHandler);
+  },
 } as const;
 
 export const {

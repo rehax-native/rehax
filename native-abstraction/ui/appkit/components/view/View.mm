@@ -2,6 +2,7 @@
 #include "../../../base.h"
 #include "../layouts/StackLayout.h"
 #include "Gesture.h"
+#include "KeyHandler.h"
 
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
@@ -266,6 +267,16 @@ void View::removeGesture(ObjectPointer<Gesture> gesture) {
     gestures.erase(it);
     gesture->decreaseReferenceCount();
   }
+}
+
+void View::addKeyHandler(ObjectPointer<KeyHandler> keyHandler) {
+  BaseView * view = (__bridge BaseView *) nativeView;
+  view->keyHandlers.push_back(keyHandler->handler);
+}
+
+void View::removeKeyHandler(ObjectPointer<KeyHandler> keyHandler) {
+//  BaseView * view = (__bridge BaseView *) nativeView;
+//  view->keyDownHandlers.push_back(keyHandler.handler);
 }
 
 }

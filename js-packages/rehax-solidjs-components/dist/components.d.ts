@@ -60,6 +60,10 @@ export interface ViewBaseProps {
         x: number;
         y: number;
     }) => void;
+    onKey?: (e: {
+        key: string;
+        isKeyDown: boolean;
+    }) => void;
 }
 export interface ViewProps extends ViewBaseProps {
     children?: JSX.Element;
@@ -92,11 +96,13 @@ export interface TextInputProps extends ViewBaseProps {
 }
 /** A text input to capture all kind of user input */
 export declare function TextInput(props: TextInputProps): RehaxTextInput;
+interface SelectOption {
+    value: string;
+    name: string;
+}
 export interface SelectProps extends ViewBaseProps {
-    options?: ({
-        value: string;
-        name: string;
-    })[];
+    options?: SelectOption[];
+    onValueChange?: (value?: SelectOption) => void;
 }
 /** A text input to capture all kind of user input */
 export declare function Select(props: SelectProps): RehaxSelect;
@@ -157,3 +163,4 @@ export declare function QuadraticBezier(x1: number, y1: number, x: number, y: nu
 export declare function CubicBezier(x1: number, y1: number, x2: number, y2: number, x: number, y: number): (path: RehaxVectorPath) => void;
 export declare function Close(): (path: RehaxVectorPath) => void;
 export declare function Arc(rx: number, ry: number, xAxisRotation: number, largeArc: number, sweepFlag: number, x: number, y: number): (path: RehaxVectorPath) => void;
+export {};

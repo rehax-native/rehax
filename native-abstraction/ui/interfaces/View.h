@@ -1,6 +1,7 @@
 using namespace rehaxUtils;
 
 class Gesture;
+class KeyHandler;
 
 class View : public Object<View> {
 
@@ -72,8 +73,11 @@ public:
   RHX_EXPORT void setOpacity(rehax::ui::DefaultValue);
 
   // Gesture
-  RHX_EXPORT void addGesture(ObjectPointer<Gesture> Gesture);
-  RHX_EXPORT void removeGesture(ObjectPointer<Gesture> Gesture);
+  RHX_EXPORT void addGesture(ObjectPointer<Gesture> gesture);
+  RHX_EXPORT void removeGesture(ObjectPointer<Gesture> gesture);
+
+  RHX_EXPORT void addKeyHandler(ObjectPointer<KeyHandler> keyHandler);
+  RHX_EXPORT void removeKeyHandler(ObjectPointer<KeyHandler> keyHandler);
 
 protected:
   void * nativeView = nullptr;

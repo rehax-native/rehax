@@ -224,7 +224,7 @@ function Example4Comp() {
 function Example4() {
   let input
   return (
-    <View layout={<StackLayout options={{ spacing: 20 }} />}>
+    <View layout={<StackLayout options={{ spacing: 20 }} />} onKey={e => console.log(JSON.stringify(e))}>
       <Example4Comp />
       <Example4Comp />
       <Example4Comp />
