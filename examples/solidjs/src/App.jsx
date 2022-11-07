@@ -1,4 +1,4 @@
-import { createSignal, createMemo, createEffect } from "solid-js";
+import { createSignal, createMemo, createEffect, Show } from "solid-js";
 import {
   Color,
   Length,
@@ -16,14 +16,15 @@ import {
   Select,
 } from "@rehax/solidjs-components";
 import fetch from "@rehax/fetch";
-import crypto from 'crypto'
+import crypto from "crypto";
 
 function Example1() {
   const [count, setCount] = createSignal(10);
   const [display, setDisplay] = createSignal("flex");
   const [justifyContent, setJustifyContent] = createSignal("flex-start");
   const [alignItems, setAlignItems] = createSignal("flex-start");
-  const [cb, setCb] = createSignal(() => console.log(2))
+  const [cb, setCb] = createSignal(() => console.log(2));
+  const [showRect, setShowRect] = createSignal(true)
 
   return (
     <View
@@ -62,6 +63,8 @@ function Example1() {
           const n = rnd.readUInt32BE(0);
           setCb(() => () => console.log(n));
 
+          setShowRect(false)
+
           // }
           // const result = rehax.fs.readdirSync("path")
           // console.log(JSON.stringify(result))
@@ -69,10 +72,12 @@ function Example1() {
       />
       <Button title="loop" onPress={cb()} />
       <VectorContainer width={Length.Fixed(20)} height={Length.Fixed(20)}>
-        <VectorRect
-          size={{ width: 20, height: 15 }}
-          fillColor={Color.RGBA(255, 0, 0, 1)}
-        />
+        <Show when={showRect()}>
+          <VectorRect
+            size={{ width: 20, height: 15 }}
+            fillColor={Color.RGBA(255, 0, 0, 1)}
+          />
+        </Show>
       </VectorContainer>
       <Button
         title={`Switch flex/stack ${display()}`}
@@ -150,8 +155,13 @@ function Example3() {
     >
       <Text text="EDA">
         <Text underlined>??</Text>{" "}
-        <Text fontSize={20} textColor={Color.RGBA(255, 100, 0, 1)} italic>red</Text> SNDX.io
-        <Text strikeThrough fontFamilies={['Courier New', 'Roboto']}>Henlo</Text>
+        <Text fontSize={20} textColor={Color.RGBA(255, 100, 0, 1)} italic>
+          red
+        </Text>{" "}
+        SNDX.io
+        <Text strikeThrough fontFamilies={["Courier New", "Roboto"]}>
+          Henlo
+        </Text>
       </Text>
       {/* <View>
         <View
@@ -215,16 +225,18 @@ function Example4Comp() {
         />
       }
     >
-      My name
-      01
+      My name 01
     </View>
   );
 }
 
 function Example4() {
-  let input
+  let input;
   return (
-    <View layout={<StackLayout options={{ spacing: 20 }} />} onKey={e => console.log(JSON.stringify(e))}>
+    <View
+      layout={<StackLayout options={{ spacing: 20 }} />}
+      // onKey={e => console.log(JSON.stringify(e))}
+    >
       <Example4Comp />
       <Example4Comp />
       <Example4Comp />
@@ -251,7 +263,7 @@ function Example4() {
           { value: "val1", name: "Value 1" },
           { value: "val2", name: "Value 2" },
         ]}
-        onValueChange={value => console.log(value.name)}
+        onValueChange={(value) => console.log(value.name)}
       ></Select>
     </View>
   );

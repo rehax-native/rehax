@@ -8,8 +8,8 @@ enum class StackLayoutDirection {
 };
 
 struct StackLayoutOptions {
-  StackLayoutDirection direction;
-  float spacing;
+  StackLayoutDirection direction = StackLayoutDirection::Vertical;
+  float spacing = 0;
 };
 
 }

@@ -160,8 +160,9 @@ interface SelectOption {
 }
 
 export interface SelectProps extends ViewBaseProps {
-  options?: SelectOption[]
+  options?: SelectOption[];
   onValueChange?: (value?: SelectOption) => void;
+  value?: string;
 }
 
 /** A text input to capture all kind of user input */

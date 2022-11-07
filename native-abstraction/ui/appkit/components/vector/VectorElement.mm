@@ -11,6 +11,11 @@ namespace rehax::ui::appkit::impl {
 
 #include "../../../shared/components/VectorElement.cc"
 
+void VectorElement::removeFromNativeParent() {
+  CALayer * layer = (__bridge CALayer *) this->nativeView;
+  [layer removeFromSuperlayer];
+}
+
 void VectorElement::setLineWidth(float width) {
   CALayer * layer = (__bridge CALayer *) this->nativeView;
   CAShapeLayer * shapeLayer = getShapeAtIndex(layer, 1);

@@ -1082,10 +1082,8 @@ function Example4() {
       });
     },
 
-    onKey: e => console.log(JSON.stringify(e)),
-
     get children() {
-      return [createComponent(Example4Comp, {}), createComponent(Example4Comp, {}), createComponent(Example4Comp, {}), createComponent(Text, {
+      return ["\uD83D\uDE05", createComponent(Example4Comp, {}), createComponent(Example4Comp, {}), createComponent(Example4Comp, {}), createComponent(Text, {
         get horizontalPosition() {
           return Length.Fixed(100);
         },

@@ -5,6 +5,8 @@ class VectorElement : public View {
 public:
   RHX_EXPORT static std::string ClassName();
 
+  RHX_EXPORT virtual void removeFromNativeParent();
+
   RHX_EXPORT void setLineWidth(float width);
   RHX_EXPORT void setLineWidth(rehax::ui::DefaultValue);
   RHX_EXPORT void setLineCap(VectorLineCap capsStyle);

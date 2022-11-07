@@ -25,25 +25,36 @@
 
 -(void)keyDown:(NSEvent *)event
 {
-  rehax::ui::KeyEvent keyEvent {
-    .isKeyDown = true,
-    .key = [[event charactersIgnoringModifiers] cStringUsingEncoding:NSUTF8StringEncoding],
-  };
-  for (auto handler : keyHandlers) {
-    handler(keyEvent);
+  // TODO handle event bubbling
+  if (keyHandlers.size() > 0) {
+    rehax::ui::KeyEvent keyEvent {
+      .isKeyDown = true,
+      .key = [[event charactersIgnoringModifiers] cStringUsingEncoding:NSUTF8StringEncoding],
+    };
+    for (auto handler : keyHandlers) {
+      handler(keyEvent);
+    }
+  } else {
+    [super keyDown:event];
   }
 }
 
 -(void)keyUp:(NSEvent *)event
 {
-  rehax::ui::KeyEvent keyEvent {
-    .isKeyDown = false,
-    .key = [[event charactersIgnoringModifiers] cStringUsingEncoding:NSUTF8StringEncoding],
-  };
-  for (auto handler : keyHandlers) {
-    handler(keyEvent);
+  // TODO handle event bubbling
+  if (keyHandlers.size() > 0) {
+    rehax::ui::KeyEvent keyEvent {
+      .isKeyDown = false,
+      .key = [[event charactersIgnoringModifiers] cStringUsingEncoding:NSUTF8StringEncoding],
+    };
+    for (auto handler : keyHandlers) {
+      handler(keyEvent);
+    }
+  } else {
+    [super keyUp:event];
   }
 }
+
 
 @end
 

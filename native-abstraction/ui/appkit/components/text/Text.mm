@@ -157,14 +157,17 @@ std::string Text::collectChildrenText() {
     Text * childText = (Text*) child;
     childrenText += childText->text + childText->collectChildrenText();
   }
-  childrenTextLength = childrenText.size();
+  childrenTextLength = [NSString stringWithUTF8String:childrenText.c_str()].length;
   return childrenText;
 }
 
 unsigned int Text::applyAttributes(unsigned int pos, void * attributedString) {
   NSMutableAttributedString * str = (__bridge NSMutableAttributedString *) attributedString;
-  auto rangeLength = text.size() + childrenTextLength;
-    
+  
+  NSString * nsStr = [NSString stringWithUTF8String:text.c_str()];
+  auto strLength = nsStr.length;
+  auto rangeLength = strLength + childrenTextLength;
+  
   if (hasFontSize || hasFontWeight || fontFamilies.size() > 0) {
     NSFont * font = nil;
     for (int i = 0; i < fontFamilies.size(); i++)
@@ -199,9 +202,9 @@ unsigned int Text::applyAttributes(unsigned int pos, void * attributedString) {
   int childrenSize = 0;
   for (auto & child : children) {
     Text * childText = (Text*) child;
-    childrenSize += childText->applyAttributes(pos + text.size() + childrenSize, attributedString);
+    childrenSize += childText->applyAttributes(pos + strLength + childrenSize, attributedString);
   }
-  return text.size() + childrenTextLength;
+  return strLength + childrenTextLength;
 }
 
 void Text::layout() {

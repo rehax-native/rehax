@@ -55,7 +55,7 @@ void View::addView(ObjectPointer<View> view, ObjectPointer<View> beforeView) {
 
 void View::removeView(ObjectPointer<View> view) {
   this->removeContainerView(view);
-  removeNativeView(view->nativeView);
+  view->removeFromNativeParent();
   _layout->onViewRemoved(this, view.get());
 }
 
