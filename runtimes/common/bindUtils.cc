@@ -14,7 +14,10 @@ void Bindings::bindOS() {
         return "linux";
       case rehaxUtils::OSName::Windows:
         return "windows";
+      case rehaxUtils::OSName::Unknown:
+        return "unknown";
     }
+    return "unknown";
   }, this);
   runtime::SetObjectProperty(ctx, object, "name", name);
 

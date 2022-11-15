@@ -218,9 +218,10 @@ function (rehax_add_to_executable app_name)
                 # PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out"
                 #  "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
             )
-            message(WARNING ${FLUXE_WIN_LIB})
-            message(WARNING ${SKIA_LIB})
-            message(WARNING ${SKUNICODE_LIB})
+            # message(WARNING "${REHAX_FLUXE_LOCATION}/dist/out")
+            # message(WARNING ${FLUXE_WIN_LIB})
+            # message(WARNING ${SKIA_LIB})
+            # message(WARNING ${SKUNICODE_LIB})
             target_link_libraries(
                 ${app_name}
                 ${FLUXE_WIN_LIB}
@@ -242,6 +243,7 @@ function (rehax_add_to_executable app_name)
         message(FATAL_ERROR "Backend not supported: ${REHAX_BACKEND}. please set BACKEND. Candidates: appkit, fluxe")
     endif ()
 
+    # message(WARNING "${REHAX_BUNDLE_COMMAND}")
     if (NOT "${REHAX_BUNDLE_COMMAND}" STREQUAL "")
         separate_arguments(REHAX_BUNDLE_COMMAND NATIVE_COMMAND "${REHAX_BUNDLE_COMMAND}")
         add_custom_command(
