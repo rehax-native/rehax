@@ -48,6 +48,27 @@ function createRoot(fn, detachedOwner) {
   }
 }
 
+function createSignal(value, options) {
+  options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+  const s = {
+    value,
+    observers: null,
+    observerSlots: null,
+    pending: NOTPENDING,
+    comparator: options.equals || undefined
+  };
+
+  const setter = value => {
+    if (typeof value === "function") {
+      value = value(s.pending !== NOTPENDING ? s.pending : s.value);
+    }
+
+    return writeSignal(s, value);
+  };
+
+  return [readSignal.bind(s), setter];
+}
+
 function createRenderEffect(fn, value, options) {
   const c = createComputation(fn, value, false, STALE);
   updateComputation(c);
@@ -432,6 +453,23 @@ function mergeProps$2(...sources) {
     }
 
   }, propTraps);
+}
+
+function Show(props) {
+  let strictEqual = false;
+  const condition = createMemo(() => props.when, undefined, {
+    equals: (a, b) => strictEqual ? a === b : !a === !b
+  });
+  return createMemo(() => {
+    const c = condition();
+
+    if (c) {
+      const child = props.children;
+      return (strictEqual = typeof child === "function" && child.length > 0) ? untrack(() => child(c)) : child;
+    }
+
+    return props.fallback;
+  });
 }
 
 function memo$1(fn, equals) {
@@ -919,34 +957,6 @@ function getRootView() {
   return rehax.rootView;
 }
 
-const Length = {
-  Fill() {
-    return {
-      type: "fill"
-    };
-  },
-
-  Natural() {
-    return {
-      type: "natural"
-    };
-  },
-
-  Fixed(value) {
-    return {
-      value,
-      type: "fixed"
-    };
-  },
-
-  Percent(value) {
-    return {
-      value,
-      type: "percent"
-    };
-  }
-
-};
 /** A base view */
 
 function View(props) {
@@ -980,28 +990,6 @@ function Button(props) {
     return _el$3;
   })();
 }
-/** A text input to capture all kind of user input */
-
-function TextInput(props) {
-  return (() => {
-    const _el$4 = createElement("rehaxInput");
-
-    spread(_el$4, props, false);
-
-    return _el$4;
-  })();
-}
-/** A text input to capture all kind of user input */
-
-function Select(props) {
-  return (() => {
-    const _el$5 = createElement("rehaxSelect");
-
-    spread(_el$5, props, false);
-
-    return _el$5;
-  })();
-}
 function FlexLayout(props) {
   return (() => {
     const _el$6 = createElement("rehaxFlexLayout");
@@ -1009,15 +997,6 @@ function FlexLayout(props) {
     spread(_el$6, props, false);
 
     return _el$6;
-  })();
-}
-function StackLayout(props) {
-  return (() => {
-    const _el$7 = createElement("rehaxStackLayout");
-
-    spread(_el$7, props, false);
-
-    return _el$7;
   })();
 }
 
@@ -1053,71 +1032,44 @@ undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator)
   });
 };
 
-function Example4Comp() {
-  return createComponent(View, {
-    get width() {
-      return Length.Fixed(100);
-    },
-
-    get layout() {
-      return createComponent(FlexLayout, {
-        options: {
-          alignItems: "center"
-        }
-      });
-    },
-
-    children: "My name 01"
-  });
-}
-
-function Example4() {
-  let input;
+function Example5() {
+  const [show, setShow] = createSignal(true);
   return createComponent(View, {
     get layout() {
-      return createComponent(StackLayout, {
-        options: {
-          spacing: 20
-        }
-      });
+      return createComponent(FlexLayout, {});
     },
 
     get children() {
-      return ["\uD83D\uDE05", createComponent(Example4Comp, {}), createComponent(Example4Comp, {}), createComponent(Example4Comp, {}), createComponent(Text, {
-        get horizontalPosition() {
-          return Length.Fixed(100);
-        },
-
-        get verticalPosition() {
-          return Length.Fixed(5);
-        },
-
-        onMouseMove: e => console.log(e.x),
+      return [createComponent(Button, {
+        title: "Remove",
+        onPress: () => {
+          setShow(false);
+        }
+      }), createComponent(Text, {
         children: "Hello"
-      }), createComponent(TextInput, {
-        onValueChange: () => console.log("change"),
-        onBlur: () => console.log("blurred"),
-        onSubmit: () => console.log("submitted")
-      }), createComponent(TextInput, {
-        ref(r$) {
-          const _ref$ = input;
-          typeof _ref$ === "function" ? _ref$(r$) : input = r$;
+      }), createComponent(Text, {
+        children: "Hello"
+      }), createComponent(Show, {
+        get when() {
+          return show();
         },
 
-        onValueChange: () => console.log("change"),
-        onFocus: () => console.log("focused")
-      }), createComponent(Button, {
-        title: "Focus input",
-        onPress: () => input.focus()
-      }), createComponent(Select, {
-        options: [{
-          value: "val1",
-          name: "Value 1"
-        }, {
-          value: "val2",
-          name: "Value 2"
-        }],
-        onValueChange: value => console.log(value.name)
+        get children() {
+          return [createComponent(Text, {
+            children: "Hello"
+          }), createComponent(Text, {
+            children: "Hello"
+          }), createComponent(Text, {
+            children: "Hello"
+          }), createComponent(Text, {
+            children: "Hello"
+          }), createComponent(Text, {
+            children: "Hello"
+          }), createComponent(Text, {
+            children: "Hello"
+          })];
+        }
+
       })];
     }
 
@@ -1127,7 +1079,8 @@ function Example4() {
 function App() {
   // return <Example1 />;
   // return <Example3 />;
-  return createComponent(Example4, {}); // return <Tester />;
+  // return <Example4 />;
+  return createComponent(Example5, {}); // return <Tester />;
 }
 
 render(() => createComponent(App, {}), getRootView());

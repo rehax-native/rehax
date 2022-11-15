@@ -269,10 +269,32 @@ function Example4() {
   );
 }
 
+function Example5() {
+  const [show, setShow] = createSignal(true)
+  return (
+    <View layout={<FlexLayout />}>
+      <Button title="Remove" onPress={() => {
+        setShow(false)
+      }} />
+      <Text>Hello</Text>
+      <Text>Hello</Text>
+      <Show when={show()}>
+        <Text>Hello</Text>
+        <Text>Hello</Text>
+        <Text>Hello</Text>
+        <Text>Hello</Text>
+        <Text>Hello</Text>
+        <Text>Hello</Text>
+      </Show>
+    </View>
+  );
+}
+
 function App() {
   // return <Example1 />;
   // return <Example3 />;
-  return <Example4 />;
+  // return <Example4 />;
+  return <Example5 />;
   // return <Tester />;
 }
 

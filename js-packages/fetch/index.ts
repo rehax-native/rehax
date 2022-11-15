@@ -1,4 +1,4 @@
-import { HttpMethod, HttpRequest } from "./global";
+import { HttpMethod } from "./global";
 
 export interface FetchRequest {
   url?: string;
@@ -7,7 +7,7 @@ export interface FetchRequest {
   body?: string;
 }
 
-export interface FetchReponse {
+export interface FetchResponse {
   headers?: Record<string, string>;
   ok: boolean;
   status: number;
@@ -19,7 +19,7 @@ export interface FetchReponse {
 function fetch(
   urlOrRequest: string | FetchRequest,
   requestOptions?: FetchRequest
-): Promise<FetchReponse> {
+): Promise<FetchResponse> {
   const options = {
     ...(requestOptions ??
       (typeof urlOrRequest !== "string" ? urlOrRequest : {})),

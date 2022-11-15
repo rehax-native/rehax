@@ -10,6 +10,7 @@ class Runtime : public Bindings {
 
 public:
   Runtime();
+  ~Runtime();
   void evaluate(std::string script);
   void makeConsole();
   #ifdef REHAX_WITH_FLUXE
@@ -20,8 +21,8 @@ public:
   #endif
 
 private:
-  JSVirtualMachine * vm;
-  JSContext * context;
+  JSVirtualMachine * vm = nullptr;
+  JSContext * context = nullptr;
 };
 
 }

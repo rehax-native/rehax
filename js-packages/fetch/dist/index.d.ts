@@ -5,12 +5,12 @@ export interface FetchRequest {
     headers?: Record<string, string>;
     body?: string;
 }
-export interface FetchReponse {
+export interface FetchResponse {
     headers?: Record<string, string>;
     ok: boolean;
     status: number;
     json<T = any>(): Promise<T>;
     text(): Promise<string>;
 }
-declare function fetch(urlOrRequest: string | FetchRequest, requestOptions?: FetchRequest): Promise<FetchReponse>;
+declare function fetch(urlOrRequest: string | FetchRequest, requestOptions?: FetchRequest): Promise<FetchResponse>;
 export default fetch;

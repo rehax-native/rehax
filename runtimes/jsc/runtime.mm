@@ -12,6 +12,11 @@ Runtime::Runtime() {
   Bindings::setContext(context.JSGlobalContextRef);
 }
 
+Runtime::~Runtime() {
+  context = nullptr;
+  vm = nullptr;
+}
+
 void Runtime::evaluate(std::string script) {
   NSString * scriptString = [NSString stringWithUTF8String:script.c_str()];
   [context evaluateScript:scriptString];

@@ -7,6 +7,11 @@ namespace rehax::ui::fluxe::impl {
 
 #include "../../../shared/components/VectorElement.cc"
 
+void VectorElement::removeFromNativeParent() {
+  auto view = static_cast<FluxeVectorElement *>(this->nativeView);
+  view->removeFromParent();
+}
+
 void VectorElement::setLineWidth(float width) {
   auto view = static_cast<FluxeVectorElement *>(this->nativeView);
   view->lineWidth = width;
