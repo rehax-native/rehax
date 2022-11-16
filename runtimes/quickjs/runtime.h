@@ -1,7 +1,6 @@
 #pragma once
 
 #include "./bindings.h"
-#include <thread>
 
 namespace rehax {
 namespace quickjs {
@@ -23,7 +22,6 @@ public:
 private:
   JSRuntime * runtime;
   JSContext * context;
-  std::thread * runtimeThread;
 };
 
 }
