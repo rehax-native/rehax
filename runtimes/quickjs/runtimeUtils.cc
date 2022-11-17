@@ -45,7 +45,8 @@ bool rehax::quickjs::runtime::HasObjectProperty(Context ctx, Value object, std::
 
 std::vector<std::string> rehax::quickjs::runtime::GetObjectProperties(Context ctx, Value object) {
   std::vector<std::string> properties;
-  auto jsProps = JS_Invoke(ctx, object, JS_NewAtom(ctx, "Object.keys(this)"), 0, nullptr);
+  std::string js = "Object.keys(this)";
+  auto jsProps = JS_EvalThis(ctx, object, js.c_str(), js.size(), "<internal>", 0);
   auto jsLength = JS_GetPropertyStr(ctx, jsProps, "length");
   int length;
   JS_ToInt32(ctx, &length, jsLength);

@@ -3,15 +3,6 @@
 
 using namespace rehax::quickjs;
 
-void jobLoop(JSRuntime * runtime)
-{
-  for (;;) {
-    while (JS_IsJobPending(runtime)) {
-      JSContext * ctx1;
-      JS_ExecutePendingJob(runtime, &ctx1); // this must be called in main thread again
-    }
-  }
-}
 
 Runtime::Runtime() {
   runtime = JS_NewRuntime();
@@ -20,16 +11,12 @@ Runtime::Runtime() {
   JS_SetMaxStackSize(runtime, 10 * 1024 * 1024);
   JS_SetHostPromiseRejectionTracker(runtime, js_std_promise_rejection_tracker, NULL);
 
-  runtimeThread = new std::thread(jobLoop, runtime);
-
   Bindings::setContext(context, runtime);
 }
 
 Runtime::~Runtime() {
   JS_FreeContext(context);
   JS_FreeRuntime(runtime);
-  runtimeThread->join();
-  delete runtimeThread;
 }
 
 void Runtime::makeConsole() {

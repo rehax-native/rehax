@@ -140,6 +140,15 @@ public:
   }
   JSValue call(JSContext * ctx, size_t numArgs, JSValue * args) {
     auto ret = JS_Call(ctx, fn, JS_NULL, numArgs, args);
+
+    // After we call some js function, quickjs resolves promises. Resolving doesn't run them immediately, instead it creates pending jobs
+    // We run all pending jobs here. I'm not sure if this is sufficient, meaning whether this always runs all pending jobs we will encounter
+    auto runtime = JS_GetRuntime(ctx);
+    while (JS_IsJobPending(runtime)) {
+      JSContext * ctx1;
+      JS_ExecutePendingJob(runtime, &ctx1);
+    }
+
     return ret;
   }
 private:
