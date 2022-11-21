@@ -133,7 +133,11 @@ void Text::rebuildAttributedString() {
   view.frame = CGRectMake(0, 0, 1000, 1000); // Need this otherwise if you update the text the letters will appear vertically
 
   [view.layoutManager ensureLayoutForTextContainer:view.textContainer];
-  CGSize size = [view.layoutManager usedRectForTextContainer:view.textContainer].size;
+  
+  // This is a bit weird. We get the width and height of the text in two different ways, and also add some extra space in the constraint
+  // Somehow we don't get super accurate sizes
+  CGFloat width = [view.layoutManager usedRectForTextContainer:view.textContainer].size.width;
+  CGFloat height = [str boundingRectWithSize:view.frame.size options:NSStringDrawingTruncatesLastVisibleLine].size.height;
     
   NSArray * constraints = [view.constraints copy];
   for (NSLayoutConstraint * constraint : constraints) {
@@ -143,11 +147,11 @@ void Text::rebuildAttributedString() {
   }
 
   NSLayoutConstraint * constraint;
-  constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:size.height];
+  constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:height];
   constraint.identifier = @"rhx_text_size";
   [view addConstraint:constraint];
 
-  constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:size.width + 2];
+  constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:width + 2];
   constraint.identifier = @"rhx_text_size";
   [view addConstraint:constraint];
 }
