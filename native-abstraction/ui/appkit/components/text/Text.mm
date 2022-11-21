@@ -147,7 +147,7 @@ void Text::rebuildAttributedString() {
   constraint.identifier = @"rhx_text_size";
   [view addConstraint:constraint];
 
-  constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:size.width];
+  constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:size.width + 2];
   constraint.identifier = @"rhx_text_size";
   [view addConstraint:constraint];
 }
