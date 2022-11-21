@@ -211,6 +211,17 @@ function (rehax_add_to_executable app_name)
             )
         endif()
         if (${WIN})
+            FetchContent_Declare(glfw
+                GIT_REPOSITORY https://github.com/glfw/glfw.git
+                GIT_TAG        dd8a678a66f1967372e5a5e3deac41ebf65ee127
+            )
+            set( GLFW_BUILD_DOCS OFF CACHE BOOL  "GLFW lib only" )
+            set( GLFW_INSTALL OFF CACHE BOOL  "GLFW lib only" )
+            FetchContent_MakeAvailable(glfw)
+            include_directories(${glfw_SOURCE_DIR}/include)
+
+            find_package(OpenGL REQUIRED)
+            include_directories(${OPENGL_INCLUDE_DIRS})
             find_library(
                 FLUXE_WIN_LIB 
                 NAMES fluxe
@@ -233,6 +244,8 @@ function (rehax_add_to_executable app_name)
                 ${SKTEXT_LIB}
                 ${SKUNICODE_LIB}
                 opengl32
+                glfw
+                Comctl32
             )
             target_compile_definitions(${app_name} PUBLIC -DWINVER=0x0605)
         endif()
