@@ -273,8 +273,20 @@ function Example5() {
   const [show, setShow] = createSignal(true)
   return (
     <View layout={<FlexLayout />}>
-      <Button title="Remove" onPress={() => {
+      <Button title="Remove" onPress={async () => {
+        await new Promise(resolve => setTimeout(resolve, 2000))
         setShow(false)
+
+        const res = await fetch("https://www.toptal.com/developers/postbin/1668597792320-0728177467826", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            test: '123',
+          }),
+        });
+        console.log(res.status)
       }} />
       <Text>Hello</Text>
       <Text>Hello</Text>
