@@ -24,6 +24,7 @@ void FlexLayout::setOptions(FlexLayoutOptions flexLayoutOptions) {
   justifyContent = flexLayoutOptions.justifyContent;
   alignItems = flexLayoutOptions.alignItems;
   items = flexLayoutOptions.items;
+  gap = flexLayoutOptions.gap;
   if (containerView.isValid()) {
     containerView->layout();
   }

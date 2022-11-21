@@ -103,6 +103,7 @@ interface SelectOption {
 export interface SelectProps extends ViewBaseProps {
     options?: SelectOption[];
     onValueChange?: (value?: SelectOption) => void;
+    value?: string;
 }
 /** A text input to capture all kind of user input */
 export declare function Select(props: SelectProps): RehaxSelect;
@@ -111,6 +112,7 @@ export interface FlexLayoutProps extends ViewBaseProps {
         direction?: "row" | "column" | "row-reverse" | "column-reverse";
         justifyContent?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around";
         alignItems?: "flex-start" | "flex-end" | "center" | "stretch";
+        gap?: number;
         items?: Array<{
             flexGrow?: number;
             order?: number;

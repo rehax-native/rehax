@@ -184,7 +184,7 @@ void FlexLayout::layoutContainer(View * container) {
   nativeInfo = (void*) CFBridgingRetain(constraintsArray);
   
   NSView * prevView = NULL;
-  float spacing = 0.0;
+  float spacing = gap;
   
   auto crossProps = flexLayoutAttributeForAlign(!isHorizontal, alignItems);
 
@@ -206,20 +206,20 @@ void FlexLayout::layoutContainer(View * container) {
       itemProps = flexLayoutAttributeForAlign(!isHorizontal, items[0].alignSelf);
     }
 
-    constraint = [NSLayoutConstraint constraintWithItem:view attribute:std::get<1>(itemProps) relatedBy:NSLayoutRelationEqual toItem:view.subviews[0] attribute:std::get<1>(itemProps) multiplier:1.0 constant:-spacing];
+    constraint = [NSLayoutConstraint constraintWithItem:view attribute:std::get<1>(itemProps) relatedBy:NSLayoutRelationEqual toItem:view.subviews[0] attribute:std::get<1>(itemProps) multiplier:1.0 constant:0];
     constraint.identifier = @"Flex cross axis min";
     constraint.priority = 800;
     [view addConstraint:constraint];
     [constraintsArray addObject:constraint];
     
-    constraint = [NSLayoutConstraint constraintWithItem:view.subviews[0] attribute:std::get<0>(itemProps) relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:std::get<0>(itemProps) multiplier:1.0 constant:-2.0 * spacing];
+    constraint = [NSLayoutConstraint constraintWithItem:view.subviews[0] attribute:std::get<0>(itemProps) relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:std::get<0>(itemProps) multiplier:1.0 constant:0];
     constraint.identifier = @"Flex cross size max";
     constraint.priority = 800;
     [view addConstraint:constraint];
     [constraintsArray addObject:constraint];
 
     if (std::get<2>(itemProps)) {
-      constraint = [NSLayoutConstraint constraintWithItem:view.subviews[0] attribute:std::get<3>(itemProps) relatedBy:NSLayoutRelationEqual toItem:view attribute:std::get<3>(itemProps) multiplier:1.0 constant:-2.0 * spacing];
+      constraint = [NSLayoutConstraint constraintWithItem:view.subviews[0] attribute:std::get<3>(itemProps) relatedBy:NSLayoutRelationEqual toItem:view attribute:std::get<3>(itemProps) multiplier:1.0 constant:0];
       constraint.identifier = @"Flex cross axis max";
       constraint.priority = 800;
       [view addConstraint:constraint];
@@ -254,20 +254,20 @@ void FlexLayout::layoutContainer(View * container) {
 
     prevView = subView;
 
-    constraint = [NSLayoutConstraint constraintWithItem:view attribute:std::get<1>(itemProps) relatedBy:NSLayoutRelationEqual toItem:subView attribute:std::get<1>(itemProps) multiplier:1.0 constant:-spacing];
+    constraint = [NSLayoutConstraint constraintWithItem:view attribute:std::get<1>(itemProps) relatedBy:NSLayoutRelationEqual toItem:subView attribute:std::get<1>(itemProps) multiplier:1.0 constant:0];
     constraint.identifier = @"Flex cross axis min";
     constraint.priority = 800;
     [view addConstraint:constraint];
     [constraintsArray addObject:constraint];
     
-    constraint = [NSLayoutConstraint constraintWithItem:subView attribute:std::get<0>(itemProps) relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:std::get<0>(itemProps) multiplier:1.0 constant:-2.0 * spacing];
+    constraint = [NSLayoutConstraint constraintWithItem:subView attribute:std::get<0>(itemProps) relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:std::get<0>(itemProps) multiplier:1.0 constant:0];
     constraint.identifier = @"Flex cross size max";
     constraint.priority = 800;
     [view addConstraint:constraint];
     [constraintsArray addObject:constraint];
 
     if (std::get<2>(itemProps)) {
-      constraint = [NSLayoutConstraint constraintWithItem:subView attribute:std::get<3>(itemProps) relatedBy:NSLayoutRelationEqual toItem:view attribute:std::get<3>(itemProps) multiplier:1.0 constant:-2.0 * spacing];
+      constraint = [NSLayoutConstraint constraintWithItem:subView attribute:std::get<3>(itemProps) relatedBy:NSLayoutRelationEqual toItem:view attribute:std::get<3>(itemProps) multiplier:1.0 constant:0];
       constraint.identifier = @"Flex cross axis max";
       constraint.priority = 800;
       [view addConstraint:constraint];
@@ -312,7 +312,7 @@ void FlexLayout::layoutContainer(View * container) {
 
   if ((justifyContent == FlexJustifyContent::FlexStart || totalFlex > 0.0) && view.subviews.count > 0) {
     auto subView = view.subviews[0];
-    constraint = [NSLayoutConstraint constraintWithItem:view attribute:minProp relatedBy:NSLayoutRelationEqual toItem:subView attribute:minProp multiplier:1.0 constant:-spacing];
+    constraint = [NSLayoutConstraint constraintWithItem:view attribute:minProp relatedBy:NSLayoutRelationEqual toItem:subView attribute:minProp multiplier:1.0 constant:-0];
     constraint.identifier = @"Flex main axis justify start";
     constraint.priority = 800;
     [view addConstraint:constraint];
@@ -321,7 +321,7 @@ void FlexLayout::layoutContainer(View * container) {
 
   if ((justifyContent == FlexJustifyContent::FlexEnd || totalFlex > 0.0) && view.subviews.count > 0) {
     auto subView = view.subviews[view.subviews.count - 1];
-    constraint = [NSLayoutConstraint constraintWithItem:view attribute:maxProp relatedBy:NSLayoutRelationEqual toItem:subView attribute:maxProp multiplier:1.0 constant:-spacing];
+    constraint = [NSLayoutConstraint constraintWithItem:view attribute:maxProp relatedBy:NSLayoutRelationEqual toItem:subView attribute:maxProp multiplier:1.0 constant:-0];
     constraint.identifier = @"Flex main axis justify end";
     constraint.priority = 800;
     [view addConstraint:constraint];

@@ -119,6 +119,7 @@ function Example1() {
                 direction: "column",
                 justifyContent: justifyContent(),
                 alignItems: alignItems(),
+                gap: 10,
                 // alignItems: 'center'
               }}
             />
@@ -303,9 +304,9 @@ function Example5() {
 }
 
 function App() {
-  // return <Example1 />;
+  return <Example1 />;
   // return <Example3 />;
-  return <Example4 />;
+  // return <Example4 />;
   // return <Example5 />;
   // return <Tester />;
 }

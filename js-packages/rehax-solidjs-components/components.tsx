@@ -180,6 +180,7 @@ export interface FlexLayoutProps extends ViewBaseProps {
       | "space-between"
       | "space-around";
     alignItems?: "flex-start" | "flex-end" | "center" | "stretch"; // | "baseline";
+    gap?: number;
     items?: Array<{
       flexGrow?: number;
       order?: number;

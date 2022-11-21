@@ -1,6 +1,10 @@
 'use strict';
 
-require('crypto');
+var crypto = require('crypto');
+
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var crypto__default = /*#__PURE__*/_interopDefaultLegacy(crypto);
 
 const equalFn = (a, b) => a === b;
 
@@ -46,6 +50,27 @@ function createRoot(fn, detachedOwner) {
     Listener = listener;
     Owner = owner;
   }
+}
+
+function createSignal(value, options) {
+  options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+  const s = {
+    value,
+    observers: null,
+    observerSlots: null,
+    pending: NOTPENDING,
+    comparator: options.equals || undefined
+  };
+
+  const setter = value => {
+    if (typeof value === "function") {
+      value = value(s.pending !== NOTPENDING ? s.pending : s.value);
+    }
+
+    return writeSignal(s, value);
+  };
+
+  return [readSignal.bind(s), setter];
 }
 
 function createRenderEffect(fn, value, options) {
@@ -432,6 +457,23 @@ function mergeProps$2(...sources) {
     }
 
   }, propTraps);
+}
+
+function Show(props) {
+  let strictEqual = false;
+  const condition = createMemo(() => props.when, undefined, {
+    equals: (a, b) => strictEqual ? a === b : !a === !b
+  });
+  return createMemo(() => {
+    const c = condition();
+
+    if (c) {
+      const child = props.children;
+      return (strictEqual = typeof child === "function" && child.length > 0) ? untrack(() => child(c)) : child;
+    }
+
+    return props.fallback;
+  });
 }
 
 function memo$1(fn, equals) {
@@ -919,6 +961,20 @@ function getRootView() {
   return rehax.rootView;
 }
 
+const Color = {
+  /**
+   * RGB are in range 0 - 255, alpha is 0.0 - 1.0
+   */
+  RGBA(red, green, blue, alpha) {
+    return {
+      red,
+      green,
+      blue,
+      alpha
+    };
+  }
+
+};
 const Length = {
   Fill() {
     return {
@@ -958,17 +1014,6 @@ function View(props) {
     return _el$;
   })();
 }
-/** A text view that can be styled and nested */
-
-function Text(props) {
-  return (() => {
-    const _el$2 = createElement("rehaxText");
-
-    spread(_el$2, props, false);
-
-    return _el$2;
-  })();
-}
 /** A button */
 
 function Button(props) {
@@ -991,17 +1036,6 @@ function TextInput(props) {
     return _el$4;
   })();
 }
-/** A text input to capture all kind of user input */
-
-function Select(props) {
-  return (() => {
-    const _el$5 = createElement("rehaxSelect");
-
-    spread(_el$5, props, false);
-
-    return _el$5;
-  })();
-}
 function FlexLayout(props) {
   return (() => {
     const _el$6 = createElement("rehaxFlexLayout");
@@ -1018,6 +1052,24 @@ function StackLayout(props) {
     spread(_el$7, props, false);
 
     return _el$7;
+  })();
+}
+function VectorContainer(props) {
+  return (() => {
+    const _el$8 = createElement("rehaxVectorContainer");
+
+    spread(_el$8, props, false);
+
+    return _el$8;
+  })();
+}
+function VectorRect(props) {
+  return (() => {
+    const _el$9 = createElement("rehaxVectorRect");
+
+    spread(_el$9, props, false);
+
+    return _el$9;
   })();
 }
 
@@ -1053,71 +1105,179 @@ undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator)
   });
 };
 
-function Example4Comp() {
+function Example1() {
+  const [count, setCount] = createSignal(10);
+  const [display, setDisplay] = createSignal("flex");
+  const [justifyContent, setJustifyContent] = createSignal("flex-start");
+  const [alignItems, setAlignItems] = createSignal("flex-start");
+  const [cb, setCb] = createSignal(() => console.log(2));
+  const [showRect, setShowRect] = createSignal(true);
   return createComponent(View, {
+    get height() {
+      return Length.Fill();
+    },
+
     get width() {
-      return Length.Fixed(100);
-    },
-
-    get layout() {
-      return createComponent(FlexLayout, {
-        options: {
-          alignItems: "center"
-        }
-      });
-    },
-
-    children: "My name 01"
-  });
-}
-
-function Example4() {
-  let input;
-  return createComponent(View, {
-    get layout() {
-      return createComponent(StackLayout, {
-        options: {
-          spacing: 20
-        }
-      });
+      return Length.Fill();
     },
 
     get children() {
-      return [createComponent(Example4Comp, {}), createComponent(Example4Comp, {}), createComponent(Example4Comp, {}), createComponent(Text, {
-        get horizontalPosition() {
+      return ["Count: ", memo(() => count()), createComponent(Button, {
+        title: "Test",
+        onPress: async () => {
+          // const res = await fetch('https://jsonplaceholder.typicode.com/photos')
+          // console.log('res')
+          // const text = await res.json()
+          // console.log(text)
+          // const timer = setInterval(() => {
+          //   console.log('timeout')
+          // clearTimeout(timer)
+          // }, 2000)
+          // console.log(rehax.app.getApplicationSupportDirectory())
+          // console.log(rehax.app.getCurrentUserHomeDirectory())
+          // console.log(rehax.app.getCurrentUserDesktopDirectory())
+          // console.log(rehax.app.getApplicationSupportDirectoryForApp())
+          // console.log(rehax.os.name())
+          // localStorage.setItem('test', 'my string');
+          // console.log(localStorage.getItem("test"));
+          const rnd = crypto__default["default"].randomBytes(10);
+          console.log(rnd);
+          console.log(rnd.readUInt32BE(0));
+          console.log(rnd.readUInt32BE(1));
+          const n = rnd.readUInt32BE(0);
+          setCb(() => () => console.log(n));
+          setShowRect(false); // }
+          // const result = rehax.fs.readdirSync("path")
+          // console.log(JSON.stringify(result))
+        }
+      }), createComponent(Button, {
+        title: "loop",
+
+        get onPress() {
+          return cb();
+        }
+
+      }), createComponent(VectorContainer, {
+        get width() {
+          return Length.Fixed(20);
+        },
+
+        get height() {
+          return Length.Fixed(20);
+        },
+
+        get children() {
+          return createComponent(Show, {
+            get when() {
+              return showRect();
+            },
+
+            get children() {
+              return createComponent(VectorRect, {
+                size: {
+                  width: 20,
+                  height: 15
+                },
+
+                get fillColor() {
+                  return Color.RGBA(255, 0, 0, 1);
+                }
+
+              });
+            }
+
+          });
+        }
+
+      }), createComponent(Button, {
+        get title() {
+          return `Switch flex/stack ${display()}`;
+        },
+
+        onPress: () => {
+          setCount(count() + 1);
+          setDisplay(display() === "flex" ? "none" : "flex");
+        }
+      }), createComponent(Button, {
+        get title() {
+          return `Switch justify content ${justifyContent()}`;
+        },
+
+        onPress: () => {
+          setCount(count() + 1);
+          const list = ["flex-start", "flex-end", "center"];
+          const nextIndex = (list.indexOf(justifyContent()) + 1) % list.length;
+          setJustifyContent(list[nextIndex]);
+        }
+      }), createComponent(Button, {
+        get title() {
+          return `Switch align items ${alignItems()}`;
+        },
+
+        onPress: () => {
+          setCount(count() + 1);
+          const list = ["flex-start", "flex-end", "center", "stretch"];
+          const nextIndex = (list.indexOf(alignItems()) + 1) % list.length;
+          setAlignItems(list[nextIndex]);
+        }
+      }), createComponent(TextInput, {}), createComponent(View, {
+        get width() {
           return Length.Fixed(100);
         },
 
-        get verticalPosition() {
-          return Length.Fixed(5);
+        get height() {
+          return Length.Fixed(100);
         },
 
-        onMouseMove: e => console.log(e.x),
-        children: "Hello"
-      }), createComponent(TextInput, {
-        onValueChange: () => console.log("change"),
-        onBlur: () => console.log("blurred"),
-        onSubmit: () => console.log("submitted")
-      }), createComponent(TextInput, {
-        ref(r$) {
-          const _ref$ = input;
-          typeof _ref$ === "function" ? _ref$(r$) : input = r$;
+        get backgroundColor() {
+          return Color.RGBA(0, 255, 0, 0.3);
+        }
+
+      }), createComponent(View, {
+        get height() {
+          return Length.Fixed(250);
         },
 
-        onValueChange: () => console.log("change"),
-        onFocus: () => console.log("focused")
-      }), createComponent(Button, {
-        title: "Focus input",
-        onPress: () => input.focus()
-      }), createComponent(Select, {
-        options: [{
-          value: "val1",
-          name: "Value 1"
-        }, {
-          value: "val2",
-          name: "Value 2"
-        }],
-        onValueChange: value => console.log(value.name)
+        get layout() {
+          return memo(() => display() === "flex", true)() ? createComponent(FlexLayout, {
+            get options() {
+              return {
+                direction: "column",
+                justifyContent: justifyContent(),
+                alignItems: alignItems(),
+                gap: 10 // alignItems: 'center'
+
+              };
+            }
+
+          }) : createComponent(StackLayout, {});
+        },
+
+        get children() {
+          return [createComponent(View, {
+            children: "Flex item 1"
+          }), createComponent(View, {
+            children: "Flex item 2 a little longer"
+          }), createComponent(View, {
+            children: "Flex item 3"
+          })];
+        }
+
+      }), createComponent(View, {
+        get height() {
+          return Length.Fixed(250);
+        },
+
+        get children() {
+          return [createComponent(View, {
+            children: "Stack item 1"
+          }), createComponent(View, {
+            children: "Stack item 2 a little longer"
+          }), createComponent(View, {
+            children: "Stack item 3"
+          })];
+        }
+
       })];
     }
 
@@ -1125,9 +1285,9 @@ function Example4() {
 }
 
 function App() {
-  // return <Example1 />;
-  // return <Example3 />;
-  return createComponent(Example4, {}); // return <Example5 />;
+  return createComponent(Example1, {}); // return <Example3 />;
+  // return <Example4 />;
+  // return <Example5 />;
   // return <Tester />;
 }
 

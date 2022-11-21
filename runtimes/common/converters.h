@@ -320,6 +320,7 @@ struct Converter<::rehax::ui::FlexLayoutOptions> {
     runtime::SetObjectProperty(ctx, obj, "direction", Converter<::rehax::ui::FlexLayoutDirection>::toScript(ctx, value.direction, bindings));
     runtime::SetObjectProperty(ctx, obj, "justifyContent", Converter<::rehax::ui::FlexJustifyContent>::toScript(ctx, value.justifyContent, bindings));
     runtime::SetObjectProperty(ctx, obj, "alignItems", Converter<::rehax::ui::FlexAlignItems>::toScript(ctx, value.alignItems, bindings));
+    runtime::SetObjectProperty(ctx, obj, "gap", Converter<float>::toScript(ctx, value.gap, bindings));
 
     auto arr = runtime::MakeArray(ctx);
     for (int i = 0; i < value.items.size(); i++) {
@@ -339,6 +340,9 @@ struct Converter<::rehax::ui::FlexLayoutOptions> {
     }
     if (runtime::HasObjectProperty(ctx, value, "alignItems")) {
       options.alignItems = Converter<::rehax::ui::FlexAlignItems>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "alignItems"), bindings);
+    }
+    if (runtime::HasObjectProperty(ctx, value, "gap")) {
+      options.gap = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "gap"), bindings);
     }
     if (runtime::HasObjectProperty(ctx, value, "items")) {
       runtime::Value items = runtime::GetObjectProperty(ctx, value, "items");

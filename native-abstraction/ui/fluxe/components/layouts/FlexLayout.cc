@@ -65,6 +65,8 @@ void FlexLayout::layoutContainer(View * container) {
       layout->alignItems = ::fluxe::FlexAlignItems::Stretch;
       break;
   }
+
+  layout->gap = gap;
     
 //  view->setNeedsLayout();
   view->setNeedsRerender(true);

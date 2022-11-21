@@ -27,6 +27,7 @@ private:
   bool isReverse = false;
   FlexJustifyContent justifyContent = FlexJustifyContent::FlexStart;
   FlexAlignItems alignItems = FlexAlignItems::FlexStart;
+  float gap = 0;
 
   void * nativeInfo = nullptr;
 };

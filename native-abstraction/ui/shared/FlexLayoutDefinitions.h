@@ -61,6 +61,7 @@ struct FlexItem {
 struct FlexLayoutOptions {
   FlexLayoutDirection direction = FlexLayoutDirection::Column;
 	std::vector<FlexItem> items;
+  float gap = 0;
   FlexJustifyContent justifyContent = FlexJustifyContent::FlexStart;
   FlexAlignItems alignItems = FlexAlignItems::FlexStart;
 };
