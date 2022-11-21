@@ -17,6 +17,7 @@ namespace jsc {
 struct RegisteredClass {
   std::string name;
   JSClassRef classDefine;
+  JSObjectRef classObject;
   JSObjectRef prototype;
 };
 
@@ -65,6 +66,8 @@ public:
   template <typename Object, bool instantiable = true>
   void defineClass(std::string name, RegisteredClass * parentClass);
 
+  template <typename FN> void bindStaticMethod(std::string name, runtime::Value classObject, FN fn);
+
   template <typename Object, typename RET, RET (Object::*Method)(void)> void bindMethod(std::string name,  runtime::Value prototype);
   template <typename Object, void (Object::*Method)(void)> void bindMethod(std::string name, runtime::Value prototype);
   template <typename Object, typename T1, void (Object::*Method)(T1)>
@@ -90,7 +93,7 @@ public:
   bool hasRegisteredClass(std::string name);
   template <typename T> JSValueRef cppToJs(T obj);
 
-  template <typename View, typename Layout, typename Gesture, typename KeyHandler> void bindViewClassMethods(runtime::Value prototype);
+  template <typename View, typename Layout, typename Gesture, typename KeyHandler> void bindViewClassMethods(runtime::Value classObject, runtime::Value prototype);
   template <typename View> void bindButtonClassMethods(runtime::Value prototype);
   template <typename View> void bindTextClassMethods(runtime::Value prototype);
   template <typename View> void bindTextInputClassMethods(runtime::Value prototype);

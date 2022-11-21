@@ -34,12 +34,13 @@ void Bindings::defineClass(std::string name, RegisteredClass * parentClass) {
   }
   
   auto clazz = JSClassCreate(&instanceDefine);
+  auto jsClassObject = JSObjectMake(ctx, clazz, this);
   classRegistry[Object::ClassName()] = {
     .name = name,
     .classDefine = clazz,
     .prototype = prototypeObject,
+    .classObject = jsClassObject,
   };
-  auto jsClassObject = JSObjectMake(ctx, clazz, this);
   auto className = JSStringCreateWithUTF8CString(name.c_str());
 
   auto globalObject = JSContextGetGlobalObject(ctx);
@@ -48,6 +49,14 @@ void Bindings::defineClass(std::string name, RegisteredClass * parentClass) {
   JSStringRelease(className);
   
   return clazz;
+}
+
+template <typename FN>
+void Bindings::bindStaticMethod(std::string name, runtime::Value classObject, FN fn) {
+  JSStringRef methodName = JSStringCreateWithUTF8CString(name.c_str());
+  auto functionObject = Converter<FN>::toScript(ctx, fn, this);
+  JSObjectSetProperty(ctx, (JSObjectRef) classObject, methodName, functionObject, kJSPropertyAttributeReadOnly, NULL);
+  JSStringRelease(methodName);
 }
 
 template <typename View, typename RET, RET (View::*Method)(void)>

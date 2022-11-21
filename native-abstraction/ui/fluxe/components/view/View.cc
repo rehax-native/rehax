@@ -24,6 +24,11 @@ void View::destroyNativeView() {
   }
 }
 
+rehax::ui::Color View::DefaultBackgroundColor() {
+  // FIXME: This is fluxe's default color background, but it should come from there
+  return rehax::ui::Color::RGBA(0.156, 0.156, 0.156, 1.0);
+}
+
 std::string View::description() {
   std::ostringstream stringStream;
   stringStream << instanceClassName() << "/fluxe " << this;

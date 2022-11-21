@@ -1,10 +1,6 @@
 'use strict';
 
-var crypto = require('crypto');
-
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-var crypto__default = /*#__PURE__*/_interopDefaultLegacy(crypto);
+require('crypto');
 
 const equalFn = (a, b) => a === b;
 
@@ -961,48 +957,6 @@ function getRootView() {
   return rehax.rootView;
 }
 
-const Color = {
-  /**
-   * RGB are in range 0 - 255, alpha is 0.0 - 1.0
-   */
-  RGBA(red, green, blue, alpha) {
-    return {
-      red,
-      green,
-      blue,
-      alpha
-    };
-  }
-
-};
-const Length = {
-  Fill() {
-    return {
-      type: "fill"
-    };
-  },
-
-  Natural() {
-    return {
-      type: "natural"
-    };
-  },
-
-  Fixed(value) {
-    return {
-      value,
-      type: "fixed"
-    };
-  },
-
-  Percent(value) {
-    return {
-      value,
-      type: "percent"
-    };
-  }
-
-};
 /** A base view */
 
 function View(props) {
@@ -1012,6 +966,20 @@ function View(props) {
     spread(_el$, props, false);
 
     return _el$;
+  })();
+}
+
+View.DefaultBackgroundColor = () => rehax.View.DefaultBackgroundColor();
+/** A text view that can be styled and nested */
+
+
+function Text(props) {
+  return (() => {
+    const _el$2 = createElement("rehaxText");
+
+    spread(_el$2, props, false);
+
+    return _el$2;
   })();
 }
 /** A button */
@@ -1025,17 +993,6 @@ function Button(props) {
     return _el$3;
   })();
 }
-/** A text input to capture all kind of user input */
-
-function TextInput(props) {
-  return (() => {
-    const _el$4 = createElement("rehaxInput");
-
-    spread(_el$4, props, false);
-
-    return _el$4;
-  })();
-}
 function FlexLayout(props) {
   return (() => {
     const _el$6 = createElement("rehaxFlexLayout");
@@ -1043,33 +1000,6 @@ function FlexLayout(props) {
     spread(_el$6, props, false);
 
     return _el$6;
-  })();
-}
-function StackLayout(props) {
-  return (() => {
-    const _el$7 = createElement("rehaxStackLayout");
-
-    spread(_el$7, props, false);
-
-    return _el$7;
-  })();
-}
-function VectorContainer(props) {
-  return (() => {
-    const _el$8 = createElement("rehaxVectorContainer");
-
-    spread(_el$8, props, false);
-
-    return _el$8;
-  })();
-}
-function VectorRect(props) {
-  return (() => {
-    const _el$9 = createElement("rehaxVectorRect");
-
-    spread(_el$9, props, false);
-
-    return _el$9;
   })();
 }
 
@@ -1105,176 +1035,57 @@ undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator)
   });
 };
 
-function Example1() {
-  const [count, setCount] = createSignal(10);
-  const [display, setDisplay] = createSignal("flex");
-  const [justifyContent, setJustifyContent] = createSignal("flex-start");
-  const [alignItems, setAlignItems] = createSignal("flex-start");
-  const [cb, setCb] = createSignal(() => console.log(2));
-  const [showRect, setShowRect] = createSignal(true);
+function Example5() {
+  const [show, setShow] = createSignal(true);
   return createComponent(View, {
-    get height() {
-      return Length.Fill();
-    },
-
-    get width() {
-      return Length.Fill();
+    get layout() {
+      return createComponent(FlexLayout, {});
     },
 
     get children() {
-      return ["Count: ", memo(() => count()), createComponent(Button, {
-        title: "Test",
+      return [createComponent(Button, {
+        title: "Remove",
         onPress: async () => {
-          // const res = await fetch('https://jsonplaceholder.typicode.com/photos')
-          // console.log('res')
-          // const text = await res.json()
-          // console.log(text)
-          // const timer = setInterval(() => {
-          //   console.log('timeout')
-          // clearTimeout(timer)
-          // }, 2000)
-          // console.log(rehax.app.getApplicationSupportDirectory())
-          // console.log(rehax.app.getCurrentUserHomeDirectory())
-          // console.log(rehax.app.getCurrentUserDesktopDirectory())
-          // console.log(rehax.app.getApplicationSupportDirectoryForApp())
-          // console.log(rehax.os.name())
-          // localStorage.setItem('test', 'my string');
-          // console.log(localStorage.getItem("test"));
-          const rnd = crypto__default["default"].randomBytes(10);
-          console.log(rnd);
-          console.log(rnd.readUInt32BE(0));
-          console.log(rnd.readUInt32BE(1));
-          const n = rnd.readUInt32BE(0);
-          setCb(() => () => console.log(n));
-          setShowRect(false); // }
-          // const result = rehax.fs.readdirSync("path")
-          // console.log(JSON.stringify(result))
+          console.log(1);
+          console.log(View);
+          console.log(View.DefaultBackgroundColor);
+          const color = View.DefaultBackgroundColor();
+          console.log(2);
+          console.log(JSON.stringify(color));
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          setShow(false); // const res = await fetch("https://www.toptal.com/developers/postbin/1668597792320-0728177467826", {
+          //   method: "POST",
+          //   headers: {
+          //     "Content-Type": "application/json",
+          //   },
+          //   body: JSON.stringify({
+          //     test: '123',
+          //   }),
+          // });
+          // console.log(res.status)
         }
-      }), createComponent(Button, {
-        title: "loop",
-
-        get onPress() {
-          return cb();
-        }
-
-      }), createComponent(VectorContainer, {
-        get width() {
-          return Length.Fixed(20);
-        },
-
-        get height() {
-          return Length.Fixed(20);
+      }), createComponent(Text, {
+        children: "Hello"
+      }), createComponent(Text, {
+        children: "Hello"
+      }), createComponent(Show, {
+        get when() {
+          return show();
         },
 
         get children() {
-          return createComponent(Show, {
-            get when() {
-              return showRect();
-            },
-
-            get children() {
-              return createComponent(VectorRect, {
-                size: {
-                  width: 20,
-                  height: 15
-                },
-
-                get fillColor() {
-                  return Color.RGBA(255, 0, 0, 1);
-                }
-
-              });
-            }
-
-          });
-        }
-
-      }), createComponent(Button, {
-        get title() {
-          return `Switch flex/stack ${display()}`;
-        },
-
-        onPress: () => {
-          setCount(count() + 1);
-          setDisplay(display() === "flex" ? "none" : "flex");
-        }
-      }), createComponent(Button, {
-        get title() {
-          return `Switch justify content ${justifyContent()}`;
-        },
-
-        onPress: () => {
-          setCount(count() + 1);
-          const list = ["flex-start", "flex-end", "center"];
-          const nextIndex = (list.indexOf(justifyContent()) + 1) % list.length;
-          setJustifyContent(list[nextIndex]);
-        }
-      }), createComponent(Button, {
-        get title() {
-          return `Switch align items ${alignItems()}`;
-        },
-
-        onPress: () => {
-          setCount(count() + 1);
-          const list = ["flex-start", "flex-end", "center", "stretch"];
-          const nextIndex = (list.indexOf(alignItems()) + 1) % list.length;
-          setAlignItems(list[nextIndex]);
-        }
-      }), createComponent(TextInput, {}), createComponent(View, {
-        get width() {
-          return Length.Fixed(100);
-        },
-
-        get height() {
-          return Length.Fixed(100);
-        },
-
-        get backgroundColor() {
-          return Color.RGBA(0, 255, 0, 0.3);
-        }
-
-      }), createComponent(View, {
-        get height() {
-          return Length.Fixed(250);
-        },
-
-        get layout() {
-          return memo(() => display() === "flex", true)() ? createComponent(FlexLayout, {
-            get options() {
-              return {
-                direction: "column",
-                justifyContent: justifyContent(),
-                alignItems: alignItems(),
-                gap: 10 // alignItems: 'center'
-
-              };
-            }
-
-          }) : createComponent(StackLayout, {});
-        },
-
-        get children() {
-          return [createComponent(View, {
-            children: "Flex item 1"
-          }), createComponent(View, {
-            children: "Flex item 2 a little longer"
-          }), createComponent(View, {
-            children: "Flex item 3"
-          })];
-        }
-
-      }), createComponent(View, {
-        get height() {
-          return Length.Fixed(250);
-        },
-
-        get children() {
-          return [createComponent(View, {
-            children: "Stack item 1"
-          }), createComponent(View, {
-            children: "Stack item 2 a little longer"
-          }), createComponent(View, {
-            children: "Stack item 3"
+          return [createComponent(Text, {
+            children: "Hello"
+          }), createComponent(Text, {
+            children: "Hello"
+          }), createComponent(Text, {
+            children: "Hello"
+          }), createComponent(Text, {
+            children: "Hello"
+          }), createComponent(Text, {
+            children: "Hello"
+          }), createComponent(Text, {
+            children: "Hello"
           })];
         }
 
@@ -1285,10 +1096,10 @@ function Example1() {
 }
 
 function App() {
-  return createComponent(Example1, {}); // return <Example3 />;
+  // return <Example1 />;
+  // return <Example3 />;
   // return <Example4 />;
-  // return <Example5 />;
-  // return <Tester />;
+  return createComponent(Example5, {}); // return <Tester />;
 }
 
 render(() => createComponent(App, {}), getRootView());

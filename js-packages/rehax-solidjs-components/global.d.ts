@@ -1,5 +1,7 @@
 // import { ColorType, LengthType, ViewProps } from "../rehax-solidjs-components/components";
 
+import { ColorType } from "./components";
+
 // export class RehaxGesture {
 //   setup(
 //     action: () => void,

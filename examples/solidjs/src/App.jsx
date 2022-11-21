@@ -275,19 +275,25 @@ function Example5() {
   return (
     <View layout={<FlexLayout />}>
       <Button title="Remove" onPress={async () => {
+        console.log(1)
+        console.log(View)
+        console.log(View.DefaultBackgroundColor)
+        const color = View.DefaultBackgroundColor();
+        console.log(2)
+        console.log(JSON.stringify(color));
         await new Promise(resolve => setTimeout(resolve, 2000))
         setShow(false)
 
-        const res = await fetch("https://www.toptal.com/developers/postbin/1668597792320-0728177467826", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            test: '123',
-          }),
-        });
-        console.log(res.status)
+        // const res = await fetch("https://www.toptal.com/developers/postbin/1668597792320-0728177467826", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({
+        //     test: '123',
+        //   }),
+        // });
+        // console.log(res.status)
       }} />
       <Text>Hello</Text>
       <Text>Hello</Text>
@@ -304,10 +310,10 @@ function Example5() {
 }
 
 function App() {
-  return <Example1 />;
+  // return <Example1 />;
   // return <Example3 />;
   // return <Example4 />;
-  // return <Example5 />;
+  return <Example5 />;
   // return <Tester />;
 }
 

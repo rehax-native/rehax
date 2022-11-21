@@ -26,6 +26,12 @@ void View::destroyNativeView() {
   }
 }
 
+rehax::ui::Color View::DefaultBackgroundColor() {
+  NSColorSpace *colorSpace = [NSColorSpace sRGBColorSpace];
+  NSColor * color = [[NSColor windowBackgroundColor] colorUsingColorSpace:colorSpace];
+  return rehax::ui::Color::RGBA([color redComponent], [color greenComponent], [color blueComponent], [color alphaComponent]);
+}
+
 std::string View::description() {
   std::ostringstream stringStream;
   stringStream << instanceClassName() << "/NSView (Appkit) " << this;

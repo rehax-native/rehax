@@ -115,6 +115,8 @@ export function View(props: ViewProps): RehaxView {
   return <rehaxView {...props} />;
 }
 
+View.DefaultBackgroundColor = () => rehax.View.DefaultBackgroundColor();
+
 export interface TextProps extends ViewBaseProps {
   children?: string | RehaxText | Array<string | RehaxText>;
   textColor?: ColorType;

@@ -11,6 +11,8 @@ public:
   RHX_EXPORT static ObjectPointer<View> CreateWithoutCreatingNativeView();
   RHX_EXPORT static std::string ClassName();
 
+  RHX_EXPORT static rehax::ui::Color DefaultBackgroundColor();
+
   RHX_EXPORT View();
   RHX_EXPORT virtual ~View();
 

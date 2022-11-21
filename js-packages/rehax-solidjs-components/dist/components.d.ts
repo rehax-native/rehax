@@ -70,6 +70,9 @@ export interface ViewProps extends ViewBaseProps {
 }
 /** A base view */
 export declare function View(props: ViewProps): RehaxView;
+export declare namespace View {
+    var DefaultBackgroundColor: () => ColorType;
+}
 export interface TextProps extends ViewBaseProps {
     children?: string | RehaxText | Array<string | RehaxText>;
     textColor?: ColorType;

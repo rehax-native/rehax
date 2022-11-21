@@ -68,6 +68,14 @@ void Bindings::defineClass(std::string name, RegisteredClass * parentClass) {
   auto globalObject = JS_GetGlobalObject(ctx);
   JSValue rehax = runtime::GetRehaxObject(ctx);
   JS_SetPropertyStr(ctx, rehax, name.c_str(), classObject);
+
+  classRegistry[name].classObject = classObject;
+}
+
+template <typename FN>
+void Bindings::bindStaticMethod(std::string name, runtime::Value classObject, FN fn) {
+  auto functionObject = Converter<FN>::toScript(ctx, fn, this);
+  JS_SetPropertyStr(ctx, classObject, name.c_str(), functionObject);
 }
 
 template <typename View, typename RET, RET (View::*Method)(void)>

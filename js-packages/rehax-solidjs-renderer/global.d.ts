@@ -24,6 +24,7 @@ export interface XYCoords {
 }
 
 export class RehaxView {
+  static DefaultBackgroundColor(): ColorType;
   __className: string;
   addView(node: RehaxView, anchor?: RehaxView);
   removeView(node: RehaxView);

@@ -39,6 +39,7 @@ export const Length = {
 export function View(props) {
     return <rehaxView {...props}/>;
 }
+View.DefaultBackgroundColor = () => rehax.View.DefaultBackgroundColor();
 /** A text view that can be styled and nested */
 export function Text(props) {
     return <rehaxText {...props}/>;

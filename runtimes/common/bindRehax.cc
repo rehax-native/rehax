@@ -1,6 +1,6 @@
 
 template <typename View, typename Layout, typename Gesture, typename KeyHandler>
-void Bindings::bindViewClassMethods(runtime::Value prototype) {
+void Bindings::bindViewClassMethods(runtime::Value classObject, runtime::Value prototype) {
   bindMethod<View, std::string, &View::description>("toString", prototype);
   bindMethod<View, rehaxUtils::ObjectPointer<View>, rehaxUtils::ObjectPointer<View>, &View::addView>("addView", prototype);
   bindMethod<View, &View::removeFromParent>("removeFromParent", prototype);
@@ -17,6 +17,11 @@ void Bindings::bindViewClassMethods(runtime::Value prototype) {
   bindMethod<View, rehax::ui::Color, ::rehax::ui::DefaultValue, &View::setBackgroundColor, &View::setBackgroundColor>("setBackgroundColor", prototype);
   bindMethod<View, rehaxUtils::ObjectPointer<Gesture>, &View::addGesture>("addGesture", prototype);
   bindMethod<View, rehaxUtils::ObjectPointer<KeyHandler>, &View::addKeyHandler>("addKeyHandler", prototype);
+
+  std::function<rehax::ui::Color()> DefaultBackgroundColor = [] () {
+    return View::DefaultBackgroundColor();
+  };
+  bindStaticMethod("DefaultBackgroundColor", classObject, DefaultBackgroundColor);
 }
 
 template <typename View>
@@ -161,7 +166,7 @@ void Bindings::bindRehax() {
   defineClass<VectorRect>("VectorRect", &classRegistry["VectorElement"]);
   defineClass<VectorPath>("VectorPath", &classRegistry["VectorElement"]);
 
-  bindViewClassMethods<View, ILayout, Gesture, KeyHandler>(classRegistry["View"].prototype);
+  bindViewClassMethods<View, ILayout, Gesture, KeyHandler>(classRegistry["View"].classObject, classRegistry["View"].prototype);
   bindButtonClassMethods<Button>(classRegistry["Button"].prototype);
   bindTextClassMethods<Text>(classRegistry["Text"].prototype);
   bindTextInputClassMethods<TextInput>(classRegistry["TextInput"].prototype);
