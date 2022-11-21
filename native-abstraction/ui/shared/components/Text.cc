@@ -22,10 +22,6 @@ void Text::setText(rehax::ui::DefaultValue) {
   setText("");
 }
 
-void Text::setTextColor(::rehax::ui::DefaultValue) {
-  setTextColor(::rehax::ui::Color::RGBA(1, 1, 1, 1));
-}
-
 void Text::setFontSize(rehax::ui::DefaultValue) {
   setFontSize(12);
 }

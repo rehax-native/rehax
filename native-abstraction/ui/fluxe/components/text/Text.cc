@@ -34,6 +34,10 @@ void Text::setTextColor(rehax::ui::Color color) {
   rebuildTextParts();
 }
 
+void Text::setTextColor(::rehax::ui::DefaultValue) {
+  hasColor = false;
+}
+
 void Text::setItalic(bool italic) {
   part.isItalic = italic;
   hasItalic = true;

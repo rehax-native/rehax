@@ -42,6 +42,10 @@ void Text::setTextColor(rehax::ui::Color color) {
   rebuildAttributedString();
 }
 
+void Text::setTextColor(::rehax::ui::DefaultValue) {
+  hasColor = false;
+}
+
 void Text::setFontSize(float size) {
   fontSize = size;
   hasFontSize = true;
@@ -125,11 +129,8 @@ void Text::rebuildAttributedString() {
   [view.textStorage setAttributedString:str];
   [view sizeToFit];
 
-  // we add a little inset and padding (in the constraints) because otherwise it cuts the text off weirdly
-    
-  view.textContainerInset = NSMakeSize(0, 2);
-    
-  view.frame = CGRectMake(0, 0, 1000, 20); // Need this otherwise if you update the text the letters will appear vertically
+  view.textContainerInset = NSMakeSize(0, 0);
+  view.frame = CGRectMake(0, 0, 1000, 1000); // Need this otherwise if you update the text the letters will appear vertically
 
   [view.layoutManager ensureLayoutForTextContainer:view.textContainer];
   CGSize size = [view.layoutManager usedRectForTextContainer:view.textContainer].size;
@@ -142,11 +143,11 @@ void Text::rebuildAttributedString() {
   }
 
   NSLayoutConstraint * constraint;
-  constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:size.height + 4];
+  constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:size.height];
   constraint.identifier = @"rhx_text_size";
   [view addConstraint:constraint];
 
-  constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:size.width + 2];
+  constraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:size.width];
   constraint.identifier = @"rhx_text_size";
   [view addConstraint:constraint];
 }
@@ -184,8 +185,13 @@ unsigned int Text::applyAttributes(unsigned int pos, void * attributedString) {
     [str addAttribute:NSFontAttributeName value:font range:NSMakeRange(pos, rangeLength)];
   }
   if (isRootTextView || hasColor) {
-    NSColor * c = [NSColor colorWithRed:color.r green:color.g blue:color.b alpha:color.a];
-    [str addAttribute:NSForegroundColorAttributeName value:c range:NSMakeRange(pos, rangeLength)];
+    if (hasColor) {
+      NSColor * c = [NSColor colorWithRed:color.r green:color.g blue:color.b alpha:color.a];
+      [str addAttribute:NSForegroundColorAttributeName value:c range:NSMakeRange(pos, rangeLength)];
+    } else {
+      NSColor * c = [NSColor textColor];
+      [str addAttribute:NSForegroundColorAttributeName value:c range:NSMakeRange(pos, rangeLength)];
+    }
     //   if (text == "red") {
     // [str addAttribute:NSLinkAttributeName value:@"https://google.com" range:NSMakeRange(pos, rangeLength)];
     //   }
