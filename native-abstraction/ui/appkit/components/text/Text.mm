@@ -2,6 +2,7 @@
 #include "../../../base.h"
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
+#import "BaseText.h"
 #include <iostream>
 
 namespace rehax::ui::appkit::impl {
@@ -15,12 +16,14 @@ std::string Text::description() {
 }
 
 void Text::createNativeView() {
-  NSTextView * view = [NSTextView new];
+  NSTextView * view = [BaseText new];
   [view setFrame:NSMakeRect(0, 0, 200, 200)];
   [view setString:@""];
   view.editable = NO;
   view.richText = YES;
   view.selectable = NO;
+  view.fieldEditor = NO;
+  view.allowsUndo = NO;
 //  view.linkTextAttributes = @{NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
   [view setBackgroundColor:[NSColor clearColor]];
   [view sizeToFit];
