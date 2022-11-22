@@ -6,7 +6,7 @@ using namespace rehax::ui::appkit::impl;
 #include "../../../shared/components/KeyHandler.cc"
 
 std::string KeyHandler::description() {
-  return "KeyHandler/fluxe";
+  return "KeyHandler/AppKit";
 }
 
 KeyHandler::~KeyHandler() {

@@ -199,6 +199,50 @@ struct Converter<std::function<void(void)>> {
 };
 
 template <typename T1>
+struct Converter<std::function<void(T1&)>> {
+  static JSValueRef toScript(JSContextRef ctx, std::function<void(T1&)>&& value, Bindings * bindings = nullptr) {
+    using FnType = std::function<void(T1)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto jsFnContainer = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+    JSStringRef methodName = JSStringCreateWithUTF8CString("fn");
+
+    auto functionObject = JSObjectMakeFunctionWithCallback(ctx, methodName, [] (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+      JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+      auto jsFnContainer = JSObjectGetProperty(ctx, function, fnContainer, nullptr);
+      JSStringRelease(fnContainer);
+      auto privateData = static_cast<ViewPrivateData<ContainerFnType> *>(JSObjectGetPrivate((JSObjectRef) jsFnContainer));
+      auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, jsFnContainer, privateData->bindings);
+      fnPtr->fn(
+        Converter<T1>::toCpp(ctx, arguments[0], privateData->bindings)
+      );
+      return JSValueMakeUndefined(ctx);
+    });
+    JSStringRelease(methodName);
+    JSStringRef fnContainer = JSStringCreateWithUTF8CString("__fnContainer");
+    JSObjectSetProperty(ctx, functionObject, fnContainer, jsFnContainer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum, nullptr);
+    JSStringRelease(fnContainer);
+    return functionObject;
+  }
+  static std::function<void(T1&)> toCpp(JSContextRef ctx, const JSValueRef& value, Bindings * bindings) {
+    JSObjectRef callback = (JSObjectRef) value;
+    rehaxUtils::ObjectPointer<ScriptFunctionContainer> fnPtr = rehaxUtils::Object<ScriptFunctionContainer>::Create(ctx, callback);
+    auto fn = [ctx, fnPtr, bindings] (T1 & a) {
+      JSValueRef arguments[] = {
+        Converter<T1>::toScript(ctx, a, bindings),
+      };
+      fnPtr->call(ctx, 1, arguments);
+      a = Converter<T1>::toCpp(ctx, arguments[0], bindings);
+    };
+    return fn;
+  }
+};
+
+template <typename T1>
 struct Converter<std::function<void(T1)>> {
   static JSValueRef toScript(JSContextRef ctx, std::function<void(T1)>&& value, Bindings * bindings = nullptr) {
     using FnType = std::function<void(T1)>;

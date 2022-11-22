@@ -2,6 +2,7 @@ using namespace rehaxUtils;
 
 class Gesture;
 class KeyHandler;
+class MouseHandler;
 
 class View : public Object<View> {
 
@@ -77,6 +78,9 @@ public:
   // Gesture
   RHX_EXPORT void addGesture(ObjectPointer<Gesture> gesture);
   RHX_EXPORT void removeGesture(ObjectPointer<Gesture> gesture);
+
+  RHX_EXPORT void addMouseHandler(ObjectPointer<MouseHandler> mouseHandler);
+  RHX_EXPORT void removeMouseHandler(ObjectPointer<MouseHandler> mouseHandler);
 
   RHX_EXPORT void addKeyHandler(ObjectPointer<KeyHandler> keyHandler);
   RHX_EXPORT void removeKeyHandler(ObjectPointer<KeyHandler> keyHandler);

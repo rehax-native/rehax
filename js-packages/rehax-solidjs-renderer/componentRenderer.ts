@@ -5,32 +5,32 @@ function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function gestureEnsure(node: RehaxView) {
-  if (!node._rhx_gestureHandler) {
-    const gesture = new rehax.Gesture();
-    function action() {
-      node._rhx_gestureHandler?.action();
-    }
-    function onMouseDown(x: number, y: number) {
-      node._rhx_gestureHandler?.onMouseDown({ x, y });
-    }
-    function onMouseUp(x: number, y: number) {
-      node._rhx_gestureHandler?.onMouseUp({ x, y });
-    }
-    function onMouseMove(x: number, y: number) {
-      node._rhx_gestureHandler?.onMouseMove({ x, y });
-    }
-    gesture.setup(action, onMouseDown, onMouseUp, onMouseMove);
-    node.addGesture(gesture);
-    node._rhx_gestureHandler = {
-      gesture,
-      action: () => {},
-      onMouseDown: () => {},
-      onMouseUp: () => {},
-      onMouseMove: () => {},
-    };
-  }
-}
+// function gestureEnsure(node: RehaxView) {
+//   if (!node._rhx_gestureHandler) {
+//     const gesture = new rehax.Gesture();
+//     function action() {
+//       node._rhx_gestureHandler?.action();
+//     }
+//     function onMouseDown(x: number, y: number) {
+//       node._rhx_gestureHandler?.onMouseDown({ x, y });
+//     }
+//     function onMouseUp(x: number, y: number) {
+//       node._rhx_gestureHandler?.onMouseUp({ x, y });
+//     }
+//     function onMouseMove(x: number, y: number) {
+//       node._rhx_gestureHandler?.onMouseMove({ x, y });
+//     }
+//     gesture.setup(action, onMouseDown, onMouseUp, onMouseMove);
+//     node.addGesture(gesture);
+//     node._rhx_gestureHandler = {
+//       gesture,
+//       action: () => {},
+//       onMouseDown: () => {},
+//       onMouseUp: () => {},
+//       onMouseMove: () => {},
+//     };
+//   }
+// }
 
 const ViewMap: Record<string, any> = {
   rehaxView: rehax.View,
@@ -46,28 +46,33 @@ const ViewMap: Record<string, any> = {
 } as const;
 
 const PropHandlers: Record<string, (node: RehaxView, value: any) => void> = {
-  onMouseDown: (node: RehaxView, value: any) => {
-    gestureEnsure(node);
-    if (node._rhx_gestureHandler) {
-      node._rhx_gestureHandler.onMouseDown = value;
-    }
-  },
-  onMouseUp: (node: RehaxView, value: any) => {
-    gestureEnsure(node);
-    if (node._rhx_gestureHandler) {
-      node._rhx_gestureHandler.onMouseUp = value;
-    }
-  },
-  onMouseMove: (node: RehaxView, value: any) => {
-    gestureEnsure(node);
-    if (node._rhx_gestureHandler) {
-      node._rhx_gestureHandler.onMouseMove = value;
-    }
-  },
+  // onMouseDown: (node: RehaxView, value: any) => {
+  //   gestureEnsure(node);
+  //   if (node._rhx_gestureHandler) {
+  //     node._rhx_gestureHandler.onMouseDown = value;
+  //   }
+  // },
+  // onMouseUp: (node: RehaxView, value: any) => {
+  //   gestureEnsure(node);
+  //   if (node._rhx_gestureHandler) {
+  //     node._rhx_gestureHandler.onMouseUp = value;
+  //   }
+  // },
+  // onMouseMove: (node: RehaxView, value: any) => {
+  //   gestureEnsure(node);
+  //   if (node._rhx_gestureHandler) {
+  //     node._rhx_gestureHandler.onMouseMove = value;
+  //   }
+  // },
   onKey: (node: RehaxView, value) => {
     const keyHandler = new rehax.KeyHandler();
     keyHandler.setup(value);
     node.addKeyHandler(keyHandler);
+  },
+  onMouse: (node: RehaxView, value: any) => {
+    const mouseHandler = new rehax.MouseHandler();
+    mouseHandler.setup(value);
+    node.addMouseHandler(mouseHandler);
   },
 } as const;
 

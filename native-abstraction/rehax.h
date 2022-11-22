@@ -13,6 +13,7 @@
 #include "ui/appkit/components/layouts/FlexLayout.h"
 #include "ui/appkit/components/view/Gesture.h"
 #include "ui/appkit/components/view/KeyHandler.h"
+#include "ui/appkit/components/view/MouseHandler.h"
 #endif
 
 #ifdef REHAX_WITH_FLUXE
@@ -28,6 +29,7 @@
 #include "ui/fluxe/components/layouts/FlexLayout.h"
 #include "ui/fluxe/components/view/Gesture.h"
 #include "ui/fluxe/components/view/KeyHandler.h"
+#include "ui/fluxe/components/view/MouseHandler.h"
 #endif
 
 #include "ui/base.h"
@@ -50,6 +52,7 @@ namespace rehax::ui {
     using FlexLayout = impl::FlexLayout;
     using Gesture = impl::Gesture;
     using KeyHandler = impl::KeyHandler;
+    using MouseHandler = impl::MouseHandler;
   }
   #endif
 
@@ -69,6 +72,7 @@ namespace rehax::ui {
     using FlexLayout = impl::FlexLayout;
     using Gesture = impl::Gesture;
     using KeyHandler = impl::KeyHandler;
+    using MouseHandler = impl::MouseHandler;
   }
   #endif
 }

@@ -244,7 +244,7 @@ function Example4() {
       <Text
         horizontalPosition={Length.Fixed(100)}
         verticalPosition={Length.Fixed(5)}
-        onMouseMove={(e) => console.log(e.x)}
+        onMouse={(e) => console.log(e.x)}
       >
         Hello
       </Text>
@@ -273,29 +273,58 @@ function Example4() {
 function Example5() {
   const [show, setShow] = createSignal(true)
   return (
-    <View layout={<FlexLayout />}>
-      <Button title="Remove" onPress={async () => {
-        console.log(1)
-        console.log(View)
-        console.log(View.DefaultBackgroundColor)
-        const color = View.DefaultBackgroundColor();
-        console.log(2)
-        console.log(JSON.stringify(color));
-        await new Promise(resolve => setTimeout(resolve, 2000))
-        setShow(false)
+    <View
+      layout={<FlexLayout />}
+      // onMouse={() => {
+      //   console.log("Outer view mouse up called");
+      // }}
+      // onKey={() => {
+      //   console.log('key')
+      // }}
+      onMouse={(event) => {
+        if (event.isUp) {
+          console.log("Prevent");
+          console.log(JSON.stringify(event));
+        }
+      }}
+    >
+      <Button
+        title="Remove"
+        onPress={async () => {
+          const color = View.DefaultBackgroundColor();
+          console.log(2);
+          console.log(JSON.stringify(color));
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          setShow(false);
 
-        // const res = await fetch("https://www.toptal.com/developers/postbin/1668597792320-0728177467826", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify({
-        //     test: '123',
-        //   }),
-        // });
-        // console.log(res.status)
-      }} />
-      <Text>Hello</Text>
+          // const res = await fetch("https://www.toptal.com/developers/postbin/1668597792320-0728177467826", {
+          //   method: "POST",
+          //   headers: {
+          //     "Content-Type": "application/json",
+          //   },
+          //   body: JSON.stringify({
+          //     test: '123',
+          //   }),
+          // });
+          // console.log(res.status)
+        }}
+      />
+      <View
+        onMouse={(event) => {
+          event.propagates = false;
+          if (event.isUp) {
+            console.log('stopped')
+          }
+        }}
+      >
+        <Text
+        // onMouse={() => {
+        //   console.log("Prevent");
+        // }}
+        >
+          Hello
+        </Text>
+      </View>
       <Text>Hello</Text>
       <Show when={show()}>
         <Text>Hello</Text>

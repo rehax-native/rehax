@@ -203,6 +203,59 @@ struct Converter<std::function<void(void)>> {
 };
 
 template <typename T1>
+struct Converter<std::function<void(T1&)>> {
+  static JSValue toScript(JSContext * ctx, std::function<void(T1&)> value, Bindings * bindings = nullptr) {
+    using FnType = std::function<void(T1)>;
+    using ContainerFnType = FunctionContainer<FnType>;
+    auto fnPtr = rehaxUtils::Object<ContainerFnType>::Create();
+    fnPtr->fn = value;
+    if (!bindings->hasRegisteredClass(ContainerFnType::ClassName())) {
+      bindings->defineClass<ContainerFnType>(ContainerFnType::ClassName(), nullptr);
+    }
+    auto funData2 = Converter<ContainerFnType>::toScript(ctx, fnPtr.get(), bindings);
+      
+    auto funData1 = JS_NewObjectClass(ctx, kPointerClassId);
+    JS_SetOpaque(funData1, bindings);
+
+    std::array<JSValue, 2> funDataArray {
+      funData1,
+      funData2,
+    };
+
+    auto fn = JS_NewCFunctionData(
+      ctx,
+      [] (JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+        auto bindings = (Bindings *) JS_GetOpaque(func_data[0], kPointerClassId);
+        auto fnPrivateData = static_cast<ViewPrivateData<ContainerFnType> *>(JS_GetOpaque(func_data[1], bindings->getRegisteredClass(ContainerFnType::ClassName()).classId));
+          
+        auto fnPtr = Converter<ContainerFnType>::toCpp(ctx, func_data[1], fnPrivateData->bindings);
+        fnPtr->fn(
+          Converter<T1>::toCpp(ctx, argv[0], bindings)
+        );
+        return JS_UNDEFINED;
+      },
+      0, 0, funDataArray.size(), funDataArray.data()
+    );
+
+    for (auto v : funDataArray) {
+      JS_FreeValue(ctx, v);
+    }
+    return fn;
+  }
+  static std::function<void(T1&)> toCpp(JSContext * ctx, const JSValue& value, Bindings * bindings) {
+    rehaxUtils::ObjectPointer<ScriptFunctionContainer> fnPtr = rehaxUtils::Object<ScriptFunctionContainer>::Create(ctx, value);
+    auto fn = [ctx, fnPtr, bindings] (T1& x) {
+      JSValue args[] = {
+        Converter<T1>::toScript(ctx, x, bindings),
+      };
+      fnPtr->call(ctx, 1, args);
+      x = Converter<T1>::toCpp(ctx, args[0], bindings);
+    };
+    return fn;
+  }
+};
+
+template <typename T1>
 struct Converter<std::function<void(T1)>> {
   static JSValue toScript(JSContext * ctx, std::function<void(T1)> value, Bindings * bindings = nullptr) {
     using FnType = std::function<void(T1)>;

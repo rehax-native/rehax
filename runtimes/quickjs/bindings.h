@@ -64,7 +64,8 @@ public:
     typename VectorPath,
     typename ILayout,
     typename Gesture,
-    typename KeyHandler
+    typename KeyHandler,
+    typename MouseHandler
   >
   void bindRehax();
 
@@ -101,7 +102,7 @@ public:
   bool hasRegisteredClass(std::string name);
   template <typename T> JSValue cppToJs(T obj);
 
-  template <typename View, typename Layout, typename Gesture, typename KeyHandler> void bindViewClassMethods(JSValue classObject, JSValue prototype);
+  template <typename View, typename Layout, typename Gesture, typename KeyHandler, typename MouseHandler> void bindViewClassMethods(JSValue classObject, JSValue prototype);
   template <typename View> void bindButtonClassMethods(JSValue prototype);
   template <typename View> void bindTextClassMethods(JSValue prototype);
   template <typename View> void bindTextInputClassMethods(JSValue prototype);
@@ -113,6 +114,7 @@ public:
   template <typename Layout, typename View> void bindFlexLayoutClassMethods(JSValue prototype);
   template <typename Gesture> void bindGestureClassMethods(JSValue prototype);
   template <typename KeyHandler> void bindKeyHandlerClassMethods(JSValue prototype);
+  template <typename MouseHandler> void bindMouseHandlerClassMethods(JSValue prototype);
 
   void bindRequire();
   void bindBuffer();

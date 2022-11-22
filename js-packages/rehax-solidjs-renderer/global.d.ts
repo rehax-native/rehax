@@ -9,13 +9,28 @@ export class RehaxGesture {
   ): void;
 }
 
-interface KeyEvent {
+export interface KeyEvent {
   key: string;
   isKeyDown: boolean;
 }
 
 export class RehaxKeyHandler {
   setup(handleKey: (event: KeyEvent) => void): void;
+}
+
+export interface MouseEvent {
+  propagates: boolean;
+  isDown: boolean;
+  isUp: boolean;
+  isMove: boolean;
+  isEnter: boolean;
+  isExit: boolean;
+  x: number;
+  y: number;
+}
+
+export class RehaxMouseHandler {
+  setup(handleMouse: (event: MouseEvent) => void): void;
 }
 
 export interface XYCoords {
@@ -40,13 +55,15 @@ export class RehaxView {
 
   addGesture(gesture: RehaxGesture): void;
   addKeyHandler(keyHandler: RehaxKeyHandler): void;
+  addMouseHandler(mouseHandler: RehaxMouseHandler): void;
 
   _rhx_gestureHandler?: {
     gesture: RehaxGesture;
     action: () => void;
-    onMouseDown: (coords: XYCoords) => void;
-    onMouseMove: (coords: XYCoords) => void;
-    onMouseUp: (coords: XYCoords) => void;
+    onMouse: (event: MouseEvent) => void;
+    // onMouseDown: (coords: XYCoords) => void;
+    // onMouseMove: (coords: XYCoords) => void;
+    // onMouseUp: (coords: XYCoords) => void;
   };
 }
 
@@ -109,6 +126,7 @@ declare global {
     rootView: RehaxView,
     Gesture: RehaxGesture,
     KeyHandler: RehaxKeyHandler,
+    MouseHandler: RehaxMouseHandler,
     View: RehaxView,
     Text: RehaxText,
     Button: RehaxButton,

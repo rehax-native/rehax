@@ -3,6 +3,7 @@
 #include "../layouts/StackLayout.h"
 #include "Gesture.h"
 #include "KeyHandler.h"
+#include "MouseHandler.h"
 
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
@@ -260,6 +261,8 @@ void View::addGesture(ObjectPointer<Gesture> gesture) {
   gesture->increaseReferenceCount();
   gestures.insert(gesture.get());
 
+  // todo: remove all when the view is destroyed
+
   [view addGestureRecognizer:rec];
 }
 
@@ -281,8 +284,24 @@ void View::addKeyHandler(ObjectPointer<KeyHandler> keyHandler) {
 }
 
 void View::removeKeyHandler(ObjectPointer<KeyHandler> keyHandler) {
-//  BaseView * view = (__bridge BaseView *) nativeView;
-//  view->keyDownHandlers.push_back(keyHandler.handler);
+  BaseView * view = (__bridge BaseView *) nativeView;
+//  auto it = view->keyHandlers.find(keyHandler);
+//  if (it !== view->keyHandlers.end()) {
+//    view->keyHandlers.erase(it);
+//  }
+}
+
+void View::addMouseHandler(ObjectPointer<MouseHandler> mouseHandler) {
+  BaseView * view = (__bridge BaseView *) nativeView;
+  view->mouseHandlers.push_back(mouseHandler->handler);
+}
+
+void View::removeMouseHandler(ObjectPointer<MouseHandler> mouseHandler) {
+  BaseView * view = (__bridge BaseView *) nativeView;
+//  auto it = view->mouseHandlers.find(mouseHandler);
+//  if (it !== view->mouseHandlers.end()) {
+//    view->mouseHandlers.erase(it);
+//  }
 }
 
 }

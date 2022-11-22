@@ -1,5 +1,5 @@
 
-template <typename View, typename Layout, typename Gesture, typename KeyHandler>
+template <typename View, typename Layout, typename Gesture, typename KeyHandler, typename MouseHandler>
 void Bindings::bindViewClassMethods(runtime::Value classObject, runtime::Value prototype) {
   bindMethod<View, std::string, &View::description>("toString", prototype);
   bindMethod<View, rehaxUtils::ObjectPointer<View>, rehaxUtils::ObjectPointer<View>, &View::addView>("addView", prototype);
@@ -17,6 +17,7 @@ void Bindings::bindViewClassMethods(runtime::Value classObject, runtime::Value p
   bindMethod<View, rehax::ui::Color, ::rehax::ui::DefaultValue, &View::setBackgroundColor, &View::setBackgroundColor>("setBackgroundColor", prototype);
   bindMethod<View, rehaxUtils::ObjectPointer<Gesture>, &View::addGesture>("addGesture", prototype);
   bindMethod<View, rehaxUtils::ObjectPointer<KeyHandler>, &View::addKeyHandler>("addKeyHandler", prototype);
+  bindMethod<View, rehaxUtils::ObjectPointer<MouseHandler>, &View::addMouseHandler>("addMouseHandler", prototype);
 
   std::function<rehax::ui::Color()> DefaultBackgroundColor = [] () {
     return View::DefaultBackgroundColor();
@@ -116,6 +117,11 @@ void Bindings::bindKeyHandlerClassMethods(runtime::Value prototype) {
   bindMethod<KeyHandler, std::function<void(rehax::ui::KeyEvent)>, &KeyHandler::setup>("setup", prototype);
 }
 
+template <typename MouseHandler>
+void Bindings::bindMouseHandlerClassMethods(runtime::Value prototype) {
+  bindMethod<MouseHandler, std::function<void(rehax::ui::MouseEvent&)>, &MouseHandler::setup>("setup", prototype);
+}
+
 template <
   typename StackLayout,
   typename FlexLayout,
@@ -130,7 +136,8 @@ template <
   typename VectorPath,
   typename ILayout,
   typename Gesture,
-  typename KeyHandler
+  typename KeyHandler,
+  typename MouseHandler
 >
 void Bindings::bindRehax() {
 #if RHX_GEN_DOCS
@@ -165,8 +172,11 @@ void Bindings::bindRehax() {
   defineClass<VectorElement, false>("VectorElement", &classRegistry["View"]);
   defineClass<VectorRect>("VectorRect", &classRegistry["VectorElement"]);
   defineClass<VectorPath>("VectorPath", &classRegistry["VectorElement"]);
+  defineClass<KeyHandler>("KeyHandler", nullptr);
+  defineClass<MouseHandler>("MouseHandler", nullptr);
+  defineClass<Gesture>("Gesture", nullptr);
 
-  bindViewClassMethods<View, ILayout, Gesture, KeyHandler>(classRegistry["View"].classObject, classRegistry["View"].prototype);
+  bindViewClassMethods<View, ILayout, Gesture, KeyHandler, MouseHandler>(classRegistry["View"].classObject, classRegistry["View"].prototype);
   bindButtonClassMethods<Button>(classRegistry["Button"].prototype);
   bindTextClassMethods<Text>(classRegistry["Text"].prototype);
   bindTextInputClassMethods<TextInput>(classRegistry["TextInput"].prototype);
@@ -178,11 +188,9 @@ void Bindings::bindRehax() {
   bindStackLayoutClassMethods<StackLayout, View>(classRegistry["StackLayout"].prototype);
   bindFlexLayoutClassMethods<FlexLayout, View>(classRegistry["FlexLayout"].prototype);
 
-  defineClass<Gesture>("Gesture", nullptr);
   bindGestureClassMethods<Gesture>(classRegistry["Gesture"].prototype);
-
-  defineClass<KeyHandler>("KeyHandler", nullptr);
   bindKeyHandlerClassMethods<KeyHandler>(classRegistry["KeyHandler"].prototype);
+  bindMouseHandlerClassMethods<MouseHandler>(classRegistry["MouseHandler"].prototype);
 
 #if RHX_GEN_DOCS
   jscDocs.printJson();
@@ -207,7 +215,8 @@ void Bindings::bindAppkitRehax() {
     rehax::ui::appkit::VectorPath,
     rehax::ui::appkit::ILayout,
     rehax::ui::appkit::Gesture,
-    rehax::ui::appkit::KeyHandler
+    rehax::ui::appkit::KeyHandler,
+    rehax::ui::appkit::MouseHandler
   >();
 
 #if RHX_GEN_DOCS
@@ -233,7 +242,8 @@ void Bindings::bindFluxeRehax() {
     rehax::ui::fluxe::VectorPath,
     rehax::ui::fluxe::ILayout,
     rehax::ui::fluxe::Gesture,
-    rehax::ui::fluxe::KeyHandler
+    rehax::ui::fluxe::KeyHandler,
+    rehax::ui::fluxe::MouseHandler
   >();
 
 #if RHX_GEN_DOCS

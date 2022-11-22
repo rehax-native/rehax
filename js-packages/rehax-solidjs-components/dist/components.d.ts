@@ -1,4 +1,4 @@
-import { RehaxVectorRect, RehaxVectorPath, RehaxILayout, RehaxView, RehaxText, RehaxButton, RehaxTextInput, RehaxSelect, RehaxFlexLayout, RehaxStackLayout, RehaxVectorContainer } from "../rehax-solidjs-renderer/global";
+import { RehaxVectorRect, RehaxVectorPath, RehaxILayout, RehaxView, RehaxText, RehaxButton, RehaxTextInput, RehaxSelect, RehaxFlexLayout, RehaxStackLayout, RehaxVectorContainer, KeyEvent, MouseEvent } from "../rehax-solidjs-renderer/global";
 import { JSX } from "solid-js";
 export interface ColorType {
     /** Range 0 - 255 */
@@ -48,25 +48,11 @@ export interface ViewBaseProps {
     height?: LengthType;
     backgroundColor?: ColorType;
     layout?: RehaxILayout;
-    onMouseDown?: (e: {
-        x: number;
-        y: number;
-    }) => void;
-    onMouseMove?: (e: {
-        x: number;
-        y: number;
-    }) => void;
-    onMouseUp?: (e: {
-        x: number;
-        y: number;
-    }) => void;
-    onKey?: (e: {
-        key: string;
-        isKeyDown: boolean;
-    }) => void;
 }
 export interface ViewProps extends ViewBaseProps {
     children?: JSX.Element;
+    onKey?: (e: KeyEvent) => void;
+    onMouse?: (e: MouseEvent) => void;
 }
 /** A base view */
 export declare function View(props: ViewProps): RehaxView;

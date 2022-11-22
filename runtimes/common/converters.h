@@ -377,6 +377,50 @@ struct Converter<::rehax::ui::KeyEvent> {
 };
 
 template <>
+struct Converter<::rehax::ui::MouseEvent> {
+  static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::MouseEvent& value, Bindings * bindings) {
+    runtime::Value obj = runtime::MakeObject(ctx);
+    runtime::SetObjectProperty(ctx, obj, "propagates", Converter<bool>::toScript(ctx, value.propagates));
+    runtime::SetObjectProperty(ctx, obj, "isDown", Converter<bool>::toScript(ctx, value.isDown));
+    runtime::SetObjectProperty(ctx, obj, "isUp", Converter<bool>::toScript(ctx, value.isUp));
+    runtime::SetObjectProperty(ctx, obj, "isMove", Converter<bool>::toScript(ctx, value.isMove));
+    runtime::SetObjectProperty(ctx, obj, "isEnter", Converter<bool>::toScript(ctx, value.isEnter));
+    runtime::SetObjectProperty(ctx, obj, "isExit", Converter<bool>::toScript(ctx, value.isExit));
+    runtime::SetObjectProperty(ctx, obj, "x", Converter<float>::toScript(ctx, value.x));
+    runtime::SetObjectProperty(ctx, obj, "y", Converter<float>::toScript(ctx, value.y));
+    return obj;
+  }
+  static ::rehax::ui::MouseEvent toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    ::rehax::ui::MouseEvent event;
+    if (runtime::HasObjectProperty(ctx, value, "propagates")) {
+      event.propagates = Converter<bool>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "propagates"), bindings);
+    }
+    if (runtime::HasObjectProperty(ctx, value, "isDown")) {
+      event.isDown = Converter<bool>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "isDown"), bindings);
+    }
+    if (runtime::HasObjectProperty(ctx, value, "isUp")) {
+      event.isUp = Converter<bool>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "isUp"), bindings);
+    }
+    if (runtime::HasObjectProperty(ctx, value, "isMove")) {
+      event.isMove = Converter<bool>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "isMove"), bindings);
+    }
+    if (runtime::HasObjectProperty(ctx, value, "isEnter")) {
+      event.isEnter = Converter<bool>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "isEnter"), bindings);
+    }
+    if (runtime::HasObjectProperty(ctx, value, "isExit")) {
+      event.isExit = Converter<bool>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "isExit"), bindings);
+    }
+    if (runtime::HasObjectProperty(ctx, value, "x")) {
+      event.x = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "x"), bindings);
+    }
+    if (runtime::HasObjectProperty(ctx, value, "y")) {
+      event.y = Converter<float>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "y"), bindings);
+    }
+    return event;
+  }
+};
+
+template <>
 struct Converter<::rehax::ui::GestureState> {
   static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::GestureState& value, Bindings * bindings) {
     if (value == ui::GestureState::Possible) {

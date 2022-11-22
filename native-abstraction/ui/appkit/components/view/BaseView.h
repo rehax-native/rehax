@@ -3,6 +3,7 @@
 #include <vector>
 #include <functional>
 #include "../../../shared/KeyHandlerDefinitions.h"
+#include "../../../shared/MouseHandlerDefinitions.h"
 
 // @interface ViewLayouter : NSObject
 // - (void)layout:(NSView*)view;
@@ -12,7 +13,8 @@
 {
 //    ViewLayouter * layouter;
 @public
-  std::vector<std::function<void(rehax::ui::KeyEvent)>> keyHandlers;
+  std::vector<std::function<void(rehax::ui::KeyEvent&)>> keyHandlers;
+  std::vector<std::function<void(rehax::ui::MouseEvent&)>> mouseHandlers;
 }
 
 - (BOOL)isFlipped;

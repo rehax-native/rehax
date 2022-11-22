@@ -5,6 +5,7 @@
 #include "../layouts/StackLayout.h"
 #include "Gesture.h"
 #include "KeyHandler.h"
+#include "MouseHandler.h"
 
 namespace rehax::ui::fluxe::impl {
 
@@ -177,9 +178,18 @@ void View::removeGesture(ObjectPointer<Gesture> gesture)
 void View::addKeyHandler(ObjectPointer<KeyHandler> keyHandler) {
   auto view = static_cast<::fluxe::View *>(nativeView);
 
-std::cout << " add key handler " << std::endl;
+  keyHandler->increaseReferenceCount();
   auto listener = view->addEventListener<RehaxFluxeKeyListener>(keyHandler);
   // listener->callbacks = static_cast<GestureCallbackContainer *>(gesture->native);
+}
+
+void View::addMouseHandler(ObjectPointer<MouseHandler> mouseHandler) {
+  auto view = static_cast<::fluxe::View *>(nativeView);
+
+  mouseHandler->increaseReferenceCount();
+  auto listener = view->addEventListener<RehaxFluxeMouseListener>(mouseHandler);
+  // listener->callbacks = static_cast<GestureCallbackContainer *>(gesture->native);
+  // TODO decrease reference counts
 }
 
 }

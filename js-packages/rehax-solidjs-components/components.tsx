@@ -10,6 +10,8 @@ import {
   RehaxFlexLayout,
   RehaxStackLayout,
   RehaxVectorContainer,
+  KeyEvent,
+  MouseEvent,
 } from "../rehax-solidjs-renderer/global";
 import { JSX } from "solid-js";
 
@@ -98,16 +100,12 @@ export interface ViewBaseProps {
   height?: LengthType;
   backgroundColor?: ColorType;
   layout?: RehaxILayout;
-
-  onMouseDown?: (e: { x: number; y: number }) => void;
-  onMouseMove?: (e: { x: number; y: number }) => void;
-  onMouseUp?: (e: { x: number; y: number }) => void;
-
-  onKey?: (e: { key: string; isKeyDown: boolean }) => void;
 }
 
 export interface ViewProps extends ViewBaseProps {
   children?: JSX.Element;
+  onKey?: (e: KeyEvent) => void;
+  onMouse?: (e: MouseEvent) => void;
 }
 
 /** A base view */

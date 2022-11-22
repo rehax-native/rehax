@@ -775,56 +775,33 @@ function createRenderer(options) {
 
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
-}
+} // function gestureEnsure(node: RehaxView) {
+//   if (!node._rhx_gestureHandler) {
+//     const gesture = new rehax.Gesture();
+//     function action() {
+//       node._rhx_gestureHandler?.action();
+//     }
+//     function onMouseDown(x: number, y: number) {
+//       node._rhx_gestureHandler?.onMouseDown({ x, y });
+//     }
+//     function onMouseUp(x: number, y: number) {
+//       node._rhx_gestureHandler?.onMouseUp({ x, y });
+//     }
+//     function onMouseMove(x: number, y: number) {
+//       node._rhx_gestureHandler?.onMouseMove({ x, y });
+//     }
+//     gesture.setup(action, onMouseDown, onMouseUp, onMouseMove);
+//     node.addGesture(gesture);
+//     node._rhx_gestureHandler = {
+//       gesture,
+//       action: () => {},
+//       onMouseDown: () => {},
+//       onMouseUp: () => {},
+//       onMouseMove: () => {},
+//     };
+//   }
+// }
 
-function gestureEnsure(node) {
-  if (!node._rhx_gestureHandler) {
-    const gesture = new rehax.Gesture();
-
-    function action() {
-      var _a;
-
-      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.action();
-    }
-
-    function onMouseDown(x, y) {
-      var _a;
-
-      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.onMouseDown({
-        x,
-        y
-      });
-    }
-
-    function onMouseUp(x, y) {
-      var _a;
-
-      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.onMouseUp({
-        x,
-        y
-      });
-    }
-
-    function onMouseMove(x, y) {
-      var _a;
-
-      (_a = node._rhx_gestureHandler) === null || _a === void 0 ? void 0 : _a.onMouseMove({
-        x,
-        y
-      });
-    }
-
-    gesture.setup(action, onMouseDown, onMouseUp, onMouseMove);
-    node.addGesture(gesture);
-    node._rhx_gestureHandler = {
-      gesture,
-      action: () => {},
-      onMouseDown: () => {},
-      onMouseUp: () => {},
-      onMouseMove: () => {}
-    };
-  }
-}
 
 const ViewMap = {
   rehaxView: rehax.View,
@@ -839,31 +816,35 @@ const ViewMap = {
   rehaxVectorPath: rehax.VectorPath
 };
 const PropHandlers = {
-  onMouseDown: (node, value) => {
-    gestureEnsure(node);
-
-    if (node._rhx_gestureHandler) {
-      node._rhx_gestureHandler.onMouseDown = value;
-    }
-  },
-  onMouseUp: (node, value) => {
-    gestureEnsure(node);
-
-    if (node._rhx_gestureHandler) {
-      node._rhx_gestureHandler.onMouseUp = value;
-    }
-  },
-  onMouseMove: (node, value) => {
-    gestureEnsure(node);
-
-    if (node._rhx_gestureHandler) {
-      node._rhx_gestureHandler.onMouseMove = value;
-    }
-  },
+  // onMouseDown: (node: RehaxView, value: any) => {
+  //   gestureEnsure(node);
+  //   if (node._rhx_gestureHandler) {
+  //     node._rhx_gestureHandler.onMouseDown = value;
+  //   }
+  // },
+  // onMouseUp: (node: RehaxView, value: any) => {
+  //   gestureEnsure(node);
+  //   if (node._rhx_gestureHandler) {
+  //     node._rhx_gestureHandler.onMouseUp = value;
+  //   }
+  // },
+  // onMouseMove: (node: RehaxView, value: any) => {
+  //   gestureEnsure(node);
+  //   if (node._rhx_gestureHandler) {
+  //     node._rhx_gestureHandler.onMouseMove = value;
+  //   }
+  // },
   onKey: (node, value) => {
     const keyHandler = new rehax.KeyHandler();
     keyHandler.setup(value);
     node.addKeyHandler(keyHandler);
+  },
+  onMouse: (node, value) => {
+    const mouseHandler = new rehax.MouseHandler();
+    console.log('###');
+    console.log(mouseHandler);
+    mouseHandler.setup(value);
+    node.addMouseHandler(mouseHandler);
   }
 };
 const {
@@ -1042,13 +1023,17 @@ function Example5() {
       return createComponent(FlexLayout, {});
     },
 
+    onMouse: event => {
+      if (event.isUp) {
+        console.log("Prevent");
+        console.log(JSON.stringify(event));
+      }
+    },
+
     get children() {
       return [createComponent(Button, {
         title: "Remove",
         onPress: async () => {
-          console.log(1);
-          console.log(View);
-          console.log(View.DefaultBackgroundColor);
           const color = View.DefaultBackgroundColor();
           console.log(2);
           console.log(JSON.stringify(color));
@@ -1064,8 +1049,24 @@ function Example5() {
           // });
           // console.log(res.status)
         }
-      }), createComponent(Text, {
-        children: "Hello"
+      }), createComponent(View, {
+        onMouse: event => {
+          event.propagates = false;
+
+          if (event.isUp) {
+            console.log('stopped');
+          }
+        },
+
+        get children() {
+          return createComponent(Text // onMouse={() => {
+          //   console.log("Prevent");
+          // }}
+          , {
+            children: "Hello"
+          });
+        }
+
       }), createComponent(Text, {
         children: "Hello"
       }), createComponent(Show, {
