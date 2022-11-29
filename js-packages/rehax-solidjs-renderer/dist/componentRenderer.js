@@ -34,6 +34,7 @@ const ViewMap = {
     rehaxButton: rehax.Button,
     rehaxInput: rehax.TextInput,
     rehaxSelect: rehax.Select,
+    rehaxToggle: rehax.Toggle,
     rehaxStackLayout: rehax.StackLayout,
     rehaxFlexLayout: rehax.FlexLayout,
     rehaxVectorContainer: rehax.VectorContainer,

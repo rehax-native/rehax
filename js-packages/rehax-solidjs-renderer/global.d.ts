@@ -82,6 +82,8 @@ export class RehaxTextInput extends RehaxView {
 
 export class RehaxSelect extends RehaxView {}
 
+export class RehaxToggle extends RehaxView {}
+
 export class RehaxVectorContainer extends RehaxView {}
 
 export class RehaxVectorRect extends RehaxView {
@@ -132,6 +134,7 @@ declare global {
     Button: RehaxButton,
     TextInput: RehaxTextInput,
     Select: RehaxSelect,
+    Toggle: RehaxToggle,
     VectorContainer: RehaxVectorContainer,
     VectorRect: RehaxVectorRect,
     VectorPath: RehaxVectorPath,
