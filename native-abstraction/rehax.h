@@ -6,6 +6,7 @@
 #include "ui/appkit/components/text/Text.h"
 #include "ui/appkit/components/textInput/TextInput.h"
 #include "ui/appkit/components/select/Select.h"
+#include "ui/appkit/components/toggle/Toggle.h"
 #include "ui/appkit/components/vector/VectorContainer.h"
 #include "ui/appkit/components/vector/VectorRect.h"
 #include "ui/appkit/components/vector/VectorPath.h"
@@ -22,6 +23,7 @@
 #include "ui/fluxe/components/text/Text.h"
 #include "ui/fluxe/components/textInput/TextInput.h"
 #include "ui/fluxe/components/select/Select.h"
+#include "ui/fluxe/components/toggle/Toggle.h"
 #include "ui/fluxe/components/vector/VectorContainer.h"
 #include "ui/fluxe/components/vector/VectorRect.h"
 #include "ui/fluxe/components/vector/VectorPath.h"
@@ -43,6 +45,7 @@ namespace rehax::ui {
     using Text = impl::Text;
     using TextInput = impl::TextInput;
     using Select = impl::Select;
+    using Toggle = impl::Toggle;
     using VectorContainer = impl::VectorContainer;
     using VectorElement = impl::VectorElement;
     using VectorRect = impl::VectorRect;
@@ -63,6 +66,7 @@ namespace rehax::ui {
     using Text = impl::Text;
     using TextInput = impl::TextInput;
     using Select = impl::Select;
+    using Toggle = impl::Toggle;
     using VectorContainer = impl::VectorContainer;
     using VectorElement = impl::VectorElement;
     using VectorRect = impl::VectorRect;

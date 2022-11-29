@@ -1,4 +1,4 @@
-import { createSignal, createMemo, createEffect, Show } from "solid-js";
+import { createSignal, createMemo, createEffect, Show, Switch } from "solid-js";
 import {
   Color,
   Length,
@@ -14,6 +14,7 @@ import {
   FlexLayout,
   StackLayout,
   Select,
+  Toggle,
 } from "@rehax/solidjs-components";
 import fetch from "@rehax/fetch";
 import crypto from "crypto";
@@ -24,7 +25,7 @@ function Example1() {
   const [justifyContent, setJustifyContent] = createSignal("flex-start");
   const [alignItems, setAlignItems] = createSignal("flex-start");
   const [cb, setCb] = createSignal(() => console.log(2));
-  const [showRect, setShowRect] = createSignal(true)
+  const [showRect, setShowRect] = createSignal(true);
 
   return (
     <View
@@ -33,6 +34,7 @@ function Example1() {
       // backgroundColor={Color.RGBA(0, 255, 0, 0.3)}
     >
       Count: {count()}
+      <Toggle onValueChange={(value) => console.log(`New value ${value}`)} />
       <Button
         title="Test"
         onPress={async () => {
@@ -63,7 +65,7 @@ function Example1() {
           const n = rnd.readUInt32BE(0);
           setCb(() => () => console.log(n));
 
-          setShowRect(false)
+          setShowRect(false);
 
           // }
           // const result = rehax.fs.readdirSync("path")
@@ -112,6 +114,7 @@ function Example1() {
       ></View>
       <View
         height={Length.Fixed(250)}
+        width={Length.Fill()}
         layout={
           display() === "flex" ? (
             <FlexLayout
@@ -271,7 +274,7 @@ function Example4() {
 }
 
 function Example5() {
-  const [show, setShow] = createSignal(true)
+  const [show, setShow] = createSignal(true);
   return (
     <View
       layout={<FlexLayout />}
@@ -282,7 +285,7 @@ function Example5() {
       //   console.log('key')
       // }}
       onMouse={(event) => {
-        if (event.isUp) {
+        if (event.isDown) {
           console.log("Prevent");
           console.log(JSON.stringify(event));
         }
@@ -312,8 +315,8 @@ function Example5() {
       <View
         onMouse={(event) => {
           event.propagates = false;
-          if (event.isUp) {
-            console.log('stopped')
+          if (event.isDown) {
+            console.log("stopped");
           }
         }}
       >
@@ -325,7 +328,16 @@ function Example5() {
           Hello
         </Text>
       </View>
-      <Text>Hello</Text>
+      <View
+        onMouse={(event) => {
+          // event.propagates = true;
+          if (event.isDown) {
+            console.log("propagates");
+          }
+        }}
+      >
+        <Text>Hello</Text>
+      </View>
       <Show when={show()}>
         <Text>Hello</Text>
         <Text>Hello</Text>
@@ -339,10 +351,10 @@ function Example5() {
 }
 
 function App() {
-  // return <Example1 />;
+  return <Example1 />;
   // return <Example3 />;
   // return <Example4 />;
-  return <Example5 />;
+  // return <Example5 />;
   // return <Tester />;
 }
 

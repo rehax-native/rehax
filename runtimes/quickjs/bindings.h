@@ -58,6 +58,7 @@ public:
     typename Text,
     typename TextInput,
     typename Select,
+    typename Toggle,
     typename VectorContainer,
     typename VectorElement,
     typename VectorRect,
@@ -107,6 +108,7 @@ public:
   template <typename View> void bindTextClassMethods(JSValue prototype);
   template <typename View> void bindTextInputClassMethods(JSValue prototype);
   template <typename View> void bindSelectClassMethods(JSValue prototype);
+  template <typename View> void bindToggleClassMethods(JSValue prototype);
   template <typename View> void bindVectorElementClassMethods(JSValue prototype);
   template <typename View> void bindVectorRectClassMethods(runtime::Value prototype);
   template <typename View> void bindVectorPathClassMethods(JSValue prototype);
