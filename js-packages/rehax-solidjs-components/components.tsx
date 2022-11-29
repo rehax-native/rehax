@@ -7,6 +7,7 @@ import {
   RehaxButton,
   RehaxTextInput,
   RehaxSelect,
+  RehaxToggle,
   RehaxFlexLayout,
   RehaxStackLayout,
   RehaxVectorContainer,
@@ -98,11 +99,11 @@ export interface ViewBaseProps {
   verticalPosition?: LengthType;
   width?: LengthType;
   height?: LengthType;
-  backgroundColor?: ColorType;
-  layout?: RehaxILayout;
 }
 
 export interface ViewProps extends ViewBaseProps {
+  backgroundColor?: ColorType;
+  layout?: RehaxILayout;
   children?: JSX.Element;
   onKey?: (e: KeyEvent) => void;
   onMouse?: (e: MouseEvent) => void;
@@ -117,6 +118,7 @@ View.DefaultBackgroundColor = () => rehax.View.DefaultBackgroundColor();
 
 export interface TextProps extends ViewBaseProps {
   children?: string | RehaxText | Array<string | RehaxText>;
+  backgroundColor?: ColorType;
   textColor?: ColorType;
   fontSize?: number;
   italic?: boolean;
@@ -131,6 +133,7 @@ export function Text(props: TextProps): RehaxText {
 }
 
 export interface ButtonProps extends ViewBaseProps {
+  backgroundColor?: ColorType;
   title: string;
   onPress?: () => void;
 }
@@ -141,6 +144,7 @@ export function Button(props: ButtonProps): RehaxButton {
 }
 
 export interface TextInputProps extends ViewBaseProps {
+  backgroundColor?: ColorType;
   value?: string;
   onValueChange?: (value: string) => void;
 
@@ -165,12 +169,19 @@ export interface SelectProps extends ViewBaseProps {
   value?: string;
 }
 
-/** A text input to capture all kind of user input */
 export function Select(props: SelectProps): RehaxSelect {
   return <rehaxSelect {...props} />;
 }
 
-export interface FlexLayoutProps extends ViewBaseProps {
+export interface ToggleProps extends ViewBaseProps {
+  onValueChange?: (value?: boolean) => void;
+}
+
+export function Toggle(props: ToggleProps): RehaxToggle {
+  return <rehaxToggle {...props} />;
+}
+
+export interface FlexLayoutProps {
   options?: {
     direction?: "row" | "column" | "row-reverse" | "column-reverse";
     justifyContent?:
@@ -193,7 +204,7 @@ export function FlexLayout(props: FlexLayoutProps): RehaxFlexLayout {
   return <rehaxFlexLayout {...props} />;
 }
 
-export interface StackLayoutProps extends ViewBaseProps {
+export interface StackLayoutProps {
   options?: {
     direction?: "horizontal" | "vertical";
     spacing?: number;
@@ -205,6 +216,7 @@ export function StackLayout(props: StackLayoutProps): RehaxStackLayout {
 }
 
 export interface VectorContainerProps extends ViewBaseProps {
+  backgroundColor?: ColorType;
   children?: JSX.Element;
 }
 

@@ -1,4 +1,4 @@
-import { RehaxVectorRect, RehaxVectorPath, RehaxILayout, RehaxView, RehaxText, RehaxButton, RehaxTextInput, RehaxSelect, RehaxFlexLayout, RehaxStackLayout, RehaxVectorContainer, KeyEvent, MouseEvent } from "../rehax-solidjs-renderer/global";
+import { RehaxVectorRect, RehaxVectorPath, RehaxILayout, RehaxView, RehaxText, RehaxButton, RehaxTextInput, RehaxSelect, RehaxToggle, RehaxFlexLayout, RehaxStackLayout, RehaxVectorContainer, KeyEvent, MouseEvent } from "../rehax-solidjs-renderer/global";
 import { JSX } from "solid-js";
 export interface ColorType {
     /** Range 0 - 255 */
@@ -46,10 +46,10 @@ export interface ViewBaseProps {
     verticalPosition?: LengthType;
     width?: LengthType;
     height?: LengthType;
-    backgroundColor?: ColorType;
-    layout?: RehaxILayout;
 }
 export interface ViewProps extends ViewBaseProps {
+    backgroundColor?: ColorType;
+    layout?: RehaxILayout;
     children?: JSX.Element;
     onKey?: (e: KeyEvent) => void;
     onMouse?: (e: MouseEvent) => void;
@@ -61,6 +61,7 @@ export declare namespace View {
 }
 export interface TextProps extends ViewBaseProps {
     children?: string | RehaxText | Array<string | RehaxText>;
+    backgroundColor?: ColorType;
     textColor?: ColorType;
     fontSize?: number;
     italic?: boolean;
@@ -71,12 +72,14 @@ export interface TextProps extends ViewBaseProps {
 /** A text view that can be styled and nested */
 export declare function Text(props: TextProps): RehaxText;
 export interface ButtonProps extends ViewBaseProps {
+    backgroundColor?: ColorType;
     title: string;
     onPress?: () => void;
 }
 /** A button */
 export declare function Button(props: ButtonProps): RehaxButton;
 export interface TextInputProps extends ViewBaseProps {
+    backgroundColor?: ColorType;
     value?: string;
     onValueChange?: (value: string) => void;
     onFocus?: () => void;
@@ -94,9 +97,12 @@ export interface SelectProps extends ViewBaseProps {
     onValueChange?: (value?: SelectOption) => void;
     value?: string;
 }
-/** A text input to capture all kind of user input */
 export declare function Select(props: SelectProps): RehaxSelect;
-export interface FlexLayoutProps extends ViewBaseProps {
+export interface ToggleProps extends ViewBaseProps {
+    onValueChange?: (value?: boolean) => void;
+}
+export declare function Toggle(props: ToggleProps): RehaxToggle;
+export interface FlexLayoutProps {
     options?: {
         direction?: "row" | "column" | "row-reverse" | "column-reverse";
         justifyContent?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around";
@@ -110,7 +116,7 @@ export interface FlexLayoutProps extends ViewBaseProps {
     };
 }
 export declare function FlexLayout(props: FlexLayoutProps): RehaxFlexLayout;
-export interface StackLayoutProps extends ViewBaseProps {
+export interface StackLayoutProps {
     options?: {
         direction?: "horizontal" | "vertical";
         spacing?: number;
@@ -118,6 +124,7 @@ export interface StackLayoutProps extends ViewBaseProps {
 }
 export declare function StackLayout(props: StackLayoutProps): RehaxStackLayout;
 export interface VectorContainerProps extends ViewBaseProps {
+    backgroundColor?: ColorType;
     children?: JSX.Element;
 }
 export declare function VectorContainer(props: VectorContainerProps): RehaxVectorContainer;
