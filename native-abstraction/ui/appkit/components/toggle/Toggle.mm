@@ -27,7 +27,7 @@ void Toggle::createNativeView() {
 
 void Toggle::setValue(bool value) {
   FunctionalNSSwitch * view = (__bridge FunctionalNSSwitch *) this->nativeView;
-  view.state = NSControlStateValueOn;
+  view.state = value ? NSControlStateValueOn : NSControlStateValueOff;
 }
 
 bool Toggle::getValue() {

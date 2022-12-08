@@ -25,6 +25,41 @@ void Bindings::bindOS() {
   runtime::SetObjectProperty(ctx, rehax, "os", object);
 }
 
+template <>
+struct Converter<::rehaxUtils::App::ApplicationTheme> {
+  static runtime::Value toScript(runtime::Context ctx, ::rehaxUtils::App::ApplicationTheme& value, Bindings * bindings) {
+    if (value == ::rehaxUtils::App::ApplicationTheme::Unsupported) {
+      return Converter<std::string>::toScript(ctx, "unsupported");
+    }
+    if (value == ::rehaxUtils::App::ApplicationTheme::SystemDark) {
+      return Converter<std::string>::toScript(ctx, "system-dark");
+    }
+    if (value == ::rehaxUtils::App::ApplicationTheme::SystemLight) {
+      return Converter<std::string>::toScript(ctx, "system-light");
+    }
+  }
+  static ::rehaxUtils::App::ApplicationTheme toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    auto val = Converter<std::string>::toCpp(ctx, value, bindings);
+    if (val == "system-light") {
+      return ::rehaxUtils::App::ApplicationTheme::SystemLight;
+    }
+    if (val == "system-dark") {
+      return ::rehaxUtils::App::ApplicationTheme::SystemDark;
+    }
+    return ::rehaxUtils::App::ApplicationTheme::Unsupported;
+  }
+};
+
+template <>
+struct Converter<::rehaxUtils::App::ApplicationThemeListenerId> {
+  static runtime::Value toScript(runtime::Context ctx, ::rehaxUtils::App::ApplicationThemeListenerId& value, Bindings * bindings) {
+    return Converter<int>::toScript(ctx, value.id);
+  }
+  static ::rehaxUtils::App::ApplicationThemeListenerId toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
+    return { Converter<int>::toCpp(ctx, value, bindings) };
+  }
+};
+
 void Bindings::bindApp() {
   auto object = runtime::MakeObject(ctx);
   rehaxUtils::OS::isWindows();
@@ -53,6 +88,21 @@ void Bindings::bindApp() {
     return rehaxUtils::App::getApplicationGroupContainerDirectory(appGroupId);
   }, this);
   runtime::SetObjectProperty(ctx, object, "getApplicationGroupContainerDirectory", getApplicationGroupContainerDirectory);
+
+  auto getApplicationTheme = Converter<std::function<rehaxUtils::App::ApplicationTheme(void)>>::toScript(ctx, [] () {
+    return rehaxUtils::App::getApplicationTheme();
+  }, this);
+  runtime::SetObjectProperty(ctx, object, "getApplicationTheme", getApplicationTheme);
+
+  auto addApplicationThemeChangeListener = Converter<std::function<rehaxUtils::App::ApplicationThemeListenerId(std::function<void(rehaxUtils::App::ApplicationTheme)>)>>::toScript(ctx, [] (std::function<void(rehaxUtils::App::ApplicationTheme)> cb) {
+    return rehaxUtils::App::addApplicationThemeChangeListener(cb);
+  }, this);
+  runtime::SetObjectProperty(ctx, object, "addApplicationThemeChangeListener", addApplicationThemeChangeListener);
+  
+  auto removeApplicationThemeChangeListener = Converter<std::function<void(rehaxUtils::App::ApplicationThemeListenerId)>>::toScript(ctx, [] (rehaxUtils::App::ApplicationThemeListenerId listener) {
+    rehaxUtils::App::removeApplicationThemeChangeListener(listener);
+  }, this);
+  runtime::SetObjectProperty(ctx, object, "removeApplicationThemeChangeListener", removeApplicationThemeChangeListener);
 
   runtime::Value rehax = runtime::GetRehaxObject(ctx);
   runtime::SetObjectProperty(ctx, rehax, "app", object);
