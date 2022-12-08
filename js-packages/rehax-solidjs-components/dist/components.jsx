@@ -1,3 +1,4 @@
+import { createContext, createSignal, onCleanup, onMount, useContext, } from "solid-js";
 export const Color = {
     /**
      * RGB are in range 0 - 255, alpha is 0.0 - 1.0
@@ -100,4 +101,32 @@ export function Close() {
 }
 export function Arc(rx, ry, xAxisRotation, largeArc, sweepFlag, x, y) {
     return (path) => path.pathArc(rx, ry, xAxisRotation, largeArc, sweepFlag, x, y);
+}
+export const ThemeContext = createContext([
+    () => "unsupported",
+]);
+const isWeb = typeof rehax === "undefined";
+const themeProvider = isWeb
+    ? {
+        app: {
+            getApplicationTheme: () => "unsupported",
+            addApplicationThemeChangeListener: (listener) => 0,
+            removeApplicationThemeChangeListener: (listener) => { },
+        },
+    }
+    : rehax;
+export function ThemeProvider(props) {
+    const [theme, setTheme] = createSignal(themeProvider.app.getApplicationTheme());
+    onMount(() => {
+        const listener = themeProvider.app.addApplicationThemeChangeListener((theme) => {
+            setTheme(theme);
+        });
+        onCleanup(() => {
+            themeProvider.app.removeApplicationThemeChangeListener(listener);
+        });
+    });
+    return <ThemeContext.Provider value={[theme]} children={props.children}/>;
+}
+export function useApplicationTheme() {
+    return useContext(ThemeContext);
 }

@@ -32,7 +32,7 @@ You create the interpreter in your application, expose the bindings, and then yo
 
 auto vm = new rehax::jsc::Runtime(); // Create the interpreter
 vm->makeConsole(); // Expose console.log method
-vm->bindAppkitToJsc(); // Make the bindings
+vm->bindAppkit(); // Make the bindings
 vm->setRootView(view); // Set the root view so we can interact with it from JS
     
 vm->evaluate(" \

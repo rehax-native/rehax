@@ -7,8 +7,8 @@ const extensions = ['ts', 'tsx', 'js', 'jsx'].map((x) => '.' + x);
 export default {
   input: 'src/index.jsx',
   output: {
-    dir: 'distNative',
-    format: 'cjs'
+    dir: 'distWeb',
+    format: 'umd'
   },
   plugins: [
     nodeResolve({

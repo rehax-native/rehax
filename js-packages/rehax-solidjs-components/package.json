@@ -1,6 +1,6 @@
 {
   "name": "@rehax/solidjs-components",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "",
   "main": "dist/components.jsx",
   "files": [
@@ -24,7 +24,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@rehax/solidjs-renderer": "^0.0.20",
+    "@rehax/solidjs-renderer": "^0.0.21",
     "solid-js": "^1.4.8"
   }
 }

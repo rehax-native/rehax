@@ -15,6 +15,8 @@ import {
   StackLayout,
   Select,
   Toggle,
+  ThemeProvider,
+  useApplicationTheme,
 } from "@rehax/solidjs-components";
 import fetch from "@rehax/fetch";
 import crypto from "crypto";
@@ -26,6 +28,7 @@ function Example1() {
   const [alignItems, setAlignItems] = createSignal("flex-start");
   const [cb, setCb] = createSignal(() => console.log(2));
   const [showRect, setShowRect] = createSignal(true);
+  const [toggleVal, setToggleVal] = createSignal(true);
 
   return (
     <View
@@ -34,7 +37,13 @@ function Example1() {
       // backgroundColor={Color.RGBA(0, 255, 0, 0.3)}
     >
       Count: {count()}
-      <Toggle onValueChange={(value) => console.log(`New value ${value}`)} />
+      <Toggle
+        value={toggleVal()}
+        onValueChange={(value) => {
+          console.log(`New value ${value}`);
+          setToggleVal(value);
+        }}
+      />
       <Button
         title="Test"
         onPress={async () => {
@@ -350,12 +359,35 @@ function Example5() {
   );
 }
 
+function ThemeExample() {
+  function ThemedComponent() {
+    const [theme] = useApplicationTheme()
+    return (
+      <View>
+        <Text
+          textColor={
+            theme() === "system-dark"
+              ? Color.RGBA(255, 255, 255, 1)
+              : Color.RGBA(0, 0, 0, 1)
+          }
+        >
+          I'm themed!
+        </Text>
+      </View>
+    );
+  }
+  return <ThemeProvider>
+    <ThemedComponent />
+  </ThemeProvider>
+}
+
 function App() {
-  return <Example1 />;
-  // return <Example3 />;
+  // return <Example1 />;
+  return <Example3 />;
   // return <Example4 />;
   // return <Example5 />;
   // return <Tester />;
+  // return <ThemeExample />;
 }
 
 export default App;

@@ -1,5 +1,5 @@
 import { RehaxVectorRect, RehaxVectorPath, RehaxILayout, RehaxView, RehaxText, RehaxButton, RehaxTextInput, RehaxSelect, RehaxToggle, RehaxFlexLayout, RehaxStackLayout, RehaxVectorContainer, KeyEvent, MouseEvent } from "../rehax-solidjs-renderer/global";
-import { JSX } from "solid-js";
+import { Accessor, JSX } from "solid-js";
 export interface ColorType {
     /** Range 0 - 255 */
     red: number;
@@ -99,6 +99,7 @@ export interface SelectProps extends ViewBaseProps {
 }
 export declare function Select(props: SelectProps): RehaxSelect;
 export interface ToggleProps extends ViewBaseProps {
+    value?: boolean;
     onValueChange?: (value?: boolean) => void;
 }
 export declare function Toggle(props: ToggleProps): RehaxToggle;
@@ -161,4 +162,10 @@ export declare function QuadraticBezier(x1: number, y1: number, x: number, y: nu
 export declare function CubicBezier(x1: number, y1: number, x2: number, y2: number, x: number, y: number): (path: RehaxVectorPath) => void;
 export declare function Close(): (path: RehaxVectorPath) => void;
 export declare function Arc(rx: number, ry: number, xAxisRotation: number, largeArc: number, sweepFlag: number, x: number, y: number): (path: RehaxVectorPath) => void;
+export declare type Theme = "unsupported" | "system-dark" | "system-light";
+export declare const ThemeContext: import("solid-js").Context<[Accessor<Theme>]>;
+export declare function ThemeProvider(props: {
+    children: JSX.Element;
+}): any;
+export declare function useApplicationTheme(): [Accessor<Theme>];
 export {};

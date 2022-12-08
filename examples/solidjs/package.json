@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
-    "buildNative": "rollup --config rollup.config.js"
+    "buildNative": "rollup --config rollup.config.js",
+    "buildWeb": "rollup --config rollup.config.web.js"
   },
   "license": "MIT",
   "devDependencies": {
@@ -17,8 +18,8 @@
   },
   "dependencies": {
     "@rehax/fetch": "^0.0.1",
-    "@rehax/solidjs-components": "workspace:^0.0.16",
-    "@rehax/solidjs-renderer": "workspace:^0.0.16",
+    "@rehax/solidjs-components": "workspace:0.0.21",
+    "@rehax/solidjs-renderer": "workspace:0.0.21",
     "solid-js": "^1.4.8"
   }
 }

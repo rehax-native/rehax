@@ -10,7 +10,7 @@ declare global {
   interface Rehax {
     fs: RehaxFs;
   }
-  export const rehax: Rehax;
+  export declare const rehax: Rehax;
 }
 
 export {};

@@ -1,6 +1,7 @@
 
 export function getRootView() {
-  return rehax.rootView;
+  const isWeb = typeof rehax === "undefined";
+  return isWeb ? document.getElementById("root") : rehax.rootView;
 }
 
 export * from './componentRenderer'

@@ -26,7 +26,7 @@ export interface HttpResponse {
 }
 
 declare global {
-  export const rehax = {
+  export declare const rehax = {
     fetch: {
       request(request: HttpRequest): void;,
     },

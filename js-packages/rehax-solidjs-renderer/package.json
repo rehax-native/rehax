@@ -1,6 +1,6 @@
 {
   "name": "@rehax/solidjs-renderer",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "",
   "main": "dist/index.js",
   "files": [
@@ -37,8 +37,6 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "parse-svg-path": "^0.1.2",
-    "solid-js": "^1.4.8",
-    "pure-color": "^1.3.0"
+    "solid-js": "^1.4.8"
   }
 }

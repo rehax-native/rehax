@@ -30,7 +30,7 @@ int main() {
   vm->bindFluxeRehax();
   vm->setRootView(container);
 
-  std::ifstream t("index.native.js");
+  std::ifstream t("index.js");
 
   std::stringstream buffer;
   buffer << t.rdbuf();

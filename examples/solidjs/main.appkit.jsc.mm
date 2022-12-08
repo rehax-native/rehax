@@ -53,7 +53,7 @@ using namespace rehax::ui::appkit;
   vm->setRootView(view);
 
   NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
-  NSString * scriptPath = [NSString pathWithComponents:@[resourcePath, @"index.native.js"]];
+  NSString * scriptPath = [NSString pathWithComponents:@[resourcePath, @"index.js"]];
   NSString * script = [NSString stringWithContentsOfFile:scriptPath encoding:NSUTF8StringEncoding error:NULL];
     
   vm->evaluate([script UTF8String]);

@@ -14,7 +14,15 @@ import {
   KeyEvent,
   MouseEvent,
 } from "../rehax-solidjs-renderer/global";
-import { JSX } from "solid-js";
+import {
+  Accessor,
+  createContext,
+  createSignal,
+  JSX,
+  onCleanup,
+  onMount,
+  useContext,
+} from "solid-js";
 
 export interface ColorType {
   /** Range 0 - 255 */
@@ -174,6 +182,7 @@ export function Select(props: SelectProps): RehaxSelect {
 }
 
 export interface ToggleProps extends ViewBaseProps {
+  value?: boolean;
   onValueChange?: (value?: boolean) => void;
 }
 
@@ -308,4 +317,57 @@ export function Arc(
 ) {
   return (path: RehaxVectorPath) =>
     path.pathArc(rx, ry, xAxisRotation, largeArc, sweepFlag, x, y);
+}
+
+export type Theme = "unsupported" | "system-dark" | "system-light";
+type ThemeChangeListener = number;
+
+export const ThemeContext = createContext<[Accessor<Theme>]>([
+  () => "unsupported",
+]);
+
+const isWeb = typeof rehax === "undefined";
+
+const themeProvider = isWeb
+  ? {
+      app: {
+        getApplicationTheme: () => "unsupported" as Theme,
+        addApplicationThemeChangeListener: (listener: (theme: Theme) => void) =>
+          0,
+        removeApplicationThemeChangeListener: (
+          listener: ThemeChangeListener
+        ) => {},
+      },
+    }
+  : (rehax as unknown as {
+      app: {
+        getApplicationTheme: () => Theme;
+        addApplicationThemeChangeListener: (
+          listener: (theme: Theme) => void
+        ) => ThemeChangeListener;
+        removeApplicationThemeChangeListener: (
+          listener: ThemeChangeListener
+        ) => void;
+      };
+    });
+
+export function ThemeProvider(props: { children: JSX.Element }) {
+  const [theme, setTheme] = createSignal<Theme>(
+    themeProvider.app.getApplicationTheme()
+  );
+  onMount(() => {
+    const listener = themeProvider.app.addApplicationThemeChangeListener(
+      (theme: Theme) => {
+        setTheme(theme);
+      }
+    );
+    onCleanup(() => {
+      themeProvider.app.removeApplicationThemeChangeListener(listener);
+    });
+  });
+  return <ThemeContext.Provider value={[theme]} children={props.children} />;
+}
+
+export function useApplicationTheme() {
+  return useContext(ThemeContext);
 }

@@ -1,10 +1,6 @@
 'use strict';
 
-var crypto = require('crypto');
-
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-var crypto__default = /*#__PURE__*/_interopDefaultLegacy(crypto);
+require('crypto');
 
 const equalFn = (a, b) => a === b;
 
@@ -50,27 +46,6 @@ function createRoot(fn, detachedOwner) {
     Listener = listener;
     Owner = owner;
   }
-}
-
-function createSignal(value, options) {
-  options = options ? Object.assign({}, signalOptions, options) : signalOptions;
-  const s = {
-    value,
-    observers: null,
-    observerSlots: null,
-    pending: NOTPENDING,
-    comparator: options.equals || undefined
-  };
-
-  const setter = value => {
-    if (typeof value === "function") {
-      value = value(s.pending !== NOTPENDING ? s.pending : s.value);
-    }
-
-    return writeSignal(s, value);
-  };
-
-  return [readSignal.bind(s), setter];
 }
 
 function createRenderEffect(fn, value, options) {
@@ -459,23 +434,6 @@ function mergeProps$2(...sources) {
   }, propTraps);
 }
 
-function Show(props) {
-  let strictEqual = false;
-  const condition = createMemo(() => props.when, undefined, {
-    equals: (a, b) => strictEqual ? a === b : !a === !b
-  });
-  return createMemo(() => {
-    const c = condition();
-
-    if (c) {
-      const child = props.children;
-      return (strictEqual = typeof child === "function" && child.length > 0) ? untrack(() => child(c)) : child;
-    }
-
-    return props.fallback;
-  });
-}
-
 function memo$1(fn, equals) {
   return createMemo(fn, undefined, !equals ? {
     equals
@@ -779,7 +737,9 @@ function createRenderer(options) {
 
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
-} // function gestureEnsure(node: RehaxView) {
+}
+const isWeb$1 = typeof rehax === "undefined";
+
 //   if (!node._rhx_gestureHandler) {
 //     const gesture = new rehax.Gesture();
 //     function action() {
@@ -806,65 +766,58 @@ function capitalize(str) {
 //   }
 // }
 
+let ViewMap$1 = {};
+let PropHandlers = {};
 
-const ViewMap = {
-  rehaxView: rehax.View,
-  rehaxText: rehax.Text,
-  rehaxButton: rehax.Button,
-  rehaxInput: rehax.TextInput,
-  rehaxSelect: rehax.Select,
-  rehaxToggle: rehax.Toggle,
-  rehaxStackLayout: rehax.StackLayout,
-  rehaxFlexLayout: rehax.FlexLayout,
-  rehaxVectorContainer: rehax.VectorContainer,
-  rehaxVectorRect: rehax.VectorRect,
-  rehaxVectorPath: rehax.VectorPath
-};
-const PropHandlers = {
-  // onMouseDown: (node: RehaxView, value: any) => {
-  //   gestureEnsure(node);
-  //   if (node._rhx_gestureHandler) {
-  //     node._rhx_gestureHandler.onMouseDown = value;
-  //   }
-  // },
-  // onMouseUp: (node: RehaxView, value: any) => {
-  //   gestureEnsure(node);
-  //   if (node._rhx_gestureHandler) {
-  //     node._rhx_gestureHandler.onMouseUp = value;
-  //   }
-  // },
-  // onMouseMove: (node: RehaxView, value: any) => {
-  //   gestureEnsure(node);
-  //   if (node._rhx_gestureHandler) {
-  //     node._rhx_gestureHandler.onMouseMove = value;
-  //   }
-  // },
-  onKey: (node, value) => {
-    const keyHandler = new rehax.KeyHandler();
-    keyHandler.setup(value);
-    node.addKeyHandler(keyHandler);
-  },
-  onMouse: (node, value) => {
-    const mouseHandler = new rehax.MouseHandler();
-    mouseHandler.setup(value);
-    node.addMouseHandler(mouseHandler);
-  }
-};
-const {
-  render,
-  effect,
-  memo,
-  createComponent,
-  createElement,
-  createTextNode,
-  insertNode,
-  insert,
-  spread,
-  setProp,
-  mergeProps
-} = createRenderer({
+if (!isWeb$1) {
+  ViewMap$1 = {
+    rehaxView: rehax.View,
+    rehaxText: rehax.Text,
+    rehaxButton: rehax.Button,
+    rehaxInput: rehax.TextInput,
+    rehaxSelect: rehax.Select,
+    rehaxToggle: rehax.Toggle,
+    rehaxStackLayout: rehax.StackLayout,
+    rehaxFlexLayout: rehax.FlexLayout,
+    rehaxVectorContainer: rehax.VectorContainer,
+    rehaxVectorRect: rehax.VectorRect,
+    rehaxVectorPath: rehax.VectorPath
+  };
+  PropHandlers = {
+    // onMouseDown: (node: RehaxView, value: any) => {
+    //   gestureEnsure(node);
+    //   if (node._rhx_gestureHandler) {
+    //     node._rhx_gestureHandler.onMouseDown = value;
+    //   }
+    // },
+    // onMouseUp: (node: RehaxView, value: any) => {
+    //   gestureEnsure(node);
+    //   if (node._rhx_gestureHandler) {
+    //     node._rhx_gestureHandler.onMouseUp = value;
+    //   }
+    // },
+    // onMouseMove: (node: RehaxView, value: any) => {
+    //   gestureEnsure(node);
+    //   if (node._rhx_gestureHandler) {
+    //     node._rhx_gestureHandler.onMouseMove = value;
+    //   }
+    // },
+    onKey: (node, value) => {
+      const keyHandler = new rehax.KeyHandler();
+      keyHandler.setup(value);
+      node.addKeyHandler(keyHandler);
+    },
+    onMouse: (node, value) => {
+      const mouseHandler = new rehax.MouseHandler();
+      mouseHandler.setup(value);
+      node.addMouseHandler(mouseHandler);
+    }
+  };
+}
+
+const RehaxRenderer = {
   createElement(str) {
-    const Component = ViewMap[str];
+    const Component = ViewMap$1[str];
 
     if (Component) {
       return new Component();
@@ -935,10 +888,329 @@ const {
     return node.getNextSibling();
   }
 
-}); // Forward Solid control flow
+};
+
+//   if (!node._rhx_gestureHandler) {
+//     const gesture = new rehax.Gesture();
+//     function action() {
+//       node._rhx_gestureHandler?.action();
+//     }
+//     function onMouseDown(x: number, y: number) {
+//       node._rhx_gestureHandler?.onMouseDown({ x, y });
+//     }
+//     function onMouseUp(x: number, y: number) {
+//       node._rhx_gestureHandler?.onMouseUp({ x, y });
+//     }
+//     function onMouseMove(x: number, y: number) {
+//       node._rhx_gestureHandler?.onMouseMove({ x, y });
+//     }
+//     gesture.setup(action, onMouseDown, onMouseUp, onMouseMove);
+//     node.addGesture(gesture);
+//     node._rhx_gestureHandler = {
+//       gesture,
+//       action: () => {},
+//       onMouseDown: () => {},
+//       onMouseUp: () => {},
+//       onMouseMove: () => {},
+//     };
+//   }
+// }
+
+let ViewMap = {};
+
+if (isWeb$1) {
+  ViewMap = {
+    rehaxView: () => document.createElement("div"),
+    rehaxText: () => {
+      const el = document.createElement("p");
+      el.style.margin = "0";
+      return el;
+    },
+    rehaxButton: () => document.createElement("button"),
+    rehaxInput: () => {
+      const el = document.createElement("input");
+      return el;
+    },
+    rehaxSelect: () => document.createElement("select"),
+    rehaxToggle: () => {
+      const el = document.createElement("input");
+      el.setAttribute("type", "checkbox");
+      return el;
+    },
+    rehaxStackLayout: () => ({
+      isLayout: true,
+      type: "stack"
+    }),
+    rehaxFlexLayout: () => ({
+      isLayout: true,
+      type: "flex"
+    }),
+    rehaxVectorContainer: () => {
+      const el = document.createElement("svg"); // todo namespace
+
+      return el;
+    } // rehaxVectorRect: rehax.VectorRect,
+    // rehaxVectorPath: rehax.VectorPath,
+
+  };
+}
+
+function convertLength(prop) {
+  var _a;
+
+  if (prop.type === "fixed") {
+    return `${(_a = prop.value) !== null && _a !== void 0 ? _a : 0}px`;
+  } else if (prop.type === "fill") {
+    return `100%`;
+  }
+}
+
+function convertColor(prop) {
+  return `rgba(${prop.red}, ${prop.green}, ${prop.blue}, ${prop.alpha})`;
+}
+
+const styleProps = {
+  backgroundColor: {
+    name: "backgroundColor",
+    convert: convertColor
+  },
+  textColor: {
+    name: "color",
+    convert: convertColor
+  },
+  underlined: {
+    name: "textDecoration",
+    convert: value => value ? "underline" : "none"
+  },
+  strikeThrough: {
+    name: "textDecoration",
+    convert: value => value ? "line-through" : "none"
+  },
+  italic: {
+    name: "fontStyle",
+    convert: value => value ? "italic" : "normal"
+  },
+  fontSize: {
+    name: "fontSize",
+    convert: value => `${value}px`
+  },
+  fontFamilies: {
+    name: "fontFamily",
+    convert: value => value.join(", ")
+  },
+  width: {
+    name: "width",
+    convert: convertLength
+  },
+  height: {
+    name: "height",
+    convert: convertLength
+  }
+};
+const elementProps = {
+  BUTTON: {
+    title: (node, value) => node.innerText = value,
+    onPress: (node, value) => node.onclick = value
+  },
+  INPUT: {
+    value: (node, value) => {
+      const input = node;
+
+      if (input.type === "checkbox") {
+        input.checked = value;
+      } else {
+        input.value = value;
+      }
+    }
+  },
+  P: {// text: (node: HTMLElement, value: string) => (node.textContent = value),
+  }
+};
+//   // onMouseDown: (node: RehaxView, value: any) => {
+//   //   gestureEnsure(node);
+//   //   if (node._rhx_gestureHandler) {
+//   //     node._rhx_gestureHandler.onMouseDown = value;
+//   //   }
+//   // },
+//   // onMouseUp: (node: RehaxView, value: any) => {
+//   //   gestureEnsure(node);
+//   //   if (node._rhx_gestureHandler) {
+//   //     node._rhx_gestureHandler.onMouseUp = value;
+//   //   }
+//   // },
+//   // onMouseMove: (node: RehaxView, value: any) => {
+//   //   gestureEnsure(node);
+//   //   if (node._rhx_gestureHandler) {
+//   //     node._rhx_gestureHandler.onMouseMove = value;
+//   //   }
+//   // },
+//   onKey: (node: HTMLElement, value) => {
+//     // const keyHandler = new rehax.KeyHandler();
+//     // keyHandler.setup(value);
+//     // node.addKeyHandler(keyHandler);
+//     // node.addEventListener('keydown', (e) => {
+//     // })
+//   },
+//   onMouse: (node: HTMLElement, value: any) => {
+//     // node.addEventListener('mouseup')
+//   },
+// } as const;
+
+function setLayoutOptions(el, layout) {
+  var _a, _b, _c, _d, _e, _f, _g, _h; // el.style.display = layout.type === "flex" ? "flex" : "block";
+
+
+  el.style.display = "flex";
+  el.style.flexDirection = "column"; // This is the default in rehax
+  // if (layout.type === "flex") {
+  // }
+
+  if (layout.type === "flex") {
+    for (const key of Object.keys((_a = layout.options) !== null && _a !== void 0 ? _a : {})) {
+      el.style[key] = (_b = layout.options) === null || _b === void 0 ? void 0 : _b[key];
+    }
+
+    if ((_c = layout.options) === null || _c === void 0 ? void 0 : _c.gap) {
+      el.style.gap = `${(_d = layout.options) === null || _d === void 0 ? void 0 : _d.gap}px`;
+    }
+  } else {
+    el.style.padding = `${(_f = (_e = layout.options) === null || _e === void 0 ? void 0 : _e.spacing) !== null && _f !== void 0 ? _f : 0}px`;
+    el.style.gap = `${(_h = (_g = layout.options) === null || _g === void 0 ? void 0 : _g.spacing) !== null && _h !== void 0 ? _h : 0}px`;
+    el.style.alignItems = "flex-start";
+  }
+}
+
+const WebRenderer = {
+  createElement(str) {
+    const Component = ViewMap[str];
+
+    if (Component) {
+      const el = Component();
+
+      if (el.style) {
+        setLayoutOptions(el, {
+          isLayout: true,
+          type: "stack"
+        });
+      }
+
+      return el;
+    }
+
+    return null;
+  },
+
+  createTextNode(value) {
+    const el = document.createTextNode(value);
+    return el;
+  },
+
+  replaceText(el, value) {
+    el.textContent = value;
+  },
+
+  setProperty(node, name, value) {
+    var _a, _b;
+
+    if (!node) {
+      return;
+    }
+
+    if ("isLayout" in node && node.isLayout) {
+      node.options = Object.assign({}, node.options, value);
+
+      if (node.el) {
+        setLayoutOptions(node.el, node);
+      }
+
+      return;
+    }
+
+    const el = node;
+
+    if (name === "layout") {
+      const layout = value;
+      layout.el = el; // This might be bad?
+
+      setLayoutOptions(el, layout);
+      return;
+    }
+
+    if (styleProps[name]) {
+      const prop = styleProps[name];
+      el.style[prop.name] = prop.convert(value);
+      return;
+    }
+
+    if ((_a = elementProps[el.tagName]) === null || _a === void 0 ? void 0 : _a[name]) {
+      (_b = elementProps[el.tagName]) === null || _b === void 0 ? void 0 : _b[name](el, value);
+      return;
+    }
+
+    console.log(name, value); // const handler = PropHandlers[name];
+    // if (handler) {
+    //   handler(node, value);
+    //   return;
+    // }
+    // if (node.__className === "VectorPath" && name === "operations") {
+    //   node.beginPath();
+    //   for (const op of value) {
+    //     op(node);
+    //   }
+    //   node.endPath();
+    //   return;
+    // }
+    // const setterName = `set${capitalize(name)}`;
+    // if (setterName in node) {
+    //   node[setterName](value);
+    // } else {
+    //   console.error(`Unknown property on ${node.__className}: ${name}`);
+    // }
+  },
+
+  insertNode(parent, node, anchor) {
+    parent.insertBefore(node, anchor !== null && anchor !== void 0 ? anchor : null);
+  },
+
+  isTextNode(node) {
+    return Boolean(node.TEXT_NODE);
+  },
+
+  removeNode(parent, node) {
+    parent.removeChild(node);
+  },
+
+  getParentNode(node) {
+    return node.parentNode;
+  },
+
+  getFirstChild(node) {
+    return node.firstChild;
+  },
+
+  getNextSibling(node) {
+    return node.nextSibling;
+  }
+
+};
+
+const {
+  render,
+  effect,
+  memo,
+  createComponent,
+  createElement,
+  createTextNode,
+  insertNode,
+  insert,
+  spread,
+  setProp,
+  mergeProps
+} = createRenderer(isWeb$1 ? WebRenderer : RehaxRenderer); // Forward Solid control flow
 
 function getRootView() {
-  return rehax.rootView;
+  const isWeb = typeof rehax === "undefined";
+  return isWeb ? document.getElementById("root") : rehax.rootView;
 }
 
 const Color = {
@@ -996,73 +1268,26 @@ function View(props) {
 }
 
 View.DefaultBackgroundColor = () => rehax.View.DefaultBackgroundColor();
-/** A button */
+/** A text view that can be styled and nested */
 
-function Button(props) {
+
+function Text(props) {
   return (() => {
-    const _el$3 = createElement("rehaxButton");
+    const _el$2 = createElement("rehaxText");
 
-    spread(_el$3, props, false);
+    spread(_el$2, props, false);
 
-    return _el$3;
+    return _el$2;
   })();
 }
-/** A text input to capture all kind of user input */
-
-function TextInput(props) {
-  return (() => {
-    const _el$4 = createElement("rehaxInput");
-
-    spread(_el$4, props, false);
-
-    return _el$4;
-  })();
-}
-function Toggle(props) {
-  return (() => {
-    const _el$6 = createElement("rehaxToggle");
-
-    spread(_el$6, props, false);
-
-    return _el$6;
-  })();
-}
-function FlexLayout(props) {
-  return (() => {
-    const _el$7 = createElement("rehaxFlexLayout");
-
-    spread(_el$7, props, false);
-
-    return _el$7;
-  })();
-}
-function StackLayout(props) {
-  return (() => {
-    const _el$8 = createElement("rehaxStackLayout");
-
-    spread(_el$8, props, false);
-
-    return _el$8;
-  })();
-}
-function VectorContainer(props) {
-  return (() => {
-    const _el$9 = createElement("rehaxVectorContainer");
-
-    spread(_el$9, props, false);
-
-    return _el$9;
-  })();
-}
-function VectorRect(props) {
-  return (() => {
-    const _el$10 = createElement("rehaxVectorRect");
-
-    spread(_el$10, props, false);
-
-    return _el$10;
-  })();
-}
+const isWeb = typeof rehax === "undefined";
+isWeb ? {
+  app: {
+    getApplicationTheme: () => "unsupported",
+    addApplicationThemeChangeListener: listener => 0,
+    removeApplicationThemeChangeListener: listener => {}
+  }
+} : rehax;
 
 undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
   function adopt(value) {
@@ -1096,196 +1321,84 @@ undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator)
   });
 };
 
-function Example1() {
-  const [count, setCount] = createSignal(10);
-  const [display, setDisplay] = createSignal("flex");
-  const [justifyContent, setJustifyContent] = createSignal("flex-start");
-  const [alignItems, setAlignItems] = createSignal("flex-start");
-  const [cb, setCb] = createSignal(() => console.log(2));
-  const [showRect, setShowRect] = createSignal(true);
+function Example3() {
   return createComponent(View, {
-    get height() {
-      return Length.Fill();
-    },
-
     get width() {
       return Length.Fill();
     },
 
+    get height() {
+      return Length.Fill();
+    },
+
     get children() {
-      return ["Count: ", memo(() => count()), createComponent(Toggle, {
-        onValueChange: value => console.log(`New value ${value}`)
-      }), createComponent(Button, {
-        title: "Test",
-        onPress: async () => {
-          // const res = await fetch('https://jsonplaceholder.typicode.com/photos')
-          // console.log('res')
-          // const text = await res.json()
-          // console.log(text)
-          // const timer = setInterval(() => {
-          //   console.log('timeout')
-          // clearTimeout(timer)
-          // }, 2000)
-          // console.log(rehax.app.getApplicationSupportDirectory())
-          // console.log(rehax.app.getCurrentUserHomeDirectory())
-          // console.log(rehax.app.getCurrentUserDesktopDirectory())
-          // console.log(rehax.app.getApplicationSupportDirectoryForApp())
-          // console.log(rehax.os.name())
-          // localStorage.setItem('test', 'my string');
-          // console.log(localStorage.getItem("test"));
-          const rnd = crypto__default["default"].randomBytes(10);
-          console.log(rnd);
-          console.log(rnd.readUInt32BE(0));
-          console.log(rnd.readUInt32BE(1));
-          const n = rnd.readUInt32BE(0);
-          setCb(() => () => console.log(n));
-          setShowRect(false); // }
-          // const result = rehax.fs.readdirSync("path")
-          // console.log(JSON.stringify(result))
-        }
-      }), createComponent(Button, {
-        title: "loop",
-
-        get onPress() {
-          return cb();
-        }
-
-      }), createComponent(VectorContainer, {
-        get width() {
-          return Length.Fixed(20);
-        },
-
-        get height() {
-          return Length.Fixed(20);
-        },
+      return createComponent(Text, {
+        text: "EDA",
 
         get children() {
-          return createComponent(Show, {
-            get when() {
-              return showRect();
+          return [createComponent(Text, {
+            underlined: true,
+            children: "??"
+          }), " ", createComponent(Text, {
+            fontSize: 20,
+
+            get textColor() {
+              return Color.RGBA(255, 100, 0, 1);
             },
 
-            get children() {
-              return createComponent(VectorRect, {
-                size: {
-                  width: 20,
-                  height: 15
-                },
-
-                get fillColor() {
-                  return Color.RGBA(255, 0, 0, 1);
-                }
-
-              });
-            }
-
-          });
-        }
-
-      }), createComponent(Button, {
-        get title() {
-          return `Switch flex/stack ${display()}`;
-        },
-
-        onPress: () => {
-          setCount(count() + 1);
-          setDisplay(display() === "flex" ? "none" : "flex");
-        }
-      }), createComponent(Button, {
-        get title() {
-          return `Switch justify content ${justifyContent()}`;
-        },
-
-        onPress: () => {
-          setCount(count() + 1);
-          const list = ["flex-start", "flex-end", "center"];
-          const nextIndex = (list.indexOf(justifyContent()) + 1) % list.length;
-          setJustifyContent(list[nextIndex]);
-        }
-      }), createComponent(Button, {
-        get title() {
-          return `Switch align items ${alignItems()}`;
-        },
-
-        onPress: () => {
-          setCount(count() + 1);
-          const list = ["flex-start", "flex-end", "center", "stretch"];
-          const nextIndex = (list.indexOf(alignItems()) + 1) % list.length;
-          setAlignItems(list[nextIndex]);
-        }
-      }), createComponent(TextInput, {}), createComponent(View, {
-        get width() {
-          return Length.Fixed(100);
-        },
-
-        get height() {
-          return Length.Fixed(100);
-        },
-
-        get backgroundColor() {
-          return Color.RGBA(0, 255, 0, 0.3);
-        }
-
-      }), createComponent(View, {
-        get height() {
-          return Length.Fixed(250);
-        },
-
-        get width() {
-          return Length.Fill();
-        },
-
-        get layout() {
-          return memo(() => display() === "flex", true)() ? createComponent(FlexLayout, {
-            get options() {
-              return {
-                direction: "column",
-                justifyContent: justifyContent(),
-                alignItems: alignItems(),
-                gap: 10 // alignItems: 'center'
-
-              };
-            }
-
-          }) : createComponent(StackLayout, {});
-        },
-
-        get children() {
-          return [createComponent(View, {
-            children: "Flex item 1"
-          }), createComponent(View, {
-            children: "Flex item 2 a little longer"
-          }), createComponent(View, {
-            children: "Flex item 3"
+            italic: true,
+            children: "red"
+          }), " ", "SNDX.io", createComponent(Text, {
+            strikeThrough: true,
+            fontFamilies: ["Courier New", "Roboto"],
+            children: "Henlo"
           })];
         }
 
-      }), createComponent(View, {
-        get height() {
-          return Length.Fixed(250);
-        },
-
-        get children() {
-          return [createComponent(View, {
-            children: "Stack item 1"
-          }), createComponent(View, {
-            children: "Stack item 2 a little longer"
-          }), createComponent(View, {
-            children: "Stack item 3"
-          })];
-        }
-
-      })];
+      });
     }
 
-  });
+  }) // <View
+  //   width={Length.Fill()}
+  //   height={Length.Fill()}
+  //   backgroundColor={Color.RGBA(0, 0, 255, 0.3)}
+  //   layout={
+  //     <FlexLayout
+  //       options={{
+  //         direction: "row",
+  //         // justifyContent: "center",
+  //         // alignItems: alignItems(),
+  //         alignItems: 'stretch',
+  //         items: [
+  //           {},
+  //           { flexGrow: 1 },
+  //         ]
+  //       }}
+  //     />
+  //   }
+  // >
+  //   <View
+  //     width={Length.Fixed(200)}
+  //     height={Length.Fixed(200)}
+  //     backgroundColor={Color.RGBA(255, 0, 0, 0.3)}
+  //   >
+  //   </View>
+  //   <View
+  //     width={Length.Fixed(200)}
+  //     height={Length.Fixed(200)}
+  //     backgroundColor={Color.RGBA(0, 255, 0, 0.3)}
+  //   >
+  //   </View>
+  // </View>
+  ;
 }
 
 function App() {
-  return createComponent(Example1, {}); // return <Example3 />;
-  // return <Example4 />;
+  // return <Example1 />;
+  return createComponent(Example3, {}); // return <Example4 />;
   // return <Example5 />;
   // return <Tester />;
+  // return <ThemeExample />;
 }
 
 render(() => createComponent(App, {}), getRootView());

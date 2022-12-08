@@ -17,7 +17,7 @@ if (${MACOSX})
     add_executable(
         example-solidjs-appkit-jsc MACOSX_BUNDLE
         main.appkit.jsc.mm
-        distNative/index.native.js
+        distNative/index.js
     )
     set_target_properties(
         example-solidjs-appkit-jsc PROPERTIES
@@ -27,7 +27,7 @@ if (${MACOSX})
         MACOSX_BUNDLE_BUNDLE_VERSION "0.1"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "0.1"
         MACOSX_BUNDLE_INFO_PLIST examples/solidjs/info.plist
-        RESOURCE distNative/index.native.js
+        RESOURCE distNative/index.js
     )
     rehax_add_to_executable(
         example-solidjs-appkit-jsc
@@ -40,7 +40,7 @@ if (${MACOSX})
     add_executable(
         example-solidjs-appkit-quickjs MACOSX_BUNDLE
         main.appkit.quickjs.mm
-        distNative/index.native.js
+        distNative/index.js
     )
     set_target_properties(
         example-solidjs-appkit-quickjs PROPERTIES
@@ -50,7 +50,7 @@ if (${MACOSX})
         MACOSX_BUNDLE_BUNDLE_VERSION "0.1"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "0.1"
         MACOSX_BUNDLE_INFO_PLIST examples/solidjs/info.plist
-        RESOURCE distNative/index.native.js
+        RESOURCE distNative/index.js
     )
     rehax_add_to_executable(
         example-solidjs-appkit-quickjs
@@ -65,7 +65,7 @@ if (${MACOSX})
     add_executable(
         example-solidjs-fluxe-jsc MACOSX_BUNDLE
         main.fluxe.jsc.mm
-        distNative/index.native.js
+        distNative/index.js
     )
     set_target_properties(
         example-solidjs-fluxe-jsc PROPERTIES
@@ -75,7 +75,7 @@ if (${MACOSX})
         MACOSX_BUNDLE_BUNDLE_VERSION "0.1"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "0.1"
         MACOSX_BUNDLE_INFO_PLIST examples/solidjs/info.plist
-        RESOURCE distNative/index.native.js
+        RESOURCE distNative/index.js
     )
     rehax_add_to_executable(
         example-solidjs-fluxe-jsc
@@ -91,7 +91,7 @@ if (${MACOSX})
     add_executable(
         example-solidjs-fluxe-quickjs MACOSX_BUNDLE
         main.fluxe.quickjs.mm
-        distNative/index.native.js
+        distNative/index.js
     )
     set_target_properties(
         example-solidjs-fluxe-quickjs PROPERTIES
@@ -101,22 +101,22 @@ if (${MACOSX})
         MACOSX_BUNDLE_BUNDLE_VERSION "0.1"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "0.1"
         MACOSX_BUNDLE_INFO_PLIST examples/solidjs/info.plist
-        RESOURCE distNative/index.native.js
+        RESOURCE distNative/index.js
     )
 endif()
 if (${WIN})
     add_executable(
         example-solidjs-fluxe-quickjs
         main.fluxe.quickjs.win.cc
-        distNative/index.native.js
+        distNative/index.js
     )
     set_target_properties(
         example-solidjs-fluxe-quickjs PROPERTIES
-        RESOURCE distNative/index.native.js
+        RESOURCE distNative/index.js
     )
     add_custom_command(TARGET example-solidjs-fluxe-quickjs POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy
-                       ${CMAKE_SOURCE_DIR}/distNative/index.native.js $<TARGET_FILE_DIR:example-solidjs-fluxe-quickjs>)
+                       ${CMAKE_SOURCE_DIR}/distNative/index.js $<TARGET_FILE_DIR:example-solidjs-fluxe-quickjs>)
 endif()
 rehax_add_to_executable(
     example-solidjs-fluxe-quickjs
