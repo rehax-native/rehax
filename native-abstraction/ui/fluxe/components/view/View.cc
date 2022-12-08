@@ -6,6 +6,7 @@
 #include "Gesture.h"
 #include "KeyHandler.h"
 #include "MouseHandler.h"
+#include <rehaxUtils/app/app.h>
 
 namespace rehax::ui::fluxe::impl {
 
@@ -27,6 +28,9 @@ void View::destroyNativeView() {
 
 rehax::ui::Color View::DefaultBackgroundColor() {
   // FIXME: This is fluxe's default color background, but it should come from there
+  if (::rehaxUtils::App::getApplicationTheme() == ::rehaxUtils::App::ApplicationTheme::SystemLight) {
+    return rehax::ui::Color::RGBA(0.944, 0.944, 0.944, 1.0);
+  }
   return rehax::ui::Color::RGBA(0.156, 0.156, 0.156, 1.0);
 }
 
