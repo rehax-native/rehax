@@ -1,13 +1,19 @@
 {
   "name": "@rehax/solidjs-renderer",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "",
   "main": "dist/index.js",
   "files": [
     "dist/index.js",
     "dist/index.d.ts",
     "dist/componentRenderer.js",
-    "dist/componentRenderer.d.ts"
+    "dist/componentRenderer.d.ts",
+    "dist/componentRendererRehax.js",
+    "dist/componentRendererRehax.d.ts",
+    "dist/componentRendererWeb.js",
+    "dist/componentRendererWeb.d.ts",
+    "dist/util.js",
+    "dist/util.d.ts"
   ],
   "scripts": {
     "build": "tsc",

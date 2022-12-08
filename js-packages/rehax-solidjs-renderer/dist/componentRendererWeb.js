@@ -253,7 +253,7 @@ export const WebRenderer = {
         parent.insertBefore(node, anchor !== null && anchor !== void 0 ? anchor : null);
     },
     isTextNode(node) {
-        return Boolean(node.TEXT_NODE);
+        return node.nodeType === Node.TEXT_NODE;
     },
     removeNode(parent, node) {
         parent.removeChild(node);
