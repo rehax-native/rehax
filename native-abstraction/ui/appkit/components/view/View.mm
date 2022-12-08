@@ -28,8 +28,11 @@ void View::destroyNativeView() {
 }
 
 rehax::ui::Color View::DefaultBackgroundColor() {
-  NSColorSpace *colorSpace = [NSColorSpace sRGBColorSpace];
-  NSColor * color = [[NSColor windowBackgroundColor] colorUsingColorSpace:colorSpace];
+  __block NSColor * color;
+  [NSApp.effectiveAppearance performAsCurrentDrawingAppearance:^{
+    NSColorSpace *colorSpace = [NSColorSpace sRGBColorSpace];
+    color = [[NSColor windowBackgroundColor] colorUsingColorSpace:colorSpace];
+  }];
   return rehax::ui::Color::RGBA([color redComponent], [color greenComponent], [color blueComponent], [color alphaComponent]);
 }
 
