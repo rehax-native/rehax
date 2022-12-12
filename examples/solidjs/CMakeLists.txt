@@ -34,6 +34,7 @@ if (${MACOSX})
         RUNTIME jsc
         BACKEND appkit
         BUNDLE_COMMAND "PATH=/Users/denis/.nvm/versions/node/v16.16.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin pnpm run buildNative"
+        OBJC_NAMESPACE_PREFIX TST
     )
 
     # Example appkit quickjs

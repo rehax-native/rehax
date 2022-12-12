@@ -1,7 +1,9 @@
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 #include <functional>
+#include "../view/ObjcDefinitions.h"
 
+#define FunctionalNSButton MakeClassName(FunctionalNSButton)
 
 @interface FunctionalNSButton : NSButton
 {

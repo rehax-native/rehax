@@ -1,6 +1,9 @@
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 #include <functional>
+#include "../view/ObjcDefinitions.h"
+
+#define FunctionalNSTextField MakeClassName(FunctionalNSTextField)
 
 @interface FunctionalNSTextField : NSTextField <NSTextFieldDelegate>
 {

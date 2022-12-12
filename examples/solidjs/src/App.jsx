@@ -362,6 +362,10 @@ function Example5() {
 function ThemeExample() {
   function ThemedComponent() {
     const [theme] = useApplicationTheme()
+    createEffect(() => {
+      console.log(theme());
+      console.log(JSON.stringify(View.DefaultBackgroundColor()));
+    });
     return (
       <View>
         <Text
@@ -382,8 +386,8 @@ function ThemeExample() {
 }
 
 function App() {
-  // return <Example1 />;
-  return <Example3 />;
+  return <Example1 />;
+  // return <Example3 />;
   // return <Example4 />;
   // return <Example5 />;
   // return <Tester />;

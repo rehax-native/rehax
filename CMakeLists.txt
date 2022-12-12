@@ -19,7 +19,7 @@ function (rehax_add_to_executable app_name)
         PARSE_ARGV 1
         REHAX
         ""
-        "RUNTIME;BACKEND;BUNDLE_COMMAND;FLUXE_LOCATION"
+        "RUNTIME;BACKEND;BUNDLE_COMMAND;FLUXE_LOCATION;OBJC_NAMESPACE_PREFIX"
         ""
     )
 
@@ -168,6 +168,8 @@ function (rehax_add_to_executable app_name)
         message(FATAL_ERROR "Runtime not supported: ${REHAX_RUNTIME}. please set RUNTIME. Candidates: jsc, quickjs")
     endif ()
 
+    target_compile_definitions(${app_name} PUBLIC -DOBJC_NAMESPACE_PREFIX=${REHAX_OBJC_NAMESPACE_PREFIX})
+
     if ("${REHAX_BACKEND}" STREQUAL "")
         message(FATAL_ERROR "BACKEND not set. Please set BACKEND. Candidates: appkit, fluxe")
     elseif (${REHAX_BACKEND} STREQUAL appkit)
@@ -215,8 +217,8 @@ function (rehax_add_to_executable app_name)
                 GIT_REPOSITORY https://github.com/glfw/glfw.git
                 GIT_TAG        dd8a678a66f1967372e5a5e3deac41ebf65ee127
             )
-            set( GLFW_BUILD_DOCS OFF CACHE BOOL  "GLFW lib only" )
-            set( GLFW_INSTALL OFF CACHE BOOL  "GLFW lib only" )
+            set(GLFW_BUILD_DOCS OFF CACHE BOOL  "GLFW lib only")
+            set(GLFW_INSTALL OFF CACHE BOOL  "GLFW lib only")
             FetchContent_MakeAvailable(glfw)
             include_directories(${glfw_SOURCE_DIR}/include)
 
