@@ -29,10 +29,15 @@ void View::destroyNativeView() {
 
 rehax::ui::Color View::DefaultBackgroundColor() {
   __block NSColor * color;
-  [NSApp.effectiveAppearance performAsCurrentDrawingAppearance:^{
+  if (@available(macOS 11.0, *)) {
+    [NSApp.effectiveAppearance performAsCurrentDrawingAppearance:^{
+      NSColorSpace *colorSpace = [NSColorSpace sRGBColorSpace];
+      color = [[NSColor windowBackgroundColor] colorUsingColorSpace:colorSpace];
+    }];
+  } else {
     NSColorSpace *colorSpace = [NSColorSpace sRGBColorSpace];
     color = [[NSColor windowBackgroundColor] colorUsingColorSpace:colorSpace];
-  }];
+  }
   return rehax::ui::Color::RGBA([color redComponent], [color greenComponent], [color blueComponent], [color alphaComponent]);
 }
 
