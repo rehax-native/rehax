@@ -360,12 +360,16 @@ template <>
 struct Converter<::rehax::ui::KeyEvent> {
   static runtime::Value toScript(runtime::Context ctx, ::rehax::ui::KeyEvent& value, Bindings * bindings) {
     runtime::Value obj = runtime::MakeObject(ctx);
+    runtime::SetObjectProperty(ctx, obj, "propagates", Converter<bool>::toScript(ctx, value.propagates));
     runtime::SetObjectProperty(ctx, obj, "key", Converter<std::string>::toScript(ctx, value.key));
     runtime::SetObjectProperty(ctx, obj, "isKeyDown", Converter<bool>::toScript(ctx, value.isKeyDown));
     return obj;
   }
   static ::rehax::ui::KeyEvent toCpp(runtime::Context ctx, const runtime::Value& value, Bindings * bindings) {
     ::rehax::ui::KeyEvent event;
+    if (runtime::HasObjectProperty(ctx, value, "propagates")) {
+      event.propagates = Converter<bool>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "propagates"), bindings);
+    }
     if (runtime::HasObjectProperty(ctx, value, "key")) {
       event.key = Converter<std::string>::toCpp(ctx, runtime::GetObjectProperty(ctx, value, "key"), bindings);
     }
