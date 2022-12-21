@@ -96,89 +96,91 @@ function (rehax_add_to_executable app_name)
         include_directories(${REHAX_FLUXE_LOCATION}/third_party/skia)
     endif()
 
-    add_library(ICU_LIB IMPORTED UNKNOWN)
-    set_target_properties(ICU_LIB PROPERTIES
-        IMPORTED_LOCATION_RELEASE
-            "${REHAX_FLUXE_LOCATION}/dist/out/release/icu.lib"
-        IMPORTED_LOCATION_DEBUG
-            "${REHAX_FLUXE_LOCATION}/dist/out/debug/icu.lib"
-    )
-    set_target_properties(ICU_LIB PROPERTIES
-        MAP_IMPORTED_CONFIG_DEBUG DEBUG
-        MAP_IMPORTED_CONFIG_RELEASE RELEASE
-        MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
-        MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
-    )
+    if (NOT TARGET ICU_LIB)
+        add_library(ICU_LIB IMPORTED UNKNOWN)
+        set_target_properties(ICU_LIB PROPERTIES
+            IMPORTED_LOCATION_RELEASE
+                "${REHAX_FLUXE_LOCATION}/dist/out/release/icu.lib"
+            IMPORTED_LOCATION_DEBUG
+                "${REHAX_FLUXE_LOCATION}/dist/out/debug/icu.lib"
+        )
+        set_target_properties(ICU_LIB PROPERTIES
+            MAP_IMPORTED_CONFIG_DEBUG DEBUG
+            MAP_IMPORTED_CONFIG_RELEASE RELEASE
+            MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
+            MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
+        )
 
-    add_library(SKIA_LIB IMPORTED UNKNOWN)
-    set_target_properties(SKIA_LIB PROPERTIES
-        IMPORTED_LOCATION_RELEASE
-            "${REHAX_FLUXE_LOCATION}/dist/out/release/skia.lib"
-        IMPORTED_LOCATION_DEBUG
-            "${REHAX_FLUXE_LOCATION}/dist/out/debug/skia.lib"
-    )
-    set_target_properties(SKIA_LIB PROPERTIES
-        MAP_IMPORTED_CONFIG_DEBUG DEBUG
-        MAP_IMPORTED_CONFIG_RELEASE RELEASE
-        MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
-        MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
-    )
+        add_library(SKIA_LIB IMPORTED UNKNOWN)
+        set_target_properties(SKIA_LIB PROPERTIES
+            IMPORTED_LOCATION_RELEASE
+                "${REHAX_FLUXE_LOCATION}/dist/out/release/skia.lib"
+            IMPORTED_LOCATION_DEBUG
+                "${REHAX_FLUXE_LOCATION}/dist/out/debug/skia.lib"
+        )
+        set_target_properties(SKIA_LIB PROPERTIES
+            MAP_IMPORTED_CONFIG_DEBUG DEBUG
+            MAP_IMPORTED_CONFIG_RELEASE RELEASE
+            MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
+            MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
+        )
 
-    add_library(SKPARAGRAPH_LIB IMPORTED UNKNOWN)
-    set_target_properties(SKPARAGRAPH_LIB PROPERTIES
-        IMPORTED_LOCATION_RELEASE
-            "${REHAX_FLUXE_LOCATION}/dist/out/release/skparagraph.lib"
-        IMPORTED_LOCATION_DEBUG
-            "${REHAX_FLUXE_LOCATION}/dist/out/debug/skparagraph.lib"
-    )
-    set_target_properties(SKPARAGRAPH_LIB PROPERTIES
-        MAP_IMPORTED_CONFIG_DEBUG DEBUG
-        MAP_IMPORTED_CONFIG_RELEASE RELEASE
-        MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
-        MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
-    )
+        add_library(SKPARAGRAPH_LIB IMPORTED UNKNOWN)
+        set_target_properties(SKPARAGRAPH_LIB PROPERTIES
+            IMPORTED_LOCATION_RELEASE
+                "${REHAX_FLUXE_LOCATION}/dist/out/release/skparagraph.lib"
+            IMPORTED_LOCATION_DEBUG
+                "${REHAX_FLUXE_LOCATION}/dist/out/debug/skparagraph.lib"
+        )
+        set_target_properties(SKPARAGRAPH_LIB PROPERTIES
+            MAP_IMPORTED_CONFIG_DEBUG DEBUG
+            MAP_IMPORTED_CONFIG_RELEASE RELEASE
+            MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
+            MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
+        )
 
-    add_library(SKSHAPER_LIB IMPORTED UNKNOWN)
-    set_target_properties(SKSHAPER_LIB PROPERTIES
-        IMPORTED_LOCATION_RELEASE
-            "${REHAX_FLUXE_LOCATION}/dist/out/release/skshaper.lib"
-        IMPORTED_LOCATION_DEBUG
-            "${REHAX_FLUXE_LOCATION}/dist/out/debug/skshaper.lib"
-    )
-    set_target_properties(SKSHAPER_LIB PROPERTIES
-        MAP_IMPORTED_CONFIG_DEBUG DEBUG
-        MAP_IMPORTED_CONFIG_RELEASE RELEASE
-        MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
-        MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
-    )
+        add_library(SKSHAPER_LIB IMPORTED UNKNOWN)
+        set_target_properties(SKSHAPER_LIB PROPERTIES
+            IMPORTED_LOCATION_RELEASE
+                "${REHAX_FLUXE_LOCATION}/dist/out/release/skshaper.lib"
+            IMPORTED_LOCATION_DEBUG
+                "${REHAX_FLUXE_LOCATION}/dist/out/debug/skshaper.lib"
+        )
+        set_target_properties(SKSHAPER_LIB PROPERTIES
+            MAP_IMPORTED_CONFIG_DEBUG DEBUG
+            MAP_IMPORTED_CONFIG_RELEASE RELEASE
+            MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
+            MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
+        )
 
-    add_library(SKTEXT_LIB IMPORTED UNKNOWN)
-    set_target_properties(SKTEXT_LIB PROPERTIES
-        IMPORTED_LOCATION_RELEASE
-            "${REHAX_FLUXE_LOCATION}/dist/out/release/sktext.lib"
-        IMPORTED_LOCATION_DEBUG
-            "${REHAX_FLUXE_LOCATION}/dist/out/debug/sktext.lib"
-    )
-    set_target_properties(SKTEXT_LIB PROPERTIES
-        MAP_IMPORTED_CONFIG_DEBUG DEBUG
-        MAP_IMPORTED_CONFIG_RELEASE RELEASE
-        MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
-        MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
-    )
+        add_library(SKTEXT_LIB IMPORTED UNKNOWN)
+        set_target_properties(SKTEXT_LIB PROPERTIES
+            IMPORTED_LOCATION_RELEASE
+                "${REHAX_FLUXE_LOCATION}/dist/out/release/sktext.lib"
+            IMPORTED_LOCATION_DEBUG
+                "${REHAX_FLUXE_LOCATION}/dist/out/debug/sktext.lib"
+        )
+        set_target_properties(SKTEXT_LIB PROPERTIES
+            MAP_IMPORTED_CONFIG_DEBUG DEBUG
+            MAP_IMPORTED_CONFIG_RELEASE RELEASE
+            MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
+            MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
+        )
 
-    add_library(SKUNICODE_LIB IMPORTED UNKNOWN)
-    set_target_properties(SKUNICODE_LIB PROPERTIES
-        IMPORTED_LOCATION_RELEASE
-            "${REHAX_FLUXE_LOCATION}/dist/out/release/skunicode.lib"
-        IMPORTED_LOCATION_DEBUG
-            "${REHAX_FLUXE_LOCATION}/dist/out/debug/skunicode.lib"
-    )
-    set_target_properties(SKUNICODE_LIB PROPERTIES
-        MAP_IMPORTED_CONFIG_DEBUG DEBUG
-        MAP_IMPORTED_CONFIG_RELEASE RELEASE
-        MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
-        MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
-    )
+        add_library(SKUNICODE_LIB IMPORTED UNKNOWN)
+        set_target_properties(SKUNICODE_LIB PROPERTIES
+            IMPORTED_LOCATION_RELEASE
+                "${REHAX_FLUXE_LOCATION}/dist/out/release/skunicode.lib"
+            IMPORTED_LOCATION_DEBUG
+                "${REHAX_FLUXE_LOCATION}/dist/out/debug/skunicode.lib"
+        )
+        set_target_properties(SKUNICODE_LIB PROPERTIES
+            MAP_IMPORTED_CONFIG_DEBUG DEBUG
+            MAP_IMPORTED_CONFIG_RELEASE RELEASE
+            MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
+            MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
+        )
+    endif()
 
 
     file(GLOB REHAX_SRC_FILES ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/native-abstraction/ui/style.cc)
@@ -241,18 +243,20 @@ function (rehax_add_to_executable app_name)
         target_sources(${app_name} PUBLIC ${REHAX_FLUXE_SRC_FILES} ${REHAX_SRC_FILES})
         if (${MACOSX})
             add_library(FLUXE_MAC_LIB IMPORTED UNKNOWN)
-            set_target_properties(FLUXE_MAC_LIB PROPERTIES
-                IMPORTED_LOCATION_RELEASE
-                    "${REHAX_FLUXE_LOCATION}/dist/out/release/fluxe.lib"
-                IMPORTED_LOCATION_DEBUG
-                    "${REHAX_FLUXE_LOCATION}/dist/out/debug/fluxe.lib"
-            )
-            set_target_properties(FLUXE_MAC_LIB PROPERTIES
-                MAP_IMPORTED_CONFIG_DEBUG DEBUG
-                MAP_IMPORTED_CONFIG_RELEASE RELEASE
-                MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
-                MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
-            )
+            if (NOT TARGET FLUXE_MAC_LIB)
+                set_target_properties(FLUXE_MAC_LIB PROPERTIES
+                    IMPORTED_LOCATION_RELEASE
+                        "${REHAX_FLUXE_LOCATION}/dist/out/release/fluxe.lib"
+                    IMPORTED_LOCATION_DEBUG
+                        "${REHAX_FLUXE_LOCATION}/dist/out/debug/fluxe.lib"
+                )
+                set_target_properties(FLUXE_MAC_LIB PROPERTIES
+                    MAP_IMPORTED_CONFIG_DEBUG DEBUG
+                    MAP_IMPORTED_CONFIG_RELEASE RELEASE
+                    MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
+                    MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
+                )
+            endif()
             target_link_libraries(
                 ${app_name}
                 "-framework Foundation"
@@ -286,13 +290,15 @@ function (rehax_add_to_executable app_name)
             find_package(OpenGL REQUIRED)
             include_directories(${OPENGL_INCLUDE_DIRS})
 
-            add_library(FLUXE_WIN_LIB IMPORTED UNKNOWN)
-            set_target_properties(FLUXE_WIN_LIB PROPERTIES
-                IMPORTED_LOCATION_RELEASE
-                    "${REHAX_FLUXE_LOCATION}/dist/out/release/fluxe.lib"
-                IMPORTED_LOCATION_DEBUG
-                    "${REHAX_FLUXE_LOCATION}/dist/out/debug/fluxe.lib"
-            )
+            if (NOT TARGET FLUXE_WIN_LIB)
+                add_library(FLUXE_WIN_LIB IMPORTED UNKNOWN)
+                set_target_properties(FLUXE_WIN_LIB PROPERTIES
+                    IMPORTED_LOCATION_RELEASE
+                        "${REHAX_FLUXE_LOCATION}/dist/out/release/fluxe.lib"
+                    IMPORTED_LOCATION_DEBUG
+                        "${REHAX_FLUXE_LOCATION}/dist/out/debug/fluxe.lib"
+                )
+            endif()
             set_target_properties(FLUXE_WIN_LIB PROPERTIES
                 MAP_IMPORTED_CONFIG_DEBUG DEBUG
                 MAP_IMPORTED_CONFIG_RELEASE RELEASE
