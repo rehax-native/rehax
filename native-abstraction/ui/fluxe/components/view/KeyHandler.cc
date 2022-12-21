@@ -33,20 +33,38 @@ RehaxFluxeKeyListener::RehaxFluxeKeyListener(ObjectPointer<KeyHandler> handler)
 //}
 
 bool RehaxFluxeKeyListener::isHandlingKeyboardCommand(ShellKeyboardCommand command) {
-  std::cout << "is" << std::endl;
+//  std::cout << "is" << std::endl;
   return true;
 }
 
 void RehaxFluxeKeyListener::onKeyboardCommand(ShellKeyboardCommand command) {
-  std::cout << "key" << std::endl;
-  handler->handler({
-    .isKeyDown = true, // TODO
+  rehax::ui::KeyEvent keyEvent {
+    .propagates = true,
+    .isKeyDown = true,
     .key = command.commandKey,
-  });
+  };
+  handler->handler(keyEvent);
+
+  if (!keyEvent.propagates) {
+    // TODO
+//    command.
+//    command.propagates = false;
+  }
 }
 
 void RehaxFluxeKeyListener::onTextInput(std::string text) {
-  std::cout << "a" << std::endl;
+  rehax::ui::KeyEvent keyEvent {
+    .propagates = true,
+    .isKeyDown = true,
+    .key = text,
+  };
+  handler->handler(keyEvent);
+
+  if (!keyEvent.propagates) {
+    // TODO
+//    command.
+//    command.propagates = false;
+  }
 }
 
 void RehaxFluxeKeyListener::onKeyboardMoveAction(ShellKeyboardMoveInstruction event) {

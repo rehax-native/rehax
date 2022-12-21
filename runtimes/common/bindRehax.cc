@@ -121,7 +121,7 @@ void Bindings::bindGestureClassMethods(runtime::Value prototype) {
 
 template <typename KeyHandler>
 void Bindings::bindKeyHandlerClassMethods(runtime::Value prototype) {
-  bindMethod<KeyHandler, std::function<void(rehax::ui::KeyEvent)>, &KeyHandler::setup>("setup", prototype);
+  bindMethod<KeyHandler, std::function<void(rehax::ui::KeyEvent&)>, &KeyHandler::setup>("setup", prototype);
 }
 
 template <typename MouseHandler>

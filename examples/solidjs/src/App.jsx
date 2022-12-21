@@ -290,9 +290,11 @@ function Example5() {
       // onMouse={() => {
       //   console.log("Outer view mouse up called");
       // }}
-      // onKey={() => {
-      //   console.log('key')
-      // }}
+      onKey={(e) => {
+        console.log("key");
+        console.log(JSON.stringify(e));
+        e.propagates = false;
+      }}
       onMouse={(event) => {
         if (event.isDown) {
           console.log("Prevent");
@@ -386,10 +388,10 @@ function ThemeExample() {
 }
 
 function App() {
-  return <Example1 />;
+  // return <Example1 />;
   // return <Example3 />;
   // return <Example4 />;
-  // return <Example5 />;
+  return <Example5 />;
   // return <Tester />;
   // return <ThemeExample />;
 }

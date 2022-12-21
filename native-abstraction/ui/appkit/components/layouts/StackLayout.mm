@@ -53,6 +53,14 @@ std::string StackLayout::description() {
 // @end
 
 void StackLayout::layoutContainer(View * container) {
+  // const NSView * view = (__bridge NSView *) container->getNativeView();
+  // float width = 100;
+  // float height = 50;
+  // for (int i = 0; i < view.subviews.count; i++) {
+  //   NSView * subView = view.subviews[i];
+  //   subView.frame = CGRectMake(0, i * (height + spacing), width, height);
+  // }
+
   const NSView * view = (__bridge NSView *) container->getNativeView();
   NSView * prevView = NULL;
 
@@ -69,9 +77,9 @@ void StackLayout::layoutContainer(View * container) {
 //    nativeInfo = (void*) CFBridgingRetain(layouter);
 //  }
 //  return;
-  
+
   removeLayout(container);
-  
+
   NSMutableArray * constraintsArray = [NSMutableArray array];
   nativeInfo = (void*) CFBridgingRetain(constraintsArray);
 
@@ -81,7 +89,7 @@ void StackLayout::layoutContainer(View * container) {
   const auto crossPropMin = isHorizontal ? NSLayoutAttributeTop : NSLayoutAttributeLeft;
   const auto crossPropMax = isHorizontal ? NSLayoutAttributeBottom : NSLayoutAttributeRight;
   const auto crossPropSize = isHorizontal ? NSLayoutAttributeHeight : NSLayoutAttributeWidth;
-  
+
   NSLayoutConstraint * constraint;
   const auto children = container->getChildren();
   int stackedViewsCount = 0;
@@ -133,7 +141,7 @@ void StackLayout::layoutContainer(View * container) {
     [constraintsArray addObject:constraint];
     // NSLog(@"%d size %d", i, crossPropMax == NSLayoutAttributeRight);
   }
-  
+
   if (prevView) {
     if (stackedViewsCount > 1) {
       constraint = [NSLayoutConstraint constraintWithItem:view attribute:maxProp relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:prevView attribute:maxProp multiplier:1.0 constant:spacing];

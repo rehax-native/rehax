@@ -8,7 +8,7 @@ public:
   RHX_EXPORT static ObjectPointer<KeyHandler> Create();
   RHX_EXPORT ~KeyHandler();
 
-  RHX_EXPORT void setup(std::function<void(rehax::ui::KeyEvent)> keyHandler);
+  RHX_EXPORT void setup(std::function<void(rehax::ui::KeyEvent&)> keyHandler);
 
-  std::function<void(KeyEvent)> handler;
+  std::function<void(KeyEvent&)> handler;
 };

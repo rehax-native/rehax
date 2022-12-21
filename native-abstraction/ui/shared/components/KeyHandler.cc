@@ -12,6 +12,6 @@ ObjectPointer<KeyHandler> KeyHandler::Create() {
   return ptr;
 }
 
-void KeyHandler::setup(std::function<void(rehax::ui::KeyEvent)> keyHandler) {
+void KeyHandler::setup(std::function<void(rehax::ui::KeyEvent&)> keyHandler) {
   this->handler = keyHandler;
 }
