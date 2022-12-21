@@ -96,35 +96,88 @@ function (rehax_add_to_executable app_name)
         include_directories(${REHAX_FLUXE_LOCATION}/third_party/skia)
     endif()
 
-    find_library(
-        ICU_LIB
-        NAMES icu
-        PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
+    add_library(ICU_LIB IMPORTED UNKNOWN)
+    set_target_properties(ICU_LIB PROPERTIES
+        IMPORTED_LOCATION_RELEASE
+            "${REHAX_FLUXE_LOCATION}/dist/out/release/icu.lib"
+        IMPORTED_LOCATION_DEBUG
+            "${REHAX_FLUXE_LOCATION}/dist/out/debug/icu.lib"
     )
-    find_library(
-        SKIA_LIB
-        NAMES skia
-        PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
+    set_target_properties(ICU_LIB PROPERTIES
+        MAP_IMPORTED_CONFIG_DEBUG DEBUG
+        MAP_IMPORTED_CONFIG_RELEASE RELEASE
+        MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
+        MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
     )
-    find_library(
-        SKPARAGRAPH_LIB
-        NAMES skparagraph
-        PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
+
+    add_library(SKIA_LIB IMPORTED UNKNOWN)
+    set_target_properties(SKIA_LIB PROPERTIES
+        IMPORTED_LOCATION_RELEASE
+            "${REHAX_FLUXE_LOCATION}/dist/out/release/skia.lib"
+        IMPORTED_LOCATION_DEBUG
+            "${REHAX_FLUXE_LOCATION}/dist/out/debug/skia.lib"
     )
-    find_library(
-        SKSHAPER_LIB
-        NAMES skshaper
-        PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
+    set_target_properties(SKIA_LIB PROPERTIES
+        MAP_IMPORTED_CONFIG_DEBUG DEBUG
+        MAP_IMPORTED_CONFIG_RELEASE RELEASE
+        MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
+        MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
     )
-    find_library(
-        SKTEXT_LIB
-        NAMES sktext
-        PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
+
+    add_library(SKPARAGRAPH_LIB IMPORTED UNKNOWN)
+    set_target_properties(SKPARAGRAPH_LIB PROPERTIES
+        IMPORTED_LOCATION_RELEASE
+            "${REHAX_FLUXE_LOCATION}/dist/out/release/skparagraph.lib"
+        IMPORTED_LOCATION_DEBUG
+            "${REHAX_FLUXE_LOCATION}/dist/out/debug/skparagraph.lib"
     )
-    find_library(
-        SKUNICODE_LIB
-        NAMES skunicode
-        PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
+    set_target_properties(SKPARAGRAPH_LIB PROPERTIES
+        MAP_IMPORTED_CONFIG_DEBUG DEBUG
+        MAP_IMPORTED_CONFIG_RELEASE RELEASE
+        MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
+        MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
+    )
+
+    add_library(SKSHAPER_LIB IMPORTED UNKNOWN)
+    set_target_properties(SKSHAPER_LIB PROPERTIES
+        IMPORTED_LOCATION_RELEASE
+            "${REHAX_FLUXE_LOCATION}/dist/out/release/skshaper.lib"
+        IMPORTED_LOCATION_DEBUG
+            "${REHAX_FLUXE_LOCATION}/dist/out/debug/skshaper.lib"
+    )
+    set_target_properties(SKSHAPER_LIB PROPERTIES
+        MAP_IMPORTED_CONFIG_DEBUG DEBUG
+        MAP_IMPORTED_CONFIG_RELEASE RELEASE
+        MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
+        MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
+    )
+
+    add_library(SKTEXT_LIB IMPORTED UNKNOWN)
+    set_target_properties(SKTEXT_LIB PROPERTIES
+        IMPORTED_LOCATION_RELEASE
+            "${REHAX_FLUXE_LOCATION}/dist/out/release/sktext.lib"
+        IMPORTED_LOCATION_DEBUG
+            "${REHAX_FLUXE_LOCATION}/dist/out/debug/sktext.lib"
+    )
+    set_target_properties(SKTEXT_LIB PROPERTIES
+        MAP_IMPORTED_CONFIG_DEBUG DEBUG
+        MAP_IMPORTED_CONFIG_RELEASE RELEASE
+        MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
+        MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
+    )
+
+    add_library(SKUNICODE_LIB IMPORTED UNKNOWN)
+    set_target_properties(SKUNICODE_LIB PROPERTIES
+        IMPORTED_LOCATION_RELEASE
+            "${REHAX_FLUXE_LOCATION}/dist/out/release/skunicode.lib"
+        IMPORTED_LOCATION_DEBUG
+            "${REHAX_FLUXE_LOCATION}/dist/out/debug/skunicode.lib"
+    )
+    set_target_properties(SKUNICODE_LIB PROPERTIES
+        MAP_IMPORTED_CONFIG_DEBUG DEBUG
+        MAP_IMPORTED_CONFIG_RELEASE RELEASE
+        MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
+        MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
     )
 
 
@@ -187,29 +240,37 @@ function (rehax_add_to_executable app_name)
         endif()
         target_sources(${app_name} PUBLIC ${REHAX_FLUXE_SRC_FILES} ${REHAX_SRC_FILES})
         if (${MACOSX})
-            find_library(
-                FLUXE_MAC_LIB 
-                NAMES fluxe
-                PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
-                # PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out"
+            add_library(FLUXE_MAC_LIB IMPORTED UNKNOWN)
+            set_target_properties(FLUXE_MAC_LIB PROPERTIES
+                IMPORTED_LOCATION_RELEASE
+                    "${REHAX_FLUXE_LOCATION}/dist/out/release/fluxe.lib"
+                IMPORTED_LOCATION_DEBUG
+                    "${REHAX_FLUXE_LOCATION}/dist/out/debug/fluxe.lib"
             )
-            message(WARNING ${FLUXE_MAC_LIB})
-            message(WARNING ${SKIA_LIB})
+            set_target_properties(FLUXE_MAC_LIB PROPERTIES
+                MAP_IMPORTED_CONFIG_DEBUG DEBUG
+                MAP_IMPORTED_CONFIG_RELEASE RELEASE
+                MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
+                MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
+            )
             target_link_libraries(
                 ${app_name}
-                ${FLUXE_MAC_LIB}
                 "-framework Foundation"
                 "-framework QuartzCore"
                 "-framework AppKit"
                 "-framework Metal"
                 "-framework MetalKit"
                 rehax-utils-mac
-                ${ICU_LIB}
-                ${SKIA_LIB}
-                ${SKPARAGRAPH_LIB}
-                ${SKSHAPER_LIB}
-                ${SKTEXT_LIB}
-                ${SKUNICODE_LIB}
+            )
+            target_link_libraries(
+                ${app_name}
+                FLUXE_MAC_LIB
+                ICU_LIB
+                SKIA_LIB
+                SKPARAGRAPH_LIB
+                SKSHAPER_LIB
+                SKTEXT_LIB
+                SKUNICODE_LIB
             )
         endif()
         if (${WIN})
@@ -224,31 +285,42 @@ function (rehax_add_to_executable app_name)
 
             find_package(OpenGL REQUIRED)
             include_directories(${OPENGL_INCLUDE_DIRS})
-            find_library(
-                FLUXE_WIN_LIB 
-                NAMES fluxe
-                PATHS "${REHAX_FLUXE_LOCATION}/dist/out"
-                # PATHS "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/dist/out"
-                #  "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../fluxe/build/Debug"
+
+            add_library(FLUXE_WIN_LIB IMPORTED UNKNOWN)
+            set_target_properties(FLUXE_WIN_LIB PROPERTIES
+                IMPORTED_LOCATION_RELEASE
+                    "${REHAX_FLUXE_LOCATION}/dist/out/release/fluxe.lib"
+                IMPORTED_LOCATION_DEBUG
+                    "${REHAX_FLUXE_LOCATION}/dist/out/debug/fluxe.lib"
             )
-            # message(WARNING "${REHAX_FLUXE_LOCATION}/dist/out")
-            # message(WARNING ${FLUXE_WIN_LIB})
-            # message(WARNING ${SKIA_LIB})
-            # message(WARNING ${SKUNICODE_LIB})
+            set_target_properties(FLUXE_WIN_LIB PROPERTIES
+                MAP_IMPORTED_CONFIG_DEBUG DEBUG
+                MAP_IMPORTED_CONFIG_RELEASE RELEASE
+                MAP_IMPORTED_CONFIG_RELWITHDEBINFO DEBUG
+                MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
+            )
             target_link_libraries(
                 ${app_name}
-                ${FLUXE_WIN_LIB}
                 rehax-utils-win
-                ${ICU_LIB}
-                ${SKIA_LIB}
-                ${SKPARAGRAPH_LIB}
-                ${SKSHAPER_LIB}
-                ${SKTEXT_LIB}
-                ${SKUNICODE_LIB}
                 opengl32
                 glfw
                 Comctl32
             )
+            target_link_libraries(
+                ${app_name}
+                FLUXE_WIN_LIB
+                ICU_LIB
+                SKIA_LIB
+                SKPARAGRAPH_LIB
+                SKSHAPER_LIB
+                SKTEXT_LIB
+                SKUNICODE_LIB
+            )
+            # todo copy icudatl
+            # add_custom_command(
+            #     TARGET ${app_name} POST_BUILD
+            #     COMMAND "cp "
+            # )
             target_compile_definitions(${app_name} PUBLIC -DWINVER=0x0605)
         endif()
         target_compile_definitions(${app_name} PUBLIC -DREHAX_WITH_FLUXE)
