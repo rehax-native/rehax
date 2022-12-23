@@ -242,8 +242,8 @@ function (rehax_add_to_executable app_name)
         endif()
         target_sources(${app_name} PUBLIC ${REHAX_FLUXE_SRC_FILES} ${REHAX_SRC_FILES})
         if (${MACOSX})
-            add_library(FLUXE_MAC_LIB IMPORTED UNKNOWN)
             if (NOT TARGET FLUXE_MAC_LIB)
+                add_library(FLUXE_MAC_LIB IMPORTED UNKNOWN)
                 set_target_properties(FLUXE_MAC_LIB PROPERTIES
                     IMPORTED_LOCATION_RELEASE
                         "${REHAX_FLUXE_LOCATION}/dist/out/release/fluxe.lib"
